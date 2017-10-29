@@ -80,9 +80,10 @@ class MotorRecord:
         cmd = ['caqtdm','-macro']
 
         cmd.append('\"P=%s:,M=%s\"'%tuple(self.Id.split(':')))
-        cmd.append('/sf/common/config/qt/motorx_all.ui')        
-        print(cmd)
-        return subprocess.run(cmd)
+        cmd.append('/sf/common/config/qt/motorx_all.ui')
+        #os.system(' '.join(cmd))
+        return subprocess.Popen(' '.join(cmd),shell=True)
+
 
 
     # epics motor record specific methods
