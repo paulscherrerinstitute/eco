@@ -29,6 +29,10 @@ class MotorRecord:
                 mover=mover,
                 hold=hold,
                 stopper=self._motor.stop)
+    def stop(self):
+        """ Adjustable convention"""
+        pass
+
 
     def get_current_value(self,posType='user'):
         """ Adjustable convention"""
@@ -63,6 +67,13 @@ class MotorRecord:
     def set_speed(self):
         """ Adjustable convention"""
         pass
+    def get_speed(self):
+        """ Adjustable convention"""
+        pass
+    def set_speedMax(self):
+        """ Adjustable convention"""
+        pass
+
     def set_limits(self, posType='user'):
         """ Adjustable convention"""
         _keywordChecker([('posType',posType,_posTypes)])
