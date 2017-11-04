@@ -104,7 +104,7 @@ class MotorRecord:
     def mv(self,value):
         self._currentChange = self.changeTo(value)
     def wm(self,*args,**kwargs):
-        self.get_current_value(*args,**kwargs)
+        return self.get_current_value(*args,**kwargs)
     def mvr(self,value,*args,**kwargs):
         startvalue = self.get_current_value(*args,**kwargs)
         self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)

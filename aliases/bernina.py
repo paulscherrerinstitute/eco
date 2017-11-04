@@ -1,120 +1,121 @@
-aliases = dict(
-        OPSH044 = dict(
-            alias = 'ShutUnd'
-            z_und = 44
-            desc = 'Photon shutter after Undulator'),
-        OAPU044 = dict(
-            alias = 'SlitUnd'
-            z_und = 44
-            desc = 'Slit after Undulator'),
-        PBIG050 = dict(
-            alias = 'GasMon'
-            z_und = 50
-            desc = 'Gas Monitor Intensity'),
-        PBPS053 = dict(
-            alias = 'MonUnd'
-            z_und = 44
-            desc = 'Intensity position monitor after Undulator'),
-        OATT053 = dict(
-            alias = 'AttFE'
-            z_und = 53
-            desc = 'Attenuator in Front End'),
-        SBST060 = dict(
-            alias = 'ShutFE'
-            z_und = 60
-            desc = 'Photon shutter in the end of Front End'),
-        PPRM064 = dict(
-            alias = 'ProfFE'
-            z_und = 64
-            desc = 'Profile monitor after Front End'),
-        OOMH064 = dict(
-            alias = 'MirrAlv1'
-            z_und = 64
-            desc = 'Horizontal mirror Alvra 1'),
-        PPRM066 = dict(
-            alias = 'ProfMirrAlv1'
-            z_und = 66
-            desc = 'Profile monitor after Alvra Mirror 1'),
-        OAPU092 = dict(
-            alias = 'SlitSwitch'
-            z_und = 92
-            desc = 'Slit in Optics hutch after Photon switchyard and before Bernina optics'),
-        OOMV092 = dict(
-            alias = 'Mirr1'
-            z_und = 92
-            desc = 'Vertical offset Mirror 1'),
-        PPRM094 = dict(
-            alias = 'ProfMirr1'
-            z_und = 94
-            desc = 'Profile monitor after Mirror 1'),
-        OOMV096 = dict(
-            alias = 'Mirr2'
-            z_und = 96
-            desc = 'Vertical offset mirror 2'),
-        PSCR097 = dict(
-            alias = 'ProfMirr2'
-            z_und = 097
-            desc = 'Profile Monitor after Mirror 2'),
-        ODCM098 = dict(
-            alias = 'Mono'
-            z_und = 98
-            desc = 'DCM Monochromator'),
-        PPRM102 = dict(
-            alias = 'ProfMono'
-            z_und = 102
-            desc = 'Profile monitor after Monochromator'),
-        OPPI103 = dict(
-            alias = 'Pick'
-            z_und = 103
-            desc = 'X-ray pulse picker'),
-        BST114 = dict(
-            alias = 'ShutOpt'
-            z_und = 114
-            desc = 'Shutter after Optics hutch'),
-        PBPS133 = dict(
-            alias = 'MonOpt'
-            z_und = 133
-            desc = 'Intensity/position monitor after Optics hutch'),
-        PPRM133 = dict(
-            alias = 'ProfOpt'
-            z_und = 133
-            desc = 'Profile monitor after Optics hutch'),
-        PALM134 = dict(
-            alias = 'TimTof'
-            z_und = 134
-            desc = 'Timing diagnostics THz streaking/TOF'),
-        PSEN135 = dict(
-            alias = 'TimRef'
-            z_und = 135
-            desc = 'Timing diagnostics spectral encoding of ref. index change'),
-        OATT135 = dict(
-            alias = 'Att'
-            z_und = 135
-            desc = 'Attenuator Bernina'),
-        OAPU136 = dict(
-            alias = 'SlitAtt'
-            z_und = 136
-            desc = 'Slits behind attenuator'),
-        PBPS138 = dict(
-            alias = 'MonAtt'
-            z_und = 138
-            desc = 'Intensity/Position monitor after Attenuator'),
-        OKBV139 = dict(
-            alias = 'KbVer'
-            z_und = 139
-            desc = 'Vertically focusing Bernina KB mirror'),
-        OKBH140 = dict(
-            alias = 'KbHor'
-            z_und = 140
-            desc = 'Horizontally focusing Bernina KB mirror'),
-        SARES22-GPS = dict(
-            alias = 'Gps'
-            z_und = 142
-            desc = 'General purpose station'),
+aliases = {
+        'SARFE10-OPSH044' : {
+            'alias' : 'ShutUnd',
+            'z_und' : 44,
+            'desc' : 'Photon shutter after Undulator'},
+        'SARFE10-OAPU044' : {
+            'alias' : 'SlitUnd',
+            'z_und' : 44,
+            'desc' : 'Slit after Undulator'},
+        'SARFE10-PBIG050' : {
+            'alias' : 'GasMon',
+            'z_und' : 50,
+            'desc' : 'Gas Monitor Intensity'},
+        'SARFE10-PBPS053' : {
+            'alias' : 'MonUnd',
+            'z_und' : 44,
+            'desc' : 'Intensity position monitor after Undulator'},
+        'SARFE10-OATT053' : {
+            'alias' : 'AttFE',
+            'z_und' : 53,
+            'desc' : 'Attenuator in Front End'},
+        'SARFE10-SBST060' : {
+            'alias' : 'ShutFE',
+            'z_und' : 60,
+            'desc' : 'Photon shutter in the end of Front End'},
+        'SARFE10-PPRM064' : {
+            'alias' : 'ProfFE',
+            'z_und' : 64,
+            'desc' : 'Profile monitor after Front End'},
+        'SAROP11-OOMH064' : {
+            'alias' : 'MirrAlv1',
+            'z_und' : 64,
+            'desc' : 'Horizontal mirror Alvra 1'},
+        'SAROP11-PPRM066' : {
+            'alias' : 'ProfMirrAlv1',
+            'z_und' : 66,
+            'desc' : 'Profile monitor after Alvra Mirror 1',
+            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
+        'SAROP21-OAPU092' : {
+            'alias' : 'SlitSwitch',
+            'z_und' : 92,
+            'desc' : 'Slit in Optics hutch after Photon switchyard and before Bernina optics'},
+        'SAROP21-OOMV092' : {
+            'alias' : 'Mirr1',
+            'z_und' : 92,
+            'desc' : 'Vertical offset Mirror 1'},
+        'SAROP21-PPRM094' : {
+            'alias' : 'ProfMirr1',
+            'z_und' : 94,
+            'desc' : 'Profile monitor after Mirror 1'},
+        'SAROP21-OOMV096' : {
+            'alias' : 'Mirr2',
+            'z_und' : 96,
+            'desc' : 'Vertical offset mirror 2'},
+        'SAROP21-PSCR097' : {
+                'alias' : 'ProfMirr2',
+                'z_und' : 97,
+                'desc' : 'Profile Monitor after Mirror 2'},
+        'SAROP21-ODCM098' : {
+                'alias' : 'Mono',
+                'z_und' : 98,
+                'desc' : 'DCM Monochromator'},
+        'SAROP21-PPRM102' : {
+                'alias' : 'ProfMono',
+                'z_und' : 102,
+                'desc' : 'Profile monitor after Monochromator'},
+        'SAROP21-OPPI103' : {
+                'alias' : 'Pick',
+                'z_und' : 103,
+                'desc' : 'X-ray pulse picker'},
+        'SAROP21-BST114' : {
+                'alias' : 'ShutOpt',
+                'z_und' : 114,
+                'desc' : 'Shutter after Optics hutch'},
+        'SAROP21-PBPS133' : {
+                'alias' : 'MonOpt',
+                'z_und' : 133,
+                'desc' : 'Intensity/position monitor after Optics hutch'},
+        'SAROP21-PPRM133' : {
+                'alias' : 'ProfOpt',
+                'z_und' : 133,
+                'desc' : 'Profile monitor after Optics hutch'},
+        'SAROP21-PALM134' : {
+                'alias' : 'TimTof',
+                'z_und' : 134,
+                'desc' : 'Timing diagnostics THz streaking/TOF'},
+        'SAROP21-PSEN135' : {
+                'alias' : 'TimRef',
+                'z_und' : 135,
+                'desc' : 'Timing diagnostics spectral encoding of ref. index change'},
+        'SAROP21-OATT135' : {
+                'alias' : 'Att',
+                'z_und' : 135,
+                'desc' : 'Attenuator Bernina'},
+        'SAROP21-OAPU136' : {
+                'alias' : 'SlitAtt',
+                'z_und' : 136,
+                'desc' : 'Slits behind attenuator'},
+        'SAROP21-PBPS138' : {
+                'alias' : 'MonAtt',
+                'z_und' : 138,
+                'desc' : 'Intensity/Position monitor after Attenuator'},
+        'SAROP21-OKBV139' : {
+                'alias' : 'KbVer',
+                'z_und' : 139,
+                'desc' : 'Vertically focusing Bernina KB mirror'},
+        'SAROP21-OKBH140' : {
+                'alias' : 'KbHor',
+                'z_und' : 140,
+                'desc' : 'Horizontally focusing Bernina KB mirror'},
+        'SARES22-GPS' : {
+                'alias' : 'Gps',
+                'z_und' : 142,
+                'desc' : 'General purpose station'},
 #         = dict(
 #            alias = ''
 #            z_und = 
-#            desc = ''),
-      )
+#            desc = ''},
+      }
 
 

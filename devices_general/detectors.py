@@ -21,7 +21,7 @@ class CameraCA:
         return self.px_width
 
     def get_data(self):
-        pass
+        return caget(self.Id+'.FPICTURE')
 
 
 
