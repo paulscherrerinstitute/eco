@@ -31,6 +31,10 @@ class MotorRecord:
                 stopper=self._motor.stop)
     def stop(self):
         """ Adjustable convention"""
+        try:
+             self._currentChange.stop()
+        except:
+             self._motor.stop()
         pass
 
 

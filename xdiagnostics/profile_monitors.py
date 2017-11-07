@@ -21,6 +21,26 @@ class Pprm:
         return bool(self._led.get())
 
 
+class Bernina_XEYE:
+    def __init__(self,Id,alias_namespace=None):
+        self.Id = Id
+        self.zoom = MotorRecord('SARES20-EXP:MOT_ZOOM.VAL')
+        self.cam = CameraCA(Id)
+#        self._led = PV(self.Id+':LED')
+
+
+
+#    def illuminate(self,value=None):
+#        if value:
+#            self._led.put(value)
+#        else:
+#            self._led.put(
+#                    not self.get_illumination_state())
+#
+#    def get_illumination_state(self):
+#        return bool(self._led.get())
+#
+
 
 
 

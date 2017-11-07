@@ -111,7 +111,13 @@ aliases = {
         'SARES22-GPS' : {
                 'alias' : 'Gps',
                 'z_und' : 142,
-                'desc' : 'General purpose station'},
+                'desc' : 'General purpose station',
+                'eco_type' : 'endstations.gps_platform.GPS'},
+        'SARES20-PROF142-M1' : {
+                'alias' : 'Xeye',
+                'z_und' : 142,
+                'desc' : 'General purpose station',
+                'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE'},
 #         = dict(
 #            alias = ''
 #            z_und = 
