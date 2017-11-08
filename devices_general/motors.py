@@ -16,6 +16,8 @@ class MotorRecord:
         self.Id = pvname
         self._motor = _Motor(pvname)
 
+
+
     # Conventional methods and properties for all Adjustable objects
     def changeTo(self, value, hold=False, check=True):
         """ Adjustable convention"""
@@ -78,9 +80,17 @@ class MotorRecord:
         """ Adjustable convention"""
         pass
 
-    def set_limits(self, posType='user'):
+    def set_limits(self, values, posType='user', relative_to_present=False):
         """ Adjustable convention"""
         _keywordChecker([('posType',posType,_posTypes)])
+        ll_name, hl_name = 'LLM', 'HLM'
+        if posType is 'dial':
+            ll_name, hl_name = 'DLLM', 'DHLM'
+        if relative_to_present:
+            v = self.get_current_value(posType=posType)
+            values = [v-values[0],v-values[1]]
+        self._motor.put(ll_name,values[0])
+        self._motor.put(hl_name,values[1])
 
     def get_limits(self, posType='user'):
         """ Adjustable convention"""

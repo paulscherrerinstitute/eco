@@ -23,7 +23,8 @@ class CameraCA:
     def get_data(self):
         w = self.get_px_width()
         h = self.get_px_height()
-        i = caget(self.Id+':FPICTURE')[:w*h]
+        numpix = int(caget(self.Id+':FPICTURE.NORD'))
+        i = caget(self.Id+':FPICTURE', count=numpix)
         return i.reshape(h,w)
         
 

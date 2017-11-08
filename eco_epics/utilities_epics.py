@@ -25,6 +25,6 @@ class EnumWrapper:
 class Positioner:
     def __init__(list_of_name_func_tuples):
         for name,func in list_of_name_func_tuples:
-            self.__dict__[name.replace' ','_'] = func
+            self.__dict__[name.replace(' ','_')] = func
 
 
