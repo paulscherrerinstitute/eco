@@ -112,12 +112,17 @@ aliases = {
                 'alias' : 'Gps',
                 'z_und' : 142,
                 'desc' : 'General purpose station',
-                'eco_type' : 'endstations.gps_platform.GPS'},
+                'eco_type' : 'endstations.bernina_gps.GPS'},
         'SARES20-PROF142-M1' : {
                 'alias' : 'Xeye',
                 'z_und' : 142,
                 'desc' : 'General purpose station',
                 'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE'},
+        'SLAAR21-LMOT' : {
+                'alias' : 'LasExp',
+                'z_und' : 142,
+                'desc' : 'Experiment laser optics',
+                'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
 #         = dict(
 #            alias = ''
 #            z_und = 

@@ -4,7 +4,7 @@ from ..devices_general.detectors import CameraCA
 from epics import PV
 
 class Pprm:
-    def __init__(self,Id,alias_namespace=None):
+    def __init__(self,Id):
         self.Id = Id
         self.targetY = MotorRecord(Id+':MOTOR_PROBE')
         self.cam = CameraCA(Id)
@@ -22,7 +22,7 @@ class Pprm:
 
 
 class Bernina_XEYE:
-    def __init__(self,Id,alias_namespace=None):
+    def __init__(self,Id):
         self.Id = Id
         self.zoom = MotorRecord('SARES20-EXP:MOT_ZOOM.VAL')
         self.cam = CameraCA(Id)
