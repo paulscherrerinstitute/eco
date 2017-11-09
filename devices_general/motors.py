@@ -17,7 +17,6 @@ class MotorRecord:
         self._motor = _Motor(pvname)
 
 
-
     # Conventional methods and properties for all Adjustable objects
     def changeTo(self, value, hold=False, check=True):
         """ Adjustable convention"""
@@ -111,6 +110,8 @@ class MotorRecord:
 
 
 
+
+
     # epics motor record specific methods
 
 
@@ -126,7 +127,12 @@ class MotorRecord:
         self._currentChange.wait()
 
 
-
+    # return string with motor value as variable representation
+    def __str__(self):
+        return "Motor is at %s"%self.wm()
+    
+    def __repr__(self):
+        return self.__str__()
 
 
 

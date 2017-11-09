@@ -24,8 +24,16 @@ class Pprm:
 class Bernina_XEYE:
     def __init__(self,Id):
         self.Id = Id
-        self.zoom = MotorRecord('SARES20-EXP:MOT_ZOOM.VAL')
-        self.cam = CameraCA(Id)
+        try:
+            self.zoom = MotorRecord('SARES20-EXP:MOT_ZOOM.VAL')
+        except:
+            print("X-Ray eye zoom motor not found")
+            pass
+        try:
+            self.cam = CameraCA(Id)
+        except:
+            print("X-Ray eye Cam not found")
+            pass
 #        self._led = PV(self.Id+':LED')
 
 

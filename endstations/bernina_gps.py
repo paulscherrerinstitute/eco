@@ -6,6 +6,12 @@ class GPS:
     def __init__(self,Id,alias_namespace=None):
         self.Id = Id
 
+        motors = {
+            'xhl' : Id+':MOT_GPS_TBL_TX',
+            'yhl' : Id+':MOT_GPS_TBL_TZ',
+            'zhl' : Id+':MOT_GPS_TBL_TY'}
+
+            
         ### motors heavy load gps table ###
         self.xhl = MotorRecord(Id+':MOT_GPS_TBL_TX')
         self.yhl = MotorRecord(Id+':MOT_GPS_TBL_TZ')
@@ -28,4 +34,4 @@ class GPS:
         self.tth = MotorRecord(Id+':MOT_GPS_NY_RY2TH')
         self.xbase = MotorRecord(Id+':MOT_GPS_TX')
         self.ybase = MotorRecord(Id+':MOT_GPS_TY')
-                                         
+
