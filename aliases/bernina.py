@@ -1,3 +1,6 @@
+elog = {'url': 'https://elog-gfa.psi.ch/Bernina',
+        'screenshot_directory': '/sf/bernina/config/screenshots'}
+
 aliases = {
         'SARFE10-OPSH044' : {
             'alias' : 'ShutUnd',

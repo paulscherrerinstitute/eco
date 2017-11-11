@@ -1,6 +1,13 @@
+
+from ..aliases.bernina import elog as _elog_info
+from ..utilities.elog import Elog as _Elog
+
+
+elog = _Elog(_elog_info['url'],user='gac-bernina',screenshot_directory=_elog_info['screenshot_directory'])
+
+
+
 from ..aliases.bernina import aliases as _aliases
-
-
 def _attach_device(devDict,devId):
     imp_p = devDict['eco_type'].split(sep='.')
     dev_alias = devDict['alias']
