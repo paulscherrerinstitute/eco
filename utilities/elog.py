@@ -37,9 +37,9 @@ class Elog:
         cmd = ['gnome-screenshot']
         if window:
             cmd.append('-w')
-            cmd.append('--delay=%f'%delay)
+            cmd.append('--delay=%d'%delay)
         elif desktop:
-            cmd.append('--delay=%f'%delay)
+            cmd.append('--delay=%d'%delay)
         else:
             cmd.append('-a')
         tim = datetime.datetime.now()
