@@ -1,9 +1,11 @@
 import numpy as np
 from epics import caget
+from epics import PV
 
 from cam_server import PipelineClient
 from cam_server.utils import get_host_port_from_stream_address
 from bsread import source, SUB
+import subprocess
 
 
 _cameraArrayTypes = ['monochrome','rgb']
@@ -32,7 +34,17 @@ class CameraCA:
         numpix = int(caget(self.Id+':FPICTURE.NORD'))
         i = caget(self.Id+':FPICTURE', count=numpix)
         return i.reshape(h,w)
-        
+
+
+    def gui(self, guiType='xdm'):
+        """ Adjustable convention"""
+        cmd = ['caqtdm','-macro']
+
+        cmd.append('\"NAME=%s,CAMNAME=%s\"'%(self.Id, self.Id))
+        cmd.append('/sf/controls/config/qt/Camera/CameraMiniView.ui')
+        return subprocess.Popen(' '.join(cmd),shell=True)
+
+#/sf/controls/config/qt/Camera/CameraMiniView.ui" with macro "NAME=SAROP21-PPRM138,CAMNAME=SAROP21-PPRM138        
 
 class CameraBS:
     def __init__(self,Id,elog):

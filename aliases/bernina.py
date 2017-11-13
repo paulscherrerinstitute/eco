@@ -104,6 +104,11 @@ aliases = {
                 'alias' : 'MonAtt',
                 'z_und' : 138,
                 'desc' : 'Intensity/Position monitor after Attenuator'},
+        'SAROP21-PPRM138' : {
+                'alias' : 'ProfAtt',
+                'z_und' : 138,
+                'desc' : 'Profile monitor after Attenuator',
+                'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-OKBV139' : {
                 'alias' : 'KbVer',
                 'z_und' : 139,
