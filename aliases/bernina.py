@@ -79,7 +79,8 @@ aliases = {
         'SAROP21-PBPS133' : {
                 'alias' : 'MonOpt',
                 'z_und' : 133,
-                'desc' : 'Intensity/position monitor after Optics hutch'},
+                'desc' : 'Intensity/position monitor after Optics hutch',
+            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS'},
         'SAROP21-PPRM133' : {
                 'alias' : 'ProfOpt',
                 'z_und' : 133,

@@ -1,9 +1,10 @@
 from epics import PV 
 
 class EnumWrapper:
-    def __init__(self,pvname):
+    def __init__(self,pvname,elog=None):
+        self._elog = elog
         self._pv = PV(pvname)
-        self.names = self.pv.enum_strs
+        self.names = self._pv.enum_strs
         self.setters = \
                 Positioner(\
                 [(nam,lambda:self.set(nam))
@@ -18,13 +19,25 @@ class EnumWrapper:
             assert target>0, 'set integer needs to be greater equal zero'
             assert target<len(self.names)
             self._pv.put(target)
+    def get(self):
+        return self._pv.get()
+
+    def get_name(self):
+        return self.names[self.get()]
+
+    def __repr__(self):
+        return self.get_name()
 
 
 
 
 class Positioner:
-    def __init__(list_of_name_func_tuples):
+    def __init__(self,list_of_name_func_tuples):
         for name,func in list_of_name_func_tuples:
-            self.__dict__[name.replace(' ','_')] = func
+            tname = name.replace(' ','_')\
+                              .replace('.','p')
+            if tname[0].isnumeric():
+                tname = 'v'+tname
+            self.__dict__[tname] = func
 
 
