@@ -95,7 +95,8 @@ aliases = {
         'SAROP21-OATT135' : {
                 'alias' : 'Att',
                 'z_und' : 135,
-                'desc' : 'Attenuator Bernina'},
+                'desc' : 'Attenuator Bernina',
+                'eco_type' : 'xoptics.attenuator_aramis.AttenuatorAramis'},
         'SAROP21-OAPU136' : {
                 'alias' : 'SlitAtt',
                 'z_und' : 136,
