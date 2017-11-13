@@ -1,6 +1,7 @@
 from ..eco_epics.motor import Motor as _Motor
 import subprocess
 from threading import Thread
+from epics import PV
 
 _MotorRocordStandardProperties = \
         {}
@@ -40,15 +41,15 @@ class MotorRecord:
         pass
 
 
-    def get_current_value(self,posType='user'):
+    def get_current_value(self,posType='user',readback=True):
         """ Adjustable convention"""
         _keywordChecker([('posType',posType,_posTypes)])
         if posType == 'user':
-            return self._motor.get_position( readback=True)
+            return self._motor.get_position( readback=readback)
         if posType == 'dial':
-            return self._motor.get_position( readback=True, dial=True)
+            return self._motor.get_position( readback=readback, dial=True)
         if posType == 'raw':
-            return self._motor.get_position( readback=True,  raw=True)
+            return self._motor.get_position( readback=readback,  raw=True)
 
     def set_current_value(self,value,posType='user'):
         """ Adjustable convention"""
@@ -79,6 +80,12 @@ class MotorRecord:
     def set_speedMax(self):
         """ Adjustable convention"""
         pass
+
+    def get_moveDone(self):
+        """ Adjustable convention"""
+        """ 0: moving 1: move done"""
+        return PV(str(self.Id+".DMOV")).value
+        
 
     def set_limits(self, values, posType='user', relative_to_present=False):
         """ Adjustable convention"""
@@ -122,7 +129,11 @@ class MotorRecord:
     def wm(self,*args,**kwargs):
         return self.get_current_value(*args,**kwargs)
     def mvr(self,value,*args,**kwargs):
-        startvalue = self.get_current_value(*args,**kwargs)
+
+        if(self.get_moveDone == 1):
+            startvalue = self.get_current_value(readback=True,*args,**kwargs)
+        else:
+            startvalue = self.get_current_value(readback=False,*args,**kwargs)
         self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)
     def wait(self):
         self._currentChange.wait()
