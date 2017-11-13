@@ -18,6 +18,7 @@ def _attach_device(devDict,devId):
     print(istr)
     exec(istr)
     tdev = eval('_%s(Id=\'%s\')'%(eco_type_name,devId))
+    tdev.name = dev_alias
     globals().update([(dev_alias,tdev)])
 
 
