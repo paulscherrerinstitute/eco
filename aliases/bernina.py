@@ -122,7 +122,7 @@ aliases = {
         'SARES20-PROF142-M1' : {
                 'alias' : 'Xeye',
                 'z_und' : 142,
-                'desc' : 'General purpose station',
+                'desc' : 'Mobile X-ray eye in Bernina hutch',
                 'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE'},
         'SLAAR21-LMOT' : {
                 'alias' : 'LasExp',

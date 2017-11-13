@@ -44,11 +44,11 @@ class MotorRecord:
         """ Adjustable convention"""
         _keywordChecker([('posType',posType,_posTypes)])
         if posType == 'user':
-            return self._motor.get_position()
+            return self._motor.get_position( readback=True)
         if posType == 'dial':
-            return self._motor.get_position(dial=True)
+            return self._motor.get_position( readback=True, dial=True)
         if posType == 'raw':
-            return self._motor.get_position(raw=True)
+            return self._motor.get_position( readback=True,  raw=True)
 
     def set_current_value(self,value,posType='user'):
         """ Adjustable convention"""
