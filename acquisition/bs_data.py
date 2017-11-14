@@ -3,6 +3,8 @@ from bsread.h5 import receive
 from bsread.avail import dispatcher
 import zmq
 import os
+import data_api as api
+import datetime
 
 
 class BStools:
@@ -35,6 +37,29 @@ class BStools:
         source = dispatcher.request_stream(channel_list)
         mode = zmq.SUB
         receive(source, fina, queue_size=queue_size, mode=mode, n_messages=N_pulses)
+    def db(self,channel_list=None,start_time_delta=dict(),end_time_delta=dict(),default_path=True):
+        if not channel_list:
+            print('No channels specified, using default list \'%s\' instead.'%list(self._default_channel_list.keys())[0])
+            channel_list = self._default_channel_list[list(self._default_channel_list.keys())[0]]
+        now = datetime.datetime.now()
+        end = now-datetime.timedelta(**end_time_delta)
+        start = end-datetime.timedelta(**start_time_delta)
+        return api.get_data(channels=channel_list, start=start, end=end) 
+
+    def h5_db(self,fina,channel_list=None,start_time_delta=dict(),end_time_delta=dict(),default_path=True):
+        data = self.db(channel_list=None,start_time_delta=start_time_delta,end_time_delta=end_time_delta,default_path=True)    
+        if default_path:
+            fina = self._default_file_path%fina
+        
+        if os.path.isfile(fina):
+            print('!!! File %s already exists, would you like to delete it?'%fina)
+            if input('(y/n)')=='y':
+                print('Deleting %s .'%fina)
+                os.remove(fina)
+            else:
+                return
+        
+        data.to_hdf(fina,"/data")
 
 
 
