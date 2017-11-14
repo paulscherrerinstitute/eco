@@ -79,7 +79,9 @@ aliases = {
         'SAROP21-PBPS133' : {
                 'alias' : 'MonOpt',
                 'z_und' : 133,
-                'desc' : 'Intensity/position monitor after Optics hutch'},
+                'desc' : 'Intensity/position monitor after Optics hutch',
+            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
+              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':9} },
         'SAROP21-PPRM133' : {
                 'alias' : 'ProfOpt',
                 'z_und' : 133,
@@ -95,7 +97,8 @@ aliases = {
         'SAROP21-OATT135' : {
                 'alias' : 'Att',
                 'z_und' : 135,
-                'desc' : 'Attenuator Bernina'},
+                'desc' : 'Attenuator Bernina',
+                'eco_type' : 'xoptics.attenuator_aramis.AttenuatorAramis'},
         'SAROP21-OAPU136' : {
                 'alias' : 'SlitAtt',
                 'z_und' : 136,
@@ -103,7 +106,20 @@ aliases = {
         'SAROP21-PBPS138' : {
                 'alias' : 'MonAtt',
                 'z_und' : 138,
-                'desc' : 'Intensity/Position monitor after Attenuator'},
+                'desc' : 'Intensity/Position monitor after Attenuator',
+            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
+              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':9} },
+        'SAROP21-PDIO138' : {
+                'alias' : 'DetDio',
+                'z_und' : 138,
+                'desc' : 'Diode digitizer for exp data',
+            'eco_type' : 'devices_general.detectors.DiodeDigitizer',
+              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':10} },
+        'SAROP21-PPRM138' : {
+                'alias' : 'ProfAtt',
+                'z_und' : 138,
+                'desc' : 'Profile monitor after Attenuator',
+                'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-OKBV139' : {
                 'alias' : 'KbVer',
                 'z_und' : 139,
@@ -122,7 +138,7 @@ aliases = {
         'SARES20-PROF142-M1' : {
                 'alias' : 'Xeye',
                 'z_und' : 142,
-                'desc' : 'General purpose station',
+                'desc' : 'Mobile X-ray eye in Bernina hutch',
                 'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE'},
         'SLAAR21-LMOT' : {
                 'alias' : 'LasExp',
