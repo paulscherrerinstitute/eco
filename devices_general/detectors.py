@@ -1,6 +1,7 @@
 import numpy as np
 from epics import caget
 from epics import PV
+from ..eco_epics.utilities_epics import EnumWrapper
 
 from cam_server import PipelineClient
 from cam_server.utils import get_host_port_from_stream_address
@@ -79,6 +80,23 @@ class CameraBS:
             # print("X center of mass: ", message.data.data["x_center_of_mass"].value)
             return message.data
 
+
+class FeDigitizer:
+    def __init__(self,Id,elog=None):
+        self.Id = Id
+        self.gain = EnumWrapper(Id+'-WD-gain')
+        self.channels = [
+                Id+'-BG-DATA',
+                Id+'-BG-DRS_TC',
+                Id+'-BG-PULSEID-valid',
+                Id+'-DATA',
+                Id+'-DRS_TC',
+                Id+'-PULSEID-valid']
+        
+        
+        
+        
+        
 
 
 

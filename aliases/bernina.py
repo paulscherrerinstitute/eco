@@ -80,7 +80,8 @@ aliases = {
                 'alias' : 'MonOpt',
                 'z_und' : 133,
                 'desc' : 'Intensity/position monitor after Optics hutch',
-            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS'},
+            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
+              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':9} },
         'SAROP21-PPRM133' : {
                 'alias' : 'ProfOpt',
                 'z_und' : 133,
@@ -105,7 +106,9 @@ aliases = {
         'SAROP21-PBPS138' : {
                 'alias' : 'MonAtt',
                 'z_und' : 138,
-                'desc' : 'Intensity/Position monitor after Attenuator'},
+                'desc' : 'Intensity/Position monitor after Attenuator',
+            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
+              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':9} },
         'SAROP21-PPRM138' : {
                 'alias' : 'ProfAtt',
                 'z_und' : 138,
