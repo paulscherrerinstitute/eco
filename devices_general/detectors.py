@@ -92,9 +92,15 @@ class FeDigitizer:
                 Id+'-DATA',
                 Id+'-DRS_TC',
                 Id+'-PULSEID-valid']
-        
-        
-        
+
+class DiodeDigitizer:
+    def __init__(self,Id,VME_crate=None,link=None,
+            ch_0=7,ch_1=8,
+            elog=None):
+        self.Id = Id
+        if VME_crate:
+            self.diode_0 = FeDigitizer('%s:Lnk%dCh%d'%(VME_crate,link,ch_0))
+            self.diode_1 = FeDigitizer('%s:Lnk%dCh%d'%(VME_crate,link,ch_1))
         
         
 

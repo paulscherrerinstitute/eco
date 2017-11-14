@@ -22,10 +22,12 @@ class BStools:
             fina = self._default_file_path%fina
         
         if os.path.isfile(fina):
-            print('!!! File %s already exists, would you like to delete it?')
+            print('!!! File %s already exists, would you like to delete it?'%fina)
             if input('(y/n)')=='y':
                 print('Deleting %s .'%fina)
                 os.remove(fina)
+            else:
+                return
         if not channel_list:
             print('No channels specified, using default list \'%s\' instead.'%list(self._default_channel_list.keys())[0])
             channel_list = self._default_channel_list[list(self._default_channel_list.keys())[0]]

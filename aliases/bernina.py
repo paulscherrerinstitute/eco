@@ -109,6 +109,12 @@ aliases = {
                 'desc' : 'Intensity/Position monitor after Attenuator',
             'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
               'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':9} },
+        'SAROP21-PDIO138' : {
+                'alias' : 'DetDio',
+                'z_und' : 138,
+                'desc' : 'Diode digitizer for exp data',
+            'eco_type' : 'devices_general.detectors.DiodeDigitizer',
+              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':10} },
         'SAROP21-PPRM138' : {
                 'alias' : 'ProfAtt',
                 'z_und' : 138,
