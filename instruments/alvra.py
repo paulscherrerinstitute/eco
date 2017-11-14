@@ -1,3 +1,10 @@
+from ..aliases.alvra import elog as _elog_info
+from ..utilities.elog import Elog as _Elog
+
+
+elog = _Elog(_elog_info['url'],user='gac-alvra',screenshot_directory=_elog_info['screenshot_directory'])
+
+
 from ..aliases.alvra import aliases as _aliases
 
 
