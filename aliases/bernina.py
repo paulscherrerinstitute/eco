@@ -108,7 +108,7 @@ aliases = {
                 'z_und' : 138,
                 'desc' : 'Intensity/Position monitor after Attenuator',
             'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
-              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':9} },
+              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS','link':10} },
         'SAROP21-PDIO138' : {
                 'alias' : 'DetDio',
                 'z_und' : 138,
