@@ -22,7 +22,40 @@ class SolidTargetDetectorPBPS:
             self.diode_right = FeDigitizer('%s:Lnk%dCh%d'%(VME_crate,link,ch_right))
 
 
-            
+    def set_gains(self,value):
+        try:
+            self.diode_up.gain.set(value)
+            self.diode_down.gain.set(value)
+            self.diode_left.gain.set(value)
+            self.diode_right.gain.set(value)
+        except:
+            print('No diodes configured, can not change any gain!')
+
+    def get_available_gains(self):
+        try:
+            nu = self.diode_up.gain.names
+            nd = self.diode_down.gain.names
+            nl = self.diode_left.gain.names
+            nr = self.diode_right.gain.names
+            assert nu==nd==nl==nr , 'NB: the gain options of the four diodes are not equal!!!'
+            return nu
+        except:
+            print('No diodes configured, can not change any gain!')
+
+    def get_gains(self):
+        try:
+            gains = dict()
+            gains['up'] = (self.diode_up.gain.get_name(),self.diode_up.gain.get())
+            gains['down'] = (self.diode_down.gain.get_name(),self.diode_down.gain.get())
+            gains['left'] = (self.diode_left.gain.get_name(),self.diode_left.gain.get())
+            gains['right'] = (self.diode_right.gain.get_name(),self.diode_right.gain.get())
+            return gains
+        except:
+            print('No diodes configured, can not change any gain!')
+
+
+
+                
 
         #SAROP21-CVME-PBPS:Lnk10Ch15-WD-gain
 
