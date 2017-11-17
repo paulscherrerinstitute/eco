@@ -13,10 +13,12 @@ def _keywordChecker(kw_key_list_tups):
         assert tkey in tlist, "Keyword %s should be one of %s"%(tkw,tlist)
 
 class MotorRecord:
-    def __init__(self,pvname, elog=None):
+    def __init__(self,pvname, name=None, elog=None):
         self.Id = pvname
         self._motor = _Motor(pvname)
         self._elog = elog
+        if name:
+            self.name = name
 
 
     # Conventional methods and properties for all Adjustable objects
@@ -146,8 +148,8 @@ class MotorRecord:
     def __repr__(self):
         return self.__str__()
 
-    def __call__(self,value,*args,**kwargs):
-        self.changeTo(value,*args,**kqwargs)
+    def __call__(self,value):
+        self._currentChange = self.changeTo(value)
 
 
 

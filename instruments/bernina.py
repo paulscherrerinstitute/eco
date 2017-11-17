@@ -1,6 +1,7 @@
 
 from ..aliases.bernina import elog as _elog_info
 from ..utilities.elog import Elog as _Elog
+from colorama import Fore as _color
 
 
 elog = _Elog(_elog_info['url'],user='gac-bernina',screenshot_directory=_elog_info['screenshot_directory'])
@@ -15,11 +16,18 @@ def _attach_device(devDict,devId,args,kwargs):
     eco_type_name = imp_p[-1] 
     istr = 'from ..'+'.'.join(imp_p[:-1])+' import '
     istr += '%s as _%s'%(eco_type_name,eco_type_name)
-    print(istr)
-    exec(istr)
-    tdev = eval('_%s(Id=\'%s\',*args,**kwargs)'%(eco_type_name,devId))
-    tdev.name = dev_alias
-    globals().update([(dev_alias,tdev)])
+    #print(istr)
+    print(('Configuring %s '%(dev_alias)).ljust(25), end='')
+    print(('(%s)'%(devId)).ljust(25), end='')
+    try:
+        exec(istr)
+        tdev = eval('_%s(Id=\'%s\',*args,**kwargs)'%(eco_type_name,devId))
+        tdev.name = dev_alias
+        tdev._z_und = devDict['z_und']
+        globals().update([(dev_alias,tdev)])
+        print((_color.GREEN+'OK'+_color.RESET).rjust(5))
+    except:
+        print((_color.RED+'FAILED'+_color.RESET).rjust(5))
 
 
 for device_Id in _aliases.keys():
