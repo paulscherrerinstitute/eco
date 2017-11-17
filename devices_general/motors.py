@@ -114,7 +114,8 @@ class MotorRecord:
         cmd = ['caqtdm','-macro']
 
         cmd.append('\"P=%s:,M=%s\"'%tuple(self.Id.split(':')))
-        cmd.append('/sf/common/config/qt/motorx_all.ui')
+        #cmd.append('/sf/common/config/qt/motorx_more.ui')
+        cmd.append('motorx_more.ui')
         #os.system(' '.join(cmd))
         return subprocess.Popen(' '.join(cmd),shell=True)
 

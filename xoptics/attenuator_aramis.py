@@ -15,20 +15,24 @@ class AttenuatorAramis:
         pass
     def __status__(self):
         pass
-    def updateE(self, THG = False):
-        energy = PV("SARUN03-UIND030:FELPHOTENE").value
-        if (THG == True):
-            energy = energy*3
-        energy = energy *1000
+    def updateE(self,energy = None):
+        if energy == None:
+            energy = PV("SARUN03-UIND030:FELPHOTENE").value
+            energy = energy *1000
         PV(self.Id+":ENERGY").put(energy)  
         print("Set energy to %s eV"%energy)
         return
 
-    def set_transmission(self,value, THG = False):
-        self.updateE(THG)
+    def set_transmission(self,value,energy=None):
+        self.updateE(energy)
+        PV(self.Id+":3RD_HARM_SP").put(0)
         PV(self.Id+":TRANS_SP").put(value)
-        self.updateE(THG = False)
-        print("Transmission Fundamental: %s THG: %s"%self.get_transmission())
+        pass
+
+    def set_transmission_third_harmonic(self,value,energy=None):
+        self.updateE(energy)
+        PV(self.Id+":3RD_HARM_SP").put(1)
+        PV(self.Id+":TRANS_SP").put(value)
         pass
 
     def setE(self):
@@ -37,7 +41,8 @@ class AttenuatorAramis:
     def get_transmission(self):
         tFun = PV(self.Id+":TRANS_RB").value
         tTHG = PV(self.Id+":TRANS3EDHARM_RB").value
-        return (tFun, tTHG)
+        print("Transmission Fundamental: %s THG: %s"%(tFun, tTHG))
+        pass
 
     def get_status(self):
         s_str = self._pv_status_str.get(as_string=True)
