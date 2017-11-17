@@ -69,7 +69,8 @@ class Screenshot:
             fina+='_%s'%self.user
         fina+='.png'
         filepath = os.path.join(self._screenshot_directory,fina)
-        cmd.append('--file=\"%s\"'%filepath)
+        cmd.append('--file')
+        cmd.append(filepath)
         p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         return filepath,p
         
