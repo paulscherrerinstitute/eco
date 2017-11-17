@@ -9,7 +9,8 @@ aliases = {
         'SARFE10-OAPU044' : {
             'alias' : 'SlitUnd',
             'z_und' : 44,
-            'desc' : 'Slit after Undulator'},
+            'desc' : 'Slit after Undulator',
+            'eco_type' : 'xoptics.slits.SlitFourBlades'},
         'SARFE10-PBIG050' : {
             'alias' : 'GasMon',
             'z_und' : 50,
@@ -42,7 +43,8 @@ aliases = {
         'SAROP21-OAPU092' : {
             'alias' : 'SlitSwitch',
             'z_und' : 92,
-            'desc' : 'Slit in Optics hutch after Photon switchyard and before Bernina optics'},
+            'desc' : 'Slit in Optics hutch after Photon switchyard and before Bernina optics',
+            'eco_type' : 'xoptics.slits.SlitBlades'},
         'SAROP21-OOMV092' : {
             'alias' : 'Mirr1',
             'z_und' : 92,
