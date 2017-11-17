@@ -5,6 +5,8 @@ class EnumWrapper:
         self._elog = elog
         self._pv = PV(pvname)
         self.names = self._pv.enum_strs
+        #print(self.names)
+        #if self.names:
         self.setters = \
                 Positioner(\
                 [(nam,lambda:self.set(nam))

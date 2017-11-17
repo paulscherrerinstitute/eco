@@ -1,7 +1,7 @@
 import elog as _elog_ha
 from getpass import getuser as _getuser
 from getpass import getpass as _getpass
-import os, datetime
+import os, datetime, subprocess
 
 def getDefaultElogInstance(url,**kwargs):
     from pathlib import Path
@@ -23,7 +23,7 @@ def getDefaultElogInstance(url,**kwargs):
 class Elog:
     def __init__(self,url,screenshot_directory='',**kwargs):
         self._log,self.user = getDefaultElogInstance(url,**kwargs)
-        self._screenshot_directory = screenshot_directory
+        self._screenshot = Screenshot(screenshot_directory)
         self.read = self._log.read
 
     def post(self,*args,**kwargs):
@@ -34,6 +34,25 @@ class Elog:
         return self._log.post(*args,**kwargs)
 
     def screenshot(self,message='', window=False, desktop=False, delay=3, **kwargs):
+        filepath = self._screenshot.shoot()
+        kwargs.update({'attachments':[filepath]})
+        self.post(message,**kwargs)
+
+
+class Screenshot:
+    def __init__(self,screenshot_directory='',**kwargs):
+        self._screenshot_directory = screenshot_directory
+        if not ('user' in kwargs.keys()):
+            self.user=_getuser()
+        else:
+            self.user = kwargs['user']
+
+    def show_directory(self):
+
+        p = subprocess.Popen(['nautilus',self._screenshot_directory],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    def shoot(self,message='', window=False, desktop=False, delay=3, **kwargs):
         cmd = ['gnome-screenshot']
         if window:
             cmd.append('-w')
@@ -51,12 +70,9 @@ class Elog:
         fina+='.png'
         filepath = os.path.join(self._screenshot_directory,fina)
         cmd.append('--file=\"%s\"'%filepath)
-        os.system(' '.join(cmd))
+        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        return filepath,p
         
-        kwargs.update({'attachments':[filepath]})
-        self.post(message,**kwargs)
-
-
 
 
 

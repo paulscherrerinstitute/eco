@@ -1,10 +1,13 @@
 
 from ..aliases.bernina import elog as _elog_info
 from ..utilities.elog import Elog as _Elog
-from colorama import Fore as _color
+from ..utilities.elog import Screenshot as _Screenshot
 
+from colorama import Fore as _color
+import traceback
 
 elog = _Elog(_elog_info['url'],user='gac-bernina',screenshot_directory=_elog_info['screenshot_directory'])
+screenshot = _Screenshot(screenshot_directory=_elog_info['screenshot_directory'])
 
 
 
@@ -19,6 +22,7 @@ def _attach_device(devDict,devId,args,kwargs):
     #print(istr)
     print(('Configuring %s '%(dev_alias)).ljust(25), end='')
     print(('(%s)'%(devId)).ljust(25), end='')
+    error = None
     try:
         exec(istr)
         tdev = eval('_%s(Id=\'%s\',*args,**kwargs)'%(eco_type_name,devId))
@@ -26,10 +30,12 @@ def _attach_device(devDict,devId,args,kwargs):
         tdev._z_und = devDict['z_und']
         globals().update([(dev_alias,tdev)])
         print((_color.GREEN+'OK'+_color.RESET).rjust(5))
-    except:
+    except Exception as e:
         print((_color.RED+'FAILED'+_color.RESET).rjust(5))
+        error = e
+    return error
 
-
+errors = []
 for device_Id in _aliases.keys():
     if 'eco_type' in _aliases[device_Id].keys() \
     and _aliases[device_Id]['eco_type']:
@@ -45,7 +51,16 @@ for device_Id in _aliases.keys():
         else:
             kwargs = dict()
         
-        _attach_device(_aliases[device_Id],device_Id,args,kwargs)
+        e = _attach_device(_aliases[device_Id],device_Id,args,kwargs)
+        if e: errors.append((_aliases[device_Id]['alias'],e))
+
+if len(errors)>0:
+    print('Found errors when configuring %s'%[te[0] for te in errors])
+    if input('Would you like to see error traces? (y/n)')=='y':
+        for error in errors:
+            print('---> Error when configuring %s'%error[0])
+            traceback.print_tb(error[1].__traceback__)
+
 
 
 # configuring bs daq
