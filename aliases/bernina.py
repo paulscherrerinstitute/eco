@@ -22,7 +22,8 @@ aliases = {
         'SARFE10-OATT053' : {
             'alias' : 'AttFE',
             'z_und' : 53,
-            'desc' : 'Attenuator in Front End'},
+            'desc' : 'Attenuator in Front End',
+        'eco_type' : 'xoptics.attenuator_aramis.AttenuatorAramis'},
         'SARFE10-SBST060' : {
             'alias' : 'ShutFE',
             'z_und' : 60,
