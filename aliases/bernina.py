@@ -63,8 +63,7 @@ aliases = {
         'SAROP21-PSCR097' : {
                 'alias' : 'ProfMirr2',
                 'z_und' : 97,
-                'desc' : 'Profile Monitor after Mirror 2',
-            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
+                'desc' : 'Profile Monitor after Mirror 2'},
         'SAROP21-ODCM098' : {
                 'alias' : 'Mono',
                 'z_und' : 98,
