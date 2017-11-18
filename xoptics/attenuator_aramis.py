@@ -42,7 +42,7 @@ class AttenuatorAramis:
         tFun = PV(self.Id+":TRANS_RB").value
         tTHG = PV(self.Id+":TRANS3EDHARM_RB").value
         print("Transmission Fundamental: %s THG: %s"%(tFun, tTHG))
-        pass
+        return tFun,tTHG
 
     def get_status(self):
         s_str = self._pv_status_str.get(as_string=True)
