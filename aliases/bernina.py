@@ -52,7 +52,8 @@ aliases = {
         'SAROP21-PPRM094' : {
             'alias' : 'ProfMirr1',
             'z_und' : 94,
-            'desc' : 'Profile monitor after Mirror 1'},
+            'desc' : 'Profile monitor after Mirror 1',
+            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-OOMV096' : {
             'alias' : 'Mirr2',
             'z_und' : 96,
@@ -60,7 +61,8 @@ aliases = {
         'SAROP21-PSCR097' : {
                 'alias' : 'ProfMirr2',
                 'z_und' : 97,
-                'desc' : 'Profile Monitor after Mirror 2'},
+                'desc' : 'Profile Monitor after Mirror 2',
+            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-ODCM098' : {
                 'alias' : 'Mono',
                 'z_und' : 98,
@@ -69,7 +71,8 @@ aliases = {
         'SAROP21-PPRM102' : {
                 'alias' : 'ProfMono',
                 'z_und' : 102,
-                'desc' : 'Profile monitor after Monochromator'},
+                'desc' : 'Profile monitor after Monochromator',
+            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-OPPI103' : {
                 'alias' : 'Pick',
                 'z_und' : 103,
@@ -87,7 +90,8 @@ aliases = {
         'SAROP21-PPRM133' : {
                 'alias' : 'ProfOpt',
                 'z_und' : 133,
-                'desc' : 'Profile monitor after Optics hutch'},
+                'desc' : 'Profile monitor after Optics hutch',
+            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-PALM134' : {
                 'alias' : 'TimTof',
                 'z_und' : 134,
