@@ -141,7 +141,10 @@ aliases = {
                 'alias' : 'Xeye',
                 'z_und' : 142,
                 'desc' : 'Mobile X-ray eye in Bernina hutch',
-                'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE'},
+                'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE',
+                'kwargs' : {'bshost':'sf-daqsync-01.psi.ch','bsport':11173},
+                    
+                    },
         'SLAAR21-LMOT' : {
                 'alias' : 'LasExp',
                 'z_und' : 142,

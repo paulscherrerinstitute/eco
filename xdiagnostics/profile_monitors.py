@@ -1,5 +1,5 @@
 from ..devices_general.motors import MotorRecord
-from ..devices_general.detectors import CameraCA
+from ..devices_general.detectors import CameraCA,CameraBS
 #from ..devices_general.epics_wrappers import EnumSelector
 from epics import PV
 
@@ -22,7 +22,7 @@ class Pprm:
 
 
 class Bernina_XEYE:
-    def __init__(self,Id):
+    def __init__(self,Id,bshost=None,bsport=None):
         self.Id = Id
         try:
             self.zoom = MotorRecord('SARES20-EXP:MOT_ZOOM.VAL')
@@ -34,6 +34,9 @@ class Bernina_XEYE:
         except:
             print("X-Ray eye Cam not found")
             pass
+
+        if bshost:
+            self.camBS = CameraBS(host=bshost,port=bsport)
 #        self._led = PV(self.Id+':LED')
 
 

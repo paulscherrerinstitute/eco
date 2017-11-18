@@ -7,6 +7,8 @@ from cam_server import PipelineClient
 from cam_server.utils import get_host_port_from_stream_address
 from bsread import source, SUB
 import subprocess
+import h5py
+
 
 
 _cameraArrayTypes = ['monochrome','rgb']
@@ -48,38 +50,36 @@ class CameraCA:
 #/sf/controls/config/qt/Camera/CameraMiniView.ui" with macro "NAME=SAROP21-PPRM138,CAMNAME=SAROP21-PPRM138        
 
 class CameraBS:
-    def __init__(self,Id,elog):
-        # First create the pipeline for the selected camera.
-        client = PipelineClient() 
-
-        self._instance_id, self._stream_address = \
-                client.create_instance_from_config(\
-                {"camera_name": Id})
-
-        # Extract the stream host and port from the stream_address.
-        self._stream_host, self._stream_port = \
-                get_host_port_from_stream_address(stream_address)
-        self.checkServer()
+    def __init__(self,host=None,port=None,elog=None):
+        self._stream_host = host
+        self._stream_port = port
 
     def checkServer(self):
         # Check if your instance is running on the server.
         if self._instance_id not in client.get_server_info()["active_instances"]:
             raise ValueError("Requested pipeline is not running.")
-    def get_message(self):
-        # Open connection to the stream. When exiting the 'with' section, the source disconnects by itself.
+
+    def get_images(self,N_images):
+        data = []
         with source(host=self._stream_host, port=self._stream_port, mode=SUB) as input_stream:
             input_stream.connect()
             
-            # Read one message.
-            message = input_stream.receive()
-            
-            # Print out the received stream data - dictionary.
-            # print("Dictionary with data:\n", message.data.data)
-            
-            # Print out the X center of mass.
-            # print("X center of mass: ", message.data.data["x_center_of_mass"].value)
-            return message.data
+            for n in range(N_images):
+                data.append(input_stream.receive().data.data['image'].value)
+        return data
 
+    def record_images(self,fina,N_images,dsetname='images'):
+        ds = None
+        with h5py.File(fina,'w') as f:
+            with source(host=self._stream_host, port=self._stream_port, mode=SUB) as input_stream:
+
+                input_stream.connect()
+                
+                for n in range(N_images):
+                    image = input_stream.receive().data.data['image'].value
+                    if not ds:
+                        ds = f.create_dataset(dsetname,dtype=image.dtype, shape=(N_images,)+image.shape)
+                    ds[n,:,:] = image
 
 class FeDigitizer:
     def __init__(self,Id,elog=None):
