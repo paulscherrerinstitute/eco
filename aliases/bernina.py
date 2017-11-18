@@ -31,7 +31,8 @@ aliases = {
         'SARFE10-PPRM064' : {
             'alias' : 'ProfFE',
             'z_und' : 64,
-            'desc' : 'Profile monitor after Front End'},
+            'desc' : 'Profile monitor after Front End',
+            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP11-OOMH064' : {
             'alias' : 'MirrAlv1',
             'z_und' : 64,
