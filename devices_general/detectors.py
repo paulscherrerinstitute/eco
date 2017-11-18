@@ -8,6 +8,7 @@ from cam_server.utils import get_host_port_from_stream_address
 from bsread import source, SUB
 import subprocess
 import h5py
+from time import sleep
 
 
 
@@ -38,6 +39,13 @@ class CameraCA:
         i = caget(self.Id+':FPICTURE', count=numpix)
         return i.reshape(h,w)
 
+    def record_images(self,fina,N_images,sleeptime=0.2):
+        with h5py.File(fina,'w') as f:
+            d = []
+            for n in range(N_images):
+                d.append(self.get_data())
+                sleep(sleeptime)
+            f['images'] = np.asarray(d)
 
     def gui(self, guiType='xdm'):
         """ Adjustable convention"""
