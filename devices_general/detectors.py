@@ -10,6 +10,7 @@ import subprocess
 import h5py
 from time import sleep
 
+from detector_integration_api import DetectorIntegrationClient
 
 
 _cameraArrayTypes = ['monochrome','rgb']
@@ -113,4 +114,49 @@ class DiodeDigitizer:
         
 
 
+
+
+class JF:
+    def __init__(self, Id):
+        self.writer_config = ""
+        self.backend_config = ""
+        self.detector_config = ""
+        self.Id = Id
+        self.api_address = self.Id
+        self.client = DetectorIntegrationClient(self.Id)
+
+    def reset(self):
+        self.client.reset()
+        pass
+
+    def get_status(self):
+        status = self.client.get_status()
+        return status
+
+    def get_config(self):
+        config = self.client.get_config()
+        return config
+
+    def set_config(self):
+        self.writer_config = {'dataset_name': 'jungfrau/data','output_file': '/gpfs/sf-data/bernina/raw/p16582/Bi11_pp_delayXXPP_tests.h5','process_gid': 16582,   'process_uid': 16582, "disable_processing": False};
+        self.backend_config = {"n_frames": 100000, "pede_corrections_filename": "/sf/bernina/data/res/p16582/pedestal_20171119_1027_res.h5", "pede_corrections_dataset": "gains", "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains.h5", "gain_corrections_dataset": "gains", "activate_corrections_preview": True, "pede_mask_dataset": "pixel_mask"};
+        self.detector_config = {"exptime": 0.0001, "cycles":20000, "timing": "trigger", "frames": 1}
+        DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
+        pass
+
+    def start(self):
+        self.client.start()
+        print("start acquisition")
+        pass
+
+    def stop(self):
+        self.client.stop()
+        print("stop acquisition") 
+        pass
+
+    def config_and_start_test(self):
+        self.reset()
+        self.set_config()
+        self.start()
+        pass
 

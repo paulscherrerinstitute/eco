@@ -155,6 +155,11 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Experiment laser optics',
                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
+        'http://sf-daq-1:10000' : {
+                'alias' : 'DetJF',
+                'z_und' : 142,
+                'desc' : '1.5M Jungfrau detector',
+                'eco_type' : 'devices_general.detectors.JF'},
 #         = dict(
 #            alias = ''
 #            z_und = 
