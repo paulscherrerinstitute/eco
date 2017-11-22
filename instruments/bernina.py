@@ -2,7 +2,6 @@
 from ..aliases.bernina import elog as _elog_info
 from ..utilities.elog import Elog as _Elog
 from ..utilities.elog import Screenshot as _Screenshot
-from detector_integration_api import DetectorIntegrationClient; api_address = 'http://sf-daq-1:10000'; client = DetectorIntegrationClient(api_address);
 
 
 from colorama import Fore as _color

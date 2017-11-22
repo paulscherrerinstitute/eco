@@ -10,7 +10,12 @@ import subprocess
 import h5py
 from time import sleep
 
-from detector_integration_api import DetectorIntegrationClient
+try:
+    import sys
+    sys.path.append('/sf/bernina/config/src/python/detector_integration_api')
+    from detector_integration_api import DetectorIntegrationClient
+except:
+    print('NB: detector integration could not be imported!')
 
 
 _cameraArrayTypes = ['monochrome','rgb']
