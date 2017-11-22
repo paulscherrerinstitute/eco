@@ -144,6 +144,36 @@ class JF:
         DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
         pass
 
+    def record(self,file_name,Npulses):
+        self.detector_config.update(dict(cycles=Npulses))
+        self.writer_config.update(dict(output_file=file_name))
+        self.reset()
+        DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
+        self.client.start()
+
+    def check_running(self,time_interval=.5):
+        cfg = self.get_config()
+        running = False
+        while not running:
+            if self.get_status()['status'][-7:]=='RUNNING':
+                running = True
+                break
+            else:
+                sleep(time_interval)
+        
+    def check_still_running(self,time_interval=.5):
+        cfg = self.get_config()
+        running = True
+        while running:
+            if not self.get_status()['status'][-7:]=='RUNNING':
+                running = False
+                break
+            else:
+                sleep(time_interval)
+
+            
+        
+
     def start(self):
         self.client.start()
         print("start acquisition")
