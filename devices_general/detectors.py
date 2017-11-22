@@ -85,6 +85,7 @@ class FeDigitizer:
     def __init__(self,Id,elog=None):
         self.Id = Id
         self.gain = EnumWrapper(Id+'-WD-gain')
+        self.bias = PV(Id+'-HV_SET')
         self.channels = [
                 Id+'-BG-DATA',
                 Id+'-BG-DRS_TC',
@@ -92,6 +93,14 @@ class FeDigitizer:
                 Id+'-DATA',
                 Id+'-DRS_TC',
                 Id+'-PULSEID-valid']
+
+    def set_bias(self, value)
+        bias = PV(Id+'-HV_SET')
+        bias.put(value)
+        return 'Bias set to %sV'%(bias.value)
+
+    def get_bias(self)
+        return PV(Id+'-HV_SET').value
 
 class DiodeDigitizer:
     def __init__(self,Id,VME_crate=None,link=None,
