@@ -22,7 +22,8 @@ aliases = {
         'SARFE10-OATT053' : {
             'alias' : 'AttFE',
             'z_und' : 53,
-            'desc' : 'Attenuator in Front End'},
+            'desc' : 'Attenuator in Front End',
+        'eco_type' : 'xoptics.attenuator_aramis.AttenuatorAramis'},
         'SARFE10-SBST060' : {
             'alias' : 'ShutFE',
             'z_und' : 60,
@@ -30,7 +31,8 @@ aliases = {
         'SARFE10-PPRM064' : {
             'alias' : 'ProfFE',
             'z_und' : 64,
-            'desc' : 'Profile monitor after Front End'},
+            'desc' : 'Profile monitor after Front End',
+            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP11-OOMH064' : {
             'alias' : 'MirrAlv1',
             'z_und' : 64,
@@ -61,8 +63,7 @@ aliases = {
         'SAROP21-PSCR097' : {
                 'alias' : 'ProfMirr2',
                 'z_und' : 97,
-                'desc' : 'Profile Monitor after Mirror 2',
-            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
+                'desc' : 'Profile Monitor after Mirror 2'},
         'SAROP21-ODCM098' : {
                 'alias' : 'Mono',
                 'z_und' : 98,
@@ -154,6 +155,11 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Experiment laser optics',
                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
+        'http://sf-daq-1:10000' : {
+                'alias' : 'DetJF',
+                'z_und' : 142,
+                'desc' : '1.5M Jungfrau detector',
+                'eco_type' : 'devices_general.detectors.JF'},
 #         = dict(
 #            alias = ''
 #            z_und = 
