@@ -2,6 +2,7 @@ from ..devices_general.motors import MotorRecord
 from ..devices_general.detectors import CameraCA,CameraBS
 #from ..devices_general.epics_wrappers import EnumSelector
 from epics import PV
+from ..eco_epics.utilities_epics import EnumWrapper
 
 class Pprm:
     def __init__(self,Id):
@@ -9,6 +10,7 @@ class Pprm:
         self.targetY = MotorRecord(Id+':MOTOR_PROBE')
         self.cam = CameraCA(Id)
         self._led = PV(self.Id+':LED')
+        self.target = EnumWrapper(self.Id+':PROBE_SP')
 
     def illuminate(self,value=None):
         if value:

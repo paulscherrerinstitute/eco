@@ -18,7 +18,7 @@ class EnumWrapper:
                     "set value need to be one of \n %s"%self.names
             self._pv.put(self.names.index(target))
         elif type(target) is int:
-            assert target>0, 'set integer needs to be greater equal zero'
+            assert target>=0, 'set integer needs to be positive'
             assert target<len(self.names)
             self._pv.put(target)
     def get(self):
