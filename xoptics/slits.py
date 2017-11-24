@@ -108,3 +108,42 @@ class SlitFourBlades:
     def __repr__(self):
         return self.__str__()
 
+
+
+class SlitPosWidth:
+    def __init__(self,Id,name=None,elog=None):
+        self.Id = Id
+        self.name = name
+        self._xoffs = MotorRecord(Id+':MOTOR_X')
+        self._yoffs = MotorRecord(Id+':MOTOR_Y')
+        self._xgap = MotorRecord(Id+':MOTOR_W')
+        self._ygap = MotorRecord(Id+':MOTOR_H')
+
+    def get_hg(self):
+        return self._xgap.get_current_value()
+    def get_vg(self):
+        return self._ygap.get_current_value()
+    def get_ho(self):
+        return self._xoffs.get_current_value()
+    def get_vo(self):
+        return self._yoffs.get_current_value()
+    def set_hg(self,value):
+        c = self._xgap.changeTo(value)
+        return c
+    def set_vg(self,value):
+        c = self._ygap.changeTo(value)
+        return c
+
+    def set_ho(self,value):
+        c = self._xoffs.changeTo(value)
+        return c
+    def set_vo(self,value):
+        c = self._yoffs.changeTo(value)
+        return c
+
+    def __call__(self,width,height):
+        self.set_hg(width)
+        self.set_vg(height)
+
+    def __repr__(self):
+        return '(%s,%s) mm'%(self.get_hg(),self.get_vg())

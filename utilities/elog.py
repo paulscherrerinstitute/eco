@@ -34,7 +34,7 @@ class Elog:
         return self._log.post(*args,**kwargs)
 
     def screenshot(self,message='', window=False, desktop=False, delay=3, **kwargs):
-        filepath = self._screenshot.shoot()
+        filepath = self._screenshot.shoot()[0]
         kwargs.update({'attachments':[filepath]})
         self.post(message,**kwargs)
 
@@ -71,7 +71,7 @@ class Screenshot:
         filepath = os.path.join(self._screenshot_directory,fina)
         cmd.append('--file')
         cmd.append(filepath)
-        p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        p = subprocess.call(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         return filepath,p
         
 

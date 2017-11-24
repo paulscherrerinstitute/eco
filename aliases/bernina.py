@@ -109,7 +109,8 @@ aliases = {
         'SAROP21-OAPU136' : {
                 'alias' : 'SlitAtt',
                 'z_und' : 136,
-                'desc' : 'Slits behind attenuator'},
+                'desc' : 'Slits behind attenuator',
+            'eco_type' : 'xoptics.slits.SlitPosWidth'},
         'SAROP21-PBPS138' : {
                 'alias' : 'MonAtt',
                 'z_und' : 138,
