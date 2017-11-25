@@ -111,6 +111,11 @@ aliases = {
                 'z_und' : 136,
                 'desc' : 'Slits behind attenuator',
             'eco_type' : 'xoptics.slits.SlitPosWidth'},
+        'SAROP21-OLAS136' : {
+                'alias' : 'RefLaser',
+                'z_und' : 136,
+                'desc' : 'Bernina beamline reference laser before KBs',
+            'eco_type' : 'xoptics.reflaser.RefLaser_Aramis'},
         'SAROP21-PBPS138' : {
                 'alias' : 'MonAtt',
                 'z_und' : 138,
