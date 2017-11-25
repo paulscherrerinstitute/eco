@@ -17,8 +17,7 @@ class MotorRecord:
         self.Id = pvname
         self._motor = _Motor(pvname)
         self._elog = elog
-        if name:
-            self.name = name
+        self.name = name
 
 
     # Conventional methods and properties for all Adjustable objects
@@ -151,12 +150,6 @@ class MotorRecord:
 
     def __call__(self,value):
         self._currentChange = self.changeTo(value)
-
-
-
-
-
-
 
 
 
