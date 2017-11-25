@@ -1,10 +1,12 @@
 import pyscan
 import os
 import json
+import numpy as np
 
 class ScanSimple:
-    def __init__(self,adjustables,values,counterCallers,fina,basepath='',scan_info_dir=''):
+    def __init__(self,adjustables,values,counterCallers,fina,Npulses=100,basepath='',scan_info_dir=''):
         self.Nsteps = len(values)
+        self.pulses_per_step = Npulses
         self.adjustables = adjustables
         self.values_todo = values
         self.values_done = []
@@ -26,7 +28,7 @@ class ScanSimple:
 
     def get_filename(self,stepNo,Ndigits=4):
         fina = os.path.join(self.basepath,self.fina)
-        fina += '_setp%04d.h5'%stepNo
+        fina += '_step%04d'%stepNo
         return fina
 
     def doNextStep(self,step_info=None):
@@ -39,12 +41,16 @@ class ScanSimple:
             ms.append(adj.changeTo(tv))
         for tm in ms:
             tm.wait()
+        filenames = []
+        acs = []
         for ctr in self.counterCallers:
-            ms.append(ctr.acquire(file_name=fina))
-        for tm in ms:
-            tm.wait() 
+            acq = ctr.acquire(file_name=fina,Npulses=self.pulses_per_step)
+            filenames.append(acq.file_name)
+            acs.append(acq)
+        for ta in acs:
+            ta.wait()
         self.values_done.append(self.values_todo.pop(0))
-        self.appendScanInfo(values_step,fina,step_info=step_info)
+        self.appendScanInfo(values_step,filenames,step_info=step_info)
         self.writeScanInfo()
 
         self.nextStep +=1
@@ -65,5 +71,18 @@ class ScanSimple:
             done = not self.doNextStep()
 
 
+class Scans:
+    def __init__(self,data_base_dir='',scan_info_dir='',default_counters=[]):
+        self.data_base_dir = data_base_dir
+        self.scan_info_dir = scan_info_dir
+        self._default_counters = default_counters
+
+    def ascan(self,adjustable,start_pos,end_pos,N_intervals,N_pulses,file_name=None,start_immediately=True):
+        positions = np.linspace(start_pos,end_pos,N_intervals+1)
+        values = [[tp] for tp in positions]
+        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=100,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir)
+        if start_immediately:
+            s.scanAll()
+        return s
 
 

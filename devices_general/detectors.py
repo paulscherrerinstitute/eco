@@ -9,6 +9,7 @@ from bsread import source, SUB
 import subprocess
 import h5py
 from time import sleep
+from threading import Thread
 
 try:
     import sys
@@ -116,8 +117,7 @@ class FeDigitizer:
 
 class DiodeDigitizer:
     def __init__(self,Id,VME_crate=None,link=None,
-            ch_0=7,ch_1=8,
-            elog=None):
+            ch_0=7,ch_1=8, elog=None):
         self.Id = Id
         if VME_crate:
             self.diode_0 = FeDigitizer('%s:Lnk%dCh%d'%(VME_crate,link,ch_0))
@@ -183,9 +183,6 @@ class JF:
             else:
                 sleep(time_interval)
 
-            
-        
-
     def start(self):
         self.client.start()
         print("start acquisition")
@@ -201,4 +198,47 @@ class JF:
         self.set_config()
         self.start()
         pass
+
+    def acquire(self,file_name=None,Npulses=100):
+        def acquire(file_name=None, Npulses=None):
+            self.detector_config.update(dict(cycles=Npulses))
+            self.writer_config.update(dict(output_file=file_name))
+            self.reset()
+            DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
+            self.client.start()
+            self.check_running()
+            self.check_still_running()
+
+        return Acquisition(acquire=acquire,acquisition_kwargs={'file_name':file_name, 'Npulses':Npulses},hold=False)
+
+    def wait_done(self):
+        self.check_running()
+        self.check_still_running()
+
+
+class Acquisition:
+    def __init__(self, parent=None, acquire=None, acquisition_kwargs = {}, hold=True, stopper=None):
+        self.acquisition_kwargs = acquisition_kwargs
+        self._acquire = acquire
+        self._stopper = stopper
+        self._thread = Thread(target=self._acquire,kwargs=(acquisition_kwargs))
+        if not hold:
+            self._thread.start()
+
+    def wait(self):
+        self._thread.join()
+
+    def start(self):
+        self._thread.start()
+
+    def status(self):
+        if self._thread.ident is None:
+            return 'waiting'
+        else:
+            if self._isAlive:
+                return 'acquiring'
+            else:
+                return 'done'
+    def stop(self):
+        self._stopper()
 
