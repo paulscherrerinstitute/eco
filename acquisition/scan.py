@@ -10,6 +10,7 @@ class ScanSimple:
         self.adjustables = adjustables
         self.values_todo = values
         self.values_done = []
+        self.readbacks = []
         self.counterCallers = counterCallers
         self.fina = fina
         self.nextStep = 0
@@ -21,6 +22,7 @@ class ScanSimple:
                     'Id':[ta.Id for ta in adjustables]
                     },
                 'scan_values':[],
+                'scan_readbacks':[],
                 'scan_files':[],
                 'scan_step_info':[]}
         self.scan_info_filename = os.path.join(self.scan_info_dir,fina)
@@ -41,6 +43,9 @@ class ScanSimple:
             ms.append(adj.changeTo(tv))
         for tm in ms:
             tm.wait()
+        readbacks_step = []
+        for adj in self.adjustables:
+            readbacks_step.append(adj.get_current_value())
         filenames = []
         acs = []
         for ctr in self.counterCallers:
@@ -50,14 +55,16 @@ class ScanSimple:
         for ta in acs:
             ta.wait()
         self.values_done.append(self.values_todo.pop(0))
-        self.appendScanInfo(values_step,filenames,step_info=step_info)
+        self.readbacks.append(readbacks_step)
+        self.appendScanInfo(values_step,readbacks_step,step_files=filenames,step_info=step_info)
         self.writeScanInfo()
 
         self.nextStep +=1
         return True
 
-    def appendScanInfo(self,values_step,step_files=None,step_info=None):
+    def appendScanInfo(self,values_step,readbacks_step,step_files=None,step_info=None):
         self.scan_info['scan_values'].append(values_step)
+        self.scan_info['scan_readbacks'].append(readbacks_step)
         self.scan_info['scan_files'].append(step_files)
         self.scan_info['scan_step_info'].append(step_info)
 
