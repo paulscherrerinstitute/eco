@@ -38,7 +38,7 @@ class ScanSimple:
             return False
         values_step = self.values_todo[0]
         if verbose:
-            print('Starting scan step %d of %d'%(self.nextStep,len(self.values_todo)+len(self.values_done))
+            print('Starting scan step %d of %d'%(self.nextStep+1,len(self.values_todo)+len(self.values_done)))
         ms = []
         fina = self.get_filename(self.nextStep)
         for adj,tv in zip(self.adjustables,values_step):
@@ -54,7 +54,7 @@ class ScanSimple:
         acs = []
         for ctr in self.counterCallers:
             acq = ctr.acquire(file_name=fina,Npulses=self.pulses_per_step)
-            filenames.append(acq.file_names)
+            filenames.extend(acq.file_names)
             acs.append(acq)
         for ta in acs:
             ta.wait()
