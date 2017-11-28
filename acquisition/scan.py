@@ -33,10 +33,12 @@ class ScanSimple:
         fina += '_step%04d'%stepNo
         return fina
 
-    def doNextStep(self,step_info=None):
+    def doNextStep(self,step_info=None,verbose=True):
         if not len(self.values_todo)>0:
             return False
         values_step = self.values_todo[0]
+        if verbose:
+            print('Starting scan step %d of %d'%(self.nextStep,len(self.values_todo)+len(self.values_done))
         ms = []
         fina = self.get_filename(self.nextStep)
         for adj,tv in zip(self.adjustables,values_step):
@@ -46,6 +48,8 @@ class ScanSimple:
         readbacks_step = []
         for adj in self.adjustables:
             readbacks_step.append(adj.get_current_value())
+        if verbose:
+            print('Moved variables, now starting acquisition')
         filenames = []
         acs = []
         for ctr in self.counterCallers:
@@ -54,6 +58,8 @@ class ScanSimple:
             acs.append(acq)
         for ta in acs:
             ta.wait()
+        if verbose:
+            print('Done with acquisition')
         self.values_done.append(self.values_todo.pop(0))
         self.readbacks.append(readbacks_step)
         self.appendScanInfo(values_step,readbacks_step,step_files=filenames,step_info=step_info)
