@@ -14,6 +14,7 @@ from threading import Thread
 try:
     import sys
     sys.path.append('/sf/bernina/config/src/python/detector_integration_api')
+    sys.path.append('/sf/bernina/config/src/python/jungfrau_utils')
     from detector_integration_api import DetectorIntegrationClient
 except:
     print('NB: detector integration could not be imported!')
@@ -200,7 +201,9 @@ class JF:
         pass
 
     def acquire(self,file_name=None,Npulses=100):
+        file_name += '_JF1p5M.h5'
         def acquire(file_name=None, Npulses=None):
+
             self.detector_config.update(dict(cycles=Npulses))
             self.writer_config.update(dict(output_file=file_name))
             self.reset()
@@ -210,6 +213,8 @@ class JF:
             self.check_still_running()
 
         return Acquisition(acquire=acquire,acquisition_kwargs={'file_name':file_name, 'Npulses':Npulses},hold=False)
+        
+    
 
     def wait_done(self):
         self.check_running()
@@ -219,6 +224,7 @@ class JF:
 class Acquisition:
     def __init__(self, parent=None, acquire=None, acquisition_kwargs = {}, hold=True, stopper=None):
         self.acquisition_kwargs = acquisition_kwargs
+        self.file_names = acquisition_kwargs['file_names']
         self._acquire = acquire
         self._stopper = stopper
         self._thread = Thread(target=self._acquire,kwargs=(acquisition_kwargs))
@@ -242,3 +248,149 @@ class Acquisition:
     def stop(self):
         self._stopper()
 
+
+
+def parseChannelListFile(fina):
+    out = []
+    with open(fina,'r') as f:
+        done = False
+        while not done:
+           d = f.readline()
+           if not d:
+               done=True
+           if len(d)>0:
+               if not d.isspace():
+                   if not d[0]=='#':
+                       out.append(d.strip())
+    return out
+# JF client thing
+
+class JF_BS_writer:
+    def __init__(self, Id,api_address = "http://sf-daq-1:10000"):
+        self._api_address = api_address 
+        self.client = DetectorIntegrationClient(api_address)
+        print("\nJungfrau Integration API on %s" % api_address)
+        self.writer_config = {
+                "output_file": "/sf/bernina/data/raw/p16582/test_data.h5", 
+                "process_uid": 16582, 
+                "process_gid": 16582, 
+                "dataset_name": "jungfrau/data", 
+                "n_messages": 100
+                }
+        self.backend_config = {
+                "n_frames": 100, 
+                "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains.h5", 
+                "gain_corrections_dataset": "gains", 
+                "pede_corrections_filename": "/sf/bernina//data/res/p16582/JF_pedestal/pedestal_20171124_1646_res.h5", 
+                "pede_corrections_dataset": "gains", 
+                "activate_corrections_preview": True
+                }
+        self.detector_config = {
+                "timing": "trigger", 
+                "exptime": 0.00001, 
+                "cycles": 100
+                    }
+        
+        default_channels_list = parseChannelListFile(
+                    '/sf/bernina/config/com/channel_lists/default_channel_list')
+        self.bsread_config = {
+                'output_file': '/sf/bernina/data/raw/p16582/test_bsread.h5', 
+                'process_uid': 16582, 
+                'process_gid': 16582, 
+                'n_pulses':100,
+                'channels': default_channels_list
+                }
+#        self.default_channels_list = jungfrau_utils.load_default_channel_list()
+
+    def reset(self):
+        self.client.reset()
+        pass
+
+    def get_status(self):
+        return self.client.get_status()
+
+    def get_config(self):
+        config = self.client.get_config()
+        return config
+
+    def set_config(self):
+        self.client.set_config(writer_config=self.writer_config, backend_config=self.backend_config, detector_config=self.detector_config, bsread_config=self.bsread_config)
+
+#    def record(self,file_name,Npulses):
+#        self.detector_config.update(dict(cycles=Npulses))
+#        self.writer_config.update(dict(output_file=file_name))
+#        self.reset()
+#        DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
+#        self.client.start()
+#
+#    def check_running(self,time_interval=.5):
+#        cfg = self.get_config()
+#        running = False
+#        while not running:
+#            if self.get_status()['status'][-7:]=='RUNNING':
+#                running = True
+#                break
+#            else:
+#                sleep(time_interval)
+        
+    def check_still_running(self,time_interval=.5):
+        cfg = self.get_config()
+        running = True
+        while running:
+            if not self.get_status()['status'][-7:]=='RUNNING':
+                running = False
+                break
+#            elif not self.get_status()['status'][-20:]=='BSREAD_STILL_RUNNING':
+#                running = False
+#                break
+            else:
+                sleep(time_interval)
+
+    def start(self):
+        self.client.start()
+        print("start acquisition")
+        pass
+
+    def stop(self):
+        self.client.stop()
+        print("stop acquisition") 
+        pass
+
+    def config_and_start_test(self):
+        self.reset()
+        self.set_config()
+        self.start()
+        pass
+
+    def wait_for_status(self,*args,**kwargs):
+        return self.client.wait_for_status(*args,**kwargs)
+
+    def acquire(self,file_name=None,Npulses=100,JF_factor=2,bsread_padding=50):
+        file_name_JF = file_name + '_JF1p5M.h5'
+        file_name_bsread = file_name+'.h5'
+        def acquire(file_names=None, Npulses=None):
+
+            self.detector_config.update({
+                'cycles':Npulses*JF_factor})
+            self.writer_config.update({
+                'output_file':file_name_JF,
+                'n_messages':Npulses*JF_factor})
+            self.backend_config.update({
+                'n_frames':Npulses*JF_factor})
+            self.bsread_config.update({
+                'output_file':file_name_bsread,
+                'n_pulses':Npulses+bsread_padding
+                })
+            
+            self.reset()
+            self.set_config()
+            self.client.start()
+            self.wait_for_status('IntegrationStatus.FINISHED')
+
+        return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name_bsread,file_name_JF], 'Npulses':Npulses},hold=False)
+        
+    
+
+    def wait_done(self):
+        self.check_running()
+        self.check_still_running()

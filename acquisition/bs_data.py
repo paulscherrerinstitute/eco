@@ -67,7 +67,7 @@ class BStools:
         def acquire(file_name=None, Npulses=None):
             self.h5(fina=file_name,N_pulses=Npulses)
         file_name += '.h5'
-        return Acquisition(acquire=acquire,acquisition_kwargs={'file_name':file_name, 'Npulses':Npulses},hold=False)
+        return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name], 'Npulses':Npulses},hold=False)
 
     def wait_done(self):
         self.check_running()
@@ -77,7 +77,7 @@ class BStools:
 class Acquisition:
     def __init__(self, parent=None, acquire=None, acquisition_kwargs = {}, hold=True, stopper=None):
         self.acquisition_kwargs = acquisition_kwargs
-        self.file_name = acquisition_kwargs['file_name']
+        self.file_names = acquisition_kwargs['file_names']
         self._acquire = acquire
         self._stopper = stopper
         self._thread = Thread(target=self._acquire,kwargs=(acquisition_kwargs))

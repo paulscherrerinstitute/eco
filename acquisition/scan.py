@@ -50,7 +50,7 @@ class ScanSimple:
         acs = []
         for ctr in self.counterCallers:
             acq = ctr.acquire(file_name=fina,Npulses=self.pulses_per_step)
-            filenames.append(acq.file_name)
+            filenames.append(acq.file_names)
             acs.append(acq)
         for ta in acs:
             ta.wait()

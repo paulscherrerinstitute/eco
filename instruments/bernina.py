@@ -82,9 +82,13 @@ def parseChannelListFile(fina):
 
 
 from ..acquisition.bs_data import BStools
+from ..acquisition import scan as _scan
+
 channellist = dict(bernina_channel_list=
         parseChannelListFile('/sf/bernina/config/com/channel_lists/default_channel_list'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 
-from ..acquisition import scan as _scan
-scans = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaq])
+from eco.devices_general.detectors import JF_BS_writer
+bsdaqJF = JF_BS_writer('bsdaqJF') 
+
+scansJF = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaqJF])
