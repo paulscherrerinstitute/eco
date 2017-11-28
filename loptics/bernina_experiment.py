@@ -7,6 +7,8 @@ class Laser_Exp:
         self.Id = Id
         self.delay_stage_offset =160.
 
+        
+
         ### Mirrors used in the expeirment ###
         try:
             self.phi = MotorRecord(Id+'-M517:MOT')
@@ -19,9 +21,9 @@ class Laser_Exp:
             print('No Standa steering theta mirror')
             pass
         
+        #Waveplate and Delay stage
+        self.wp = MotorRecord(Id+'-M533:MOT')
         self.delay_stage = MotorRecord(Id+'-M521:MOTOR_1')
-
-
 
     def get_delay(self):
 
