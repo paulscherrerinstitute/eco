@@ -226,12 +226,8 @@ class JF:
     def acquire(self,file_name=None,Npulses=100):
         file_name += '_JF1p5M.h5'
         def acquire(file_name=None, Npulses=None):
-<<<<<<< HEAD
-
             self.detector_config.update(dict(cycles=Npulses))
             self.writer_config.update(dict(output_file=file_name))
-=======
->>>>>>> 996d461d115daf9b253e9c9a997af8fed35bd17e
             self.reset()
             self.set_config(f = file_name, N = Npulses)
             self.client.start()
