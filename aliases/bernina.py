@@ -161,6 +161,11 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Experiment laser optics',
                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
+        'SLAAR01-TSPL-EPL' : {
+                'alias' : 'PhaseShifter',
+                'z_und' : 142,
+                'desc' : 'Experiment laser phase shifter',
+                'eco_type' : 'devices_general.timing.PhaseShifterAramis'},
         'http://sf-daq-1:10000' : {
                 'alias' : 'DetJF',
                 'z_und' : 142,

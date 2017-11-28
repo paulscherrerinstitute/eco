@@ -150,10 +150,33 @@ class JF:
         config = self.client.get_config()
         return config
 
-    def set_config(self):
-        self.writer_config = {'dataset_name': 'jungfrau/data','output_file': '/gpfs/sf-data/bernina/raw/p16582/Bi11_pp_delayXXPP_tests.h5','process_gid': 16582,   'process_uid': 16582, "disable_processing": False};
-        self.backend_config = {"n_frames": 100000, "pede_corrections_filename": "/sf/bernina/data/res/p16582/pedestal_20171119_1027_res.h5", "pede_corrections_dataset": "gains", "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains.h5", "gain_corrections_dataset": "gains", "activate_corrections_preview": True, "pede_mask_dataset": "pixel_mask"};
-        self.detector_config = {"exptime": 0.0001, "cycles":20000, "timing": "trigger", "frames": 1}
+    def set_config(self, f = "/sf/bernina/data/JF.h5", N = 1000):
+
+        self.reset()
+        self.detector_config = {
+               "timing": "trigger",
+               "exptime": 0.00001,
+               "delay"  : 0.00199, # this is the magic aldo number
+               "frames" : 1,
+               "cycles": N}
+
+
+        self.writer_config = {
+              "output_file": fname,
+              "process_uid": 16582,
+              "process_gid": 16582,
+              "dataset_name": "jungfrau/data",
+              "n_messages": N}
+
+        self.backend_config = {
+              "n_frames": N,
+              "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains.h5",
+              "gain_corrections_dataset": "gains",
+              "pede_corrections_filename": pedestal_fname,
+              "pede_corrections_dataset": "gains",
+              "activate_corrections_preview": True}
+
+
         DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
         pass
 
@@ -203,11 +226,14 @@ class JF:
     def acquire(self,file_name=None,Npulses=100):
         file_name += '_JF1p5M.h5'
         def acquire(file_name=None, Npulses=None):
+<<<<<<< HEAD
 
             self.detector_config.update(dict(cycles=Npulses))
             self.writer_config.update(dict(output_file=file_name))
+=======
+>>>>>>> 996d461d115daf9b253e9c9a997af8fed35bd17e
             self.reset()
-            DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
+            self.set_config(f = file_name, N = Npulses)
             self.client.start()
             self.check_running()
             self.check_still_running()
