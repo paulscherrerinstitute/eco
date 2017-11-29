@@ -1,6 +1,7 @@
 import sys
 sys.path.append("..")
 from ..devices_general.motors import MotorRecord
+from epics import PV
 
 class GPS:
     def __init__(self,Id,alias_namespace=None):
@@ -35,3 +36,34 @@ class GPS:
         self.xbase = MotorRecord(Id+':MOT_GPS_TX')
         self.ybase = MotorRecord(Id+':MOT_GPS_TY')
 
+        self.hex_x = PV("SARES20-HEX_PI:POSI-X")
+        self.hex_y = PV("SARES20-HEX_PI:POSI-Y")
+        self.hex_z = PV("SARES20-HEX_PI:POSI-Z")
+        self.hex_u = PV("SARES20-HEX_PI:POSI-U")
+        self.hex_v = PV("SARES20-HEX_PI:POSI-V")
+        self.hex_w = PV("SARES20-HEX_PI:POSI-W")
+
+    def __repr__(self):
+        s = "**Heavy Load**\n"
+        motors = "xmu mu tth xbase ybase".split()
+        for motor in motors:
+            s+= " - %s %.4f\n"%(motor,getattr(self,motor).wm())
+
+        s+= " - HLX %.4f\n"%(self.xhl.wm())
+        s+= " - HLY %.4f\n"%(self.yhl.wm())
+        s+= " - HLZ %.4f\n"%(self.zhl.wm())
+        s+= " - HLTheta %.4f\n"%(self.th.wm())
+        s+= "\n"
+
+        s+= "**Gonio**\n"
+        motors = "xmu mu tth xbase ybase".split()
+        for motor in motors:
+            s+= " - %s %.4f\n"%(motor,getattr(self,motor).wm())
+        s+= "\n"
+
+        s+= "**Hexapod**\n"
+        motors = "x y z u v w".split()
+        for motor in motors:
+            s+= " - hex_%s %.4f\n"%(motor,getattr(self,"hex_"+motor).get())
+        return s
+        

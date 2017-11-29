@@ -303,14 +303,16 @@ class JF_BS_writer:
                 "n_frames": 100, 
                 "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains.h5", 
                 "gain_corrections_dataset": "gains", 
-                "pede_corrections_filename": "/sf/bernina//data/res/p16582/JF_pedestal/pedestal_20171124_1646_res.h5", 
+                "pede_corrections_filename": "/sf/bernina//data/res/p16582/JF_pedestal/pedestal_20171128_1048_res.h5", 
                 "pede_corrections_dataset": "gains", 
                 "activate_corrections_preview": True
                 }
         self.detector_config = {
                 "timing": "trigger", 
                 "exptime": 0.00001, 
-                "cycles": 100
+                "cycles": 100,
+                "delay"  : 0.00199,
+                "frames" : 1
                     }
         
         default_channels_list = parseChannelListFile(

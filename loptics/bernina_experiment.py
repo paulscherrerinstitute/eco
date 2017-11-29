@@ -20,6 +20,11 @@ class Laser_Exp:
         except:
             print('No Standa steering theta mirror')
             pass
+        try:
+            self.lensx = MotorRecord('SARES20-EXP:MOT_DIODE')
+        except:
+            print('No owis lens x motor')
+            pass
         
         #Waveplate and Delay stage
         self.wp = MotorRecord(Id+'-M533:MOT')

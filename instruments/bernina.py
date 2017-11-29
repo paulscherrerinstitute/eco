@@ -92,3 +92,4 @@ from eco.devices_general.detectors import JF_BS_writer
 bsdaqJF = JF_BS_writer('bsdaqJF') 
 
 scansJF = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaqJF])
+scans = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaq])

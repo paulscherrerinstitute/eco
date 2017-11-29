@@ -64,8 +64,9 @@ class BStools:
 
 
     def acquire(self,file_name=None,Npulses=100):
-        def acquire(file_name=None, Npulses=None):
-            self.h5(fina=file_name,N_pulses=Npulses)
+
+        def acquire(file_names=None, Npulses=None):
+            self.h5(fina=file_names[0],N_pulses=Npulses)
         file_name += '.h5'
         return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name], 'Npulses':Npulses},hold=False)
 
