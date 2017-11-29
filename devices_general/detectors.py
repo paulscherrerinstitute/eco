@@ -11,6 +11,8 @@ import h5py
 from time import sleep
 from threading import Thread
 
+from ..acquisition.utilities import Acquisition
+
 try:
     import sys
     tpath = os.path.dirname(__file__)
@@ -226,16 +228,16 @@ class JF:
 
     def acquire(self,file_name=None,Npulses=100):
         file_name += '_JF1p5M.h5'
-        def acquire(file_name=None, Npulses=None):
+        def acquire():
+            self.reset()
             self.detector_config.update(dict(cycles=Npulses))
             self.writer_config.update(dict(output_file=file_name))
-            self.reset()
             self.set_config(f = file_name, N = Npulses)
             self.client.start()
             self.check_running()
             self.check_still_running()
 
-        return Acquisition(acquire=acquire,acquisition_kwargs={'file_name':file_name, 'Npulses':Npulses},hold=False)
+        return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name], 'Npulses':Npulses},hold=False)
         
     
 
@@ -243,33 +245,6 @@ class JF:
         self.check_running()
         self.check_still_running()
 
-
-class Acquisition:
-    def __init__(self, parent=None, acquire=None, acquisition_kwargs = {}, hold=True, stopper=None):
-        self.acquisition_kwargs = acquisition_kwargs
-        self.file_names = acquisition_kwargs['file_names']
-        self._acquire = acquire
-        self._stopper = stopper
-        self._thread = Thread(target=self._acquire,kwargs=(acquisition_kwargs))
-        if not hold:
-            self._thread.start()
-
-    def wait(self):
-        self._thread.join()
-
-    def start(self):
-        self._thread.start()
-
-    def status(self):
-        if self._thread.ident is None:
-            return 'waiting'
-        else:
-            if self._isAlive:
-                return 'acquiring'
-            else:
-                return 'done'
-    def stop(self):
-        self._stopper()
 
 
 
@@ -393,8 +368,7 @@ class JF_BS_writer:
     def acquire(self,file_name=None,Npulses=100,JF_factor=2,bsread_padding=50):
         file_name_JF = file_name + '_JF1p5M.h5'
         file_name_bsread = file_name+'.h5'
-        def acquire(file_names=None, Npulses=None):
-
+        def acquire():
             self.detector_config.update({
                 'cycles':Npulses*JF_factor})
             self.writer_config.update({
