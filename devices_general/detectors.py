@@ -13,8 +13,9 @@ from threading import Thread
 
 try:
     import sys
-    sys.path.insert(0,'/sf/bernina/config/src/python/detector_integration_api')
-    sys.path.insert(0,'/sf/bernina/config/src/python/jungfrau_utils')
+    tpath = os.path.dirname(__file__)
+    sys.path.insert(0,os.path.join(tpath,'../../detector_integration_api')
+    sys.path.insert(0,os.path.join(tpath,'../../jungfrau_utils')
     from detector_integration_api import DetectorIntegrationClient
 except:
     print('NB: detector integration could not be imported!')
