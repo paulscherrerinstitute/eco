@@ -93,9 +93,29 @@ class Scans:
     def ascan(self,adjustable,start_pos,end_pos,N_intervals,N_pulses,file_name=None,start_immediately=True):
         positions = np.linspace(start_pos,end_pos,N_intervals+1)
         values = [[tp] for tp in positions]
-        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=100,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir)
+        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir)
         if start_immediately:
             s.scanAll()
         return s
 
+    def rscan(self,adjustable,start_pos,end_pos,N_intervals,N_pulses,file_name=None,start_immediately=True):
+        positions = np.linspace(start_pos,end_pos,N_intervals+1)
+        current = adjustable.get_current_value()
+        values = [[tp+current] for tp in positions]
+        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir)
+        if start_immediately:
+            s.scanAll()
+        return s
+
+    def dscan(self,*args,**kwargs):
+        print('Warning: dscan will be deprecated for rscan unless someone explains what it stands for in spec!')
+        return self.rscan(*args,**kwargs)
+
+    def ascanList(self,adjustable,posList,N_pulses,file_name=None,start_immediately=True):
+        positions = posList
+        values = [[tp] for tp in positions]
+        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir)
+        if start_immediately:
+            s.scanAll()
+        return s
 
