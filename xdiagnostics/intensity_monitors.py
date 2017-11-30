@@ -21,6 +21,25 @@ class SolidTargetDetectorPBPS:
             self.diode_left = FeDigitizer('%s:Lnk%dCh%d'%(VME_crate,link,ch_left))
             self.diode_right = FeDigitizer('%s:Lnk%dCh%d'%(VME_crate,link,ch_right))
 
+    def __repr__(self):
+        s = "**Intensity  monitor**\n\n"
+
+        s+= "Target: " + (self.target.get_name()) + "\n\n"
+
+        s+= "**Bias voltage**\n"
+        s+= " - Diode up: %.4f\n" %(self.diode_up.get_bias())
+        s+= " - Diode down: %.4f\n" %(self.diode_down.get_bias())
+        s+= " - Diode left: %.4f\n" %(self.diode_left.get_bias())
+        s+= " - Diode right: %.4f\n" %(self.diode_right.get_bias())
+        s+= "\n"
+
+        s+= "**Gain**\n"
+        s+= " - Diode up: %i\n" %(self.diode_up.gain.get())
+        s+= " - Diode down: %i\n" %(self.diode_down.gain.get())
+        s+= " - Diode left: %i\n" %(self.diode_left.gain.get())
+        s+= " - Diode right: %i\n" %(self.diode_right.gain.get())
+        return s
+
 
     def set_gains(self,value):
         try:
