@@ -19,4 +19,9 @@ class KB:
         return "KB is %s"%self.mode.lower()
     
     def __repr__(self):
-        return self.__str__()
+        s = "**KB mirror**\n\n"
+        
+        motors = "bend1 bend2 pitch roll yaw x y".split()
+        for motor in motors:
+            s+= " - %s = %.4f\n" %(motor, getattr(self,motor).wm())
+        return s
