@@ -16,12 +16,11 @@ class KB:
         self.mode = PV(Id[:11]+':MODE').enum_strs[PV(Id[:11]+':MODE').value]
 
     def __str__(self):
-        return "KB is %s"%self.mode.lower()
-    
-    def __repr__(self):
         s = "**KB mirror**\n\n"
-        
         motors = "bend1 bend2 pitch roll yaw x y".split()
         for motor in motors:
             s+= " - %s = %.4f\n" %(motor, getattr(self,motor).wm())
         return s
+   
+    def __repr__(self): 
+        return self.__str__()
