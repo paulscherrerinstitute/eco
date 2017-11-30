@@ -14,10 +14,10 @@ from threading import Thread
 from ..acquisition.utilities import Acquisition
 
 try:
-    import sys
+    import sys, os
     tpath = os.path.dirname(__file__)
-    sys.path.insert(0,os.path.join(tpath,'../../detector_integration_api')
-    sys.path.insert(0,os.path.join(tpath,'../../jungfrau_utils')
+    sys.path.insert(0,os.path.join(tpath,'../../detector_integration_api'))
+    sys.path.insert(0,os.path.join(tpath,'../../jungfrau_utils'))
     from detector_integration_api import DetectorIntegrationClient
 except:
     print('NB: detector integration could not be imported!')
