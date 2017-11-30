@@ -2,6 +2,8 @@ from epics import PV
 import os
 import numpy as np
 import time
+from ..devices_general.utilities import Changer
+
 
 _basefolder = "/sf/bernina/config/com/data/src/lasertiming"
 
@@ -152,9 +154,9 @@ class Phase_shifter(PV):
         self._pv_setvalue.put(dial_ps) 
         time.sleep(0.1) 
         self._pv_execute.put(1)
-        print(accuracy)
+        #print(accuracy)
         while( np.abs(self.get_dial()-dial) > accuracy ): 
-            print(np.abs(self.get_dial()-dial))
+            #print(np.abs(self.get_dial()-dial))
             time.sleep(0.2)
 
     def set(self,value):
