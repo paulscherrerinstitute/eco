@@ -2,9 +2,8 @@ from epics import PV
 import os
 import numpy as np
 import time
-from ..devices_general.utilities import Changer
 
-_basefolder = "/sf/bernina/config/par/lasertiming"
+_basefolder = "/sf/bernina/config/com/data/src/lasertiming"
 
 def timeToStr(value,n=12):
     fmt = "%%+.%df" % n
@@ -34,6 +33,8 @@ def niceTimeToStr(delay,fmt="%+.0f"):
     ret = fmt % (delay*1e12) + "fs"
   elif 1e-18 <= a_delay < 1e-15: 
     ret = fmt % (delay*1e12) + "as"
+  elif a_delay < 1e-18: 
+    ret = "0s"
   else:
     ret = str(delay) +"s"
   return ret
@@ -117,7 +118,7 @@ _OSCILLATOR_PERIOD = 1/71.368704e6
 
 class Phase_shifter(PV):
     """ this class is needed to store the offset in files and read in ps """ 
-    def __init__(self,pv_basename="SLAAR01-TSPL-EPL",dial_max=14.05e-9): 
+    def __init__(self,pv_basename="SLAAR01-TSPL-EPL",dial_max=14.0056e-9,precision=100e-15): 
         pvname = pv_basename+":CURR_DELTA_T" 
         PV.__init__(self,pvname) 
         self._filename = os.path.join(_basefolder,pvname) 
@@ -125,6 +126,7 @@ class Phase_shifter(PV):
         self._pv_execute  = PV(pv_basename + ":SET_NEW_PHASE.PROC") 
         self._storage  = Storage(pvname)
         self.dial_max  = dial_max
+        self.retry = precision
 
     @property
     def offset(self): return self._storage.value
@@ -141,7 +143,8 @@ class Phase_shifter(PV):
         if value == None: value = self.get_dial()
         self._storage.store( value ) 
  
-    def move(self,value): 
+    def move(self,value,accuracy=None): 
+        if accuracy is None: accuracy = self.retry
         dial = value + self.offset
         dial = np.mod(dial,_OSCILLATOR_PERIOD)
         if dial > self.dial_max: dial = self.dial_max
@@ -149,7 +152,10 @@ class Phase_shifter(PV):
         self._pv_setvalue.put(dial_ps) 
         time.sleep(0.1) 
         self._pv_execute.put(1)
-        while( np.abs(self.get_dial()-dial) > 100e-15 ): time.sleep(0.2)
+        print(accuracy)
+        while( np.abs(self.get_dial()-dial) > accuracy ): 
+            print(np.abs(self.get_dial()-dial))
+            time.sleep(0.2)
 
     def set(self,value):
         newoffset = self.get_dial()-value
@@ -169,8 +175,6 @@ _phase_shifter = Phase_shifter("SLAAR01-TSPL-EPL")
 
 
 _POCKELS_CELL_RESOLUTION = 7e-9
-
-
 class Lxt(object):
     def __init__(self):
         self.sdg1 = _sdg1
@@ -183,10 +187,10 @@ class Lxt(object):
     def move_sdg(self,value):
         self.sdg1.move(value)
 
-    def move(self,value):
+    def move(self,value,accuracy=None):
         self.sdg1.move(-value)
         self.slicer_gate.move(-value)
-        self.phase_shifter.move(value)
+        self.phase_shifter.move(value,accuracy=accuracy)
 
     def set(self,value):
         self.phase_shifter.set(value)
@@ -211,25 +215,6 @@ class Lxt(object):
         return Changer(
                 target=value,
                 parent=self,
-                mover=changer,
-                hold=hold,
-                stopper=None)
-
-
-    def get_current_value(self):
-        return self.get()
-
-    def set_current_value(self,value):
-        self.set(value)
-
-    def changeTo(self, value, hold=False):
-        """ Adjustable convention"""
-
-        changer = lambda value: self.move(\
-                value)
-        return Changer(
-                target=value,
-                parent=self,
                 changer=changer,
                 hold=hold,
                 stopper=None)
@@ -242,7 +227,7 @@ class Lxt(object):
         self.set(value)
 
     def __repr__(self):
-        delay = niceTimeToStr(self.get())
+        delay = niceTimeToStr(lxt.get())
         return "delay = %s"%(delay)
 
-
+lxt = Lxt()
