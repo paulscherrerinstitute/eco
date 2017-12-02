@@ -22,6 +22,11 @@ class Pprm:
     def get_illumination_state(self):
         return bool(self._led.get())
 
+    def __repr__(self):
+        s = "**Profile Monitor**\n"
+        s+= "Target: %s" %(self.target.get_name())
+        return s
+
 
 class Bernina_XEYE:
     def __init__(self,Id,bshost=None,bsport=None):
