@@ -171,6 +171,11 @@ aliases = {
                 'z_und' : 142,
                 'desc' : '1.5M Jungfrau detector',
                 'eco_type' : 'devices_general.detectors.JF'},
+        'SLAAR21-LTIM01-EVR0' : {
+                'alias' : 'LaserShutter',
+                'z_und' : 142,
+                'desc' : 'Laser Shutter',
+                'eco_type' : 'loptics.laser_shutter.laser_shutter'},
 #         = dict(
 #            alias = ''
 #            z_und = 
