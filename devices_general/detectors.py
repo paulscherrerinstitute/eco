@@ -153,8 +153,8 @@ class JF:
         config = self.client.get_config()
         return config
 
-    def set_config(self, f = "/sf/bernina/data/JF.h5", N = 1000):
-
+    def set_config(self, pedestal_fname = '/gpfs/sf-data/bernina/derived/p16582/JF_pedestal/pedestal_20171128_1833_res.h5', fname = "/sf/bernina/data/JF.h5", N = 1000):
+        
         self.reset()
         self.detector_config = {
                "timing": "trigger",
@@ -384,7 +384,18 @@ class JF_BS_writer:
             self.reset()
             self.set_config()
             self.client.start()
-            self.wait_for_status('IntegrationStatus.FINISHED')
+            done = False
+            while not done:
+                stat = self.get_status()
+                if stat['status'] =='IntegrationStatus.FINISHED':
+                    done = True
+                if stat['status'] == 'IntegrationStatus.BSREAD_STILL_RUNNING':
+                    done = True
+                if stat['status'] == 'IntegrationStatus.INITIALIZED':
+                    done = True
+                if stat['status'] == 'IntegrationStatus.DETECTOR_STOPPED':
+                    done = True
+                sleep(.1)
 
         return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name_bsread,file_name_JF], 'Npulses':Npulses},hold=False)
         

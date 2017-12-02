@@ -2,6 +2,7 @@
 from ..aliases.bernina import elog as _elog_info
 from ..utilities.elog import Elog as _Elog
 from ..utilities.elog import Screenshot as _Screenshot
+from epics import PV
 
 
 from colorama import Fore as _color
@@ -91,8 +92,27 @@ bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 from eco.devices_general.detectors import JF_BS_writer
 bsdaqJF = JF_BS_writer('bsdaqJF') 
 
-scansJF = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaqJF])
-scans = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaq])
+
+checkerPV=PV('SARFE10-PBPG050:HAMP-INTENSITY-CAL')
+
+def checker_function(limits):
+    cv = checkerPV.get()
+    if cv>limits[0] and cv<limits[1]:
+        return True
+    else:
+        return False
+
+
+checker = {}
+checker['checker_call'] = checker_function
+checker['args'] = [[100,300]]
+checker['kwargs'] = {}
+checker['wait_time'] = 3
+
+
+
+scansJF = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
+scansBsreadLocal = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaq])
 
 from ..timing.lasertiming import Lxt as _Lxt
 
