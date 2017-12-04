@@ -131,7 +131,7 @@ aliases = {
         'SAROP11-OLAS120' : {
                 'alias' : 'RefLaser',
                 'z_und' : 120,
-                'desc' : 'Alvra beamline reference laser before KBs (OLAS),
+                'desc' : 'Alvra beamline reference laser before KBs (OLAS)',
             	'eco_type' : 'xoptics.reflaser.RefLaser_Aramis'},
         'SAROP11-PBPS122' : {
                 'alias' : 'MonAtt',
