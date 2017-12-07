@@ -104,7 +104,7 @@ aliases = {
 #              'desc' : 'Intensity/position monitor after Optics hutch (PBPS)',
 #              'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
              # the following is the trigger for this PBPS, I've changed it to SAROP11 but this definitely isn't correct
-             'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
+ #            'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
         'SAROP11-PPRM117' : {
                 'alias' : 'ProfOpt',
                 'z_und' : 117,
@@ -139,7 +139,7 @@ aliases = {
 #                 'desc' : 'Intensity/Position monitor after Attenuator',
 #            		'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
            		# the following is the trigger for this PBPS, I've changed it to SAROP11 but this definitely isn't correct
-              	'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS2','link':9} },
+ #             	'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS2','link':9} },
         'SAROP11-PPRM122' : {
                 'alias' : 'ProfAtt',
                 'z_und' : 122,
