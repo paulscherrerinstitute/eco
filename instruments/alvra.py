@@ -111,8 +111,8 @@ checker['kwargs'] = {}
 checker['wait_time'] = 3
 
 
-
-scansJF = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
+## removed below for JF
+# scansJF = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
 scansBsreadLocal = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaq])
 
 from ..timing.lasertiming import Lxt as _Lxt
