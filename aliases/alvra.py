@@ -171,7 +171,7 @@ aliases = {
 		'SARES11-XSAM125' : {
 				'alias' : 'PrimeSample',
 				'z_und' : 127,
-				'desc' : 'Sample XYZ manipulator'
+				'desc' : 'Sample XYZ manipulator',
 				'eco_type' : 'endstations.alvra_prime.huber'},
 
 #         'SARES22-GPS' : {
