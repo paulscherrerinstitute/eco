@@ -155,18 +155,18 @@ aliases = {
                 'z_und' : 124,
                 'desc' : 'Alvra horizontal KB mirror',
                 'eco_type' : 'xoptics.KB.KB'},                
-        'SAROP11-PIPS125-1' : {
-                'alias' : 'PIPS1',
-                'z_und' : 127,
-                'desc' : 'Diode digitizer for PIPS1',
-            'eco_type' : 'devices_general.detectors.DiodeDigitizer',
-              'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
-        'SAROP11-PIPS125-2' : {
-                'alias' : 'PIPS1',
-                'z_und' : 127,
-                'desc' : 'Diode digitizer for PIPS2',
-            'eco_type' : 'devices_general.detectors.DiodeDigitizer',
-              'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
+#         'SAROP11-PIPS125-1' : {
+#                 'alias' : 'PIPS1',
+#                 'z_und' : 127,
+#                 'desc' : 'Diode digitizer for PIPS1',
+#             'eco_type' : 'devices_general.detectors.DiodeDigitizer',
+#               'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
+#         'SAROP11-PIPS125-2' : {
+#                 'alias' : 'PIPS1',
+#                 'z_und' : 127,
+#                 'desc' : 'Diode digitizer for PIPS2',
+#             'eco_type' : 'devices_general.detectors.DiodeDigitizer',
+#               'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
 
 		'SARES11-XSAM125' : {
 				'alias' : 'PrimeSample',
@@ -197,11 +197,11 @@ aliases = {
                 'z_und' : 127,
                 'desc' : 'Experiment laser phase shifter',
                 'eco_type' : 'devices_general.timing.PhaseShifterAramis'},
-        'http://sf-daq-2:10000' : {
-                'alias' : 'DetJF',
-                'z_und' : 127,
-                'desc' : '4.5M Jungfrau detector',
-                'eco_type' : 'devices_general.detectors.JF'},
+#         'http://sf-daq-2:10000' : {
+#                 'alias' : 'DetJF',
+#                 'z_und' : 127,
+#                 'desc' : '4.5M Jungfrau detector',
+#                 'eco_type' : 'devices_general.detectors.JF'},
 #         'SLAAR21-LTIM01-EVR0' : {
 #                 'alias' : 'LaserShutter',
 #                 'z_und' : 142,
