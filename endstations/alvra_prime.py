@@ -8,6 +8,6 @@ class huber:
 		self.Id = Id
 		
 		### Huber sample stages ###
-		self.samx = MotorRecord(Id+':MOTOR_X1')
-		self.samy = MotorRecord(Id+':MOTOR_Y1')
-		self.samz = MotorRecord(Id+':MOTOR_Z1')
+		self.x = MotorRecord(Id+':MOTOR_X1')
+		self.y = MotorRecord(Id+':MOTOR_Y1')
+		self.z = MotorRecord(Id+':MOTOR_Z1')
