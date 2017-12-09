@@ -174,7 +174,7 @@ aliases = {
 				'desc' : 'Sample XYZ manipulator',
 				'eco_type' : 'endstations.alvra_prime.huber'},
 		'SARES11-XCRY125' : {
-				'alias' : 'PrimeCry',
+				'alias' : 'PrimeCryTrans',
 				'z_und' : 127,
 				'desc' : 'Prime von Hamos X-trans (Bragg)',
 				'eco_type' : 'endstations.alvra_prime.vonHamosBragg'},
@@ -183,6 +183,11 @@ aliases = {
 				'z_und' : 127,
 				'desc' : 'Prime optical table',
 				'eco_type' : 'endstations.alvra_prime.table'},
+		'SARES11-XMI125' : {
+				'alias' : 'MicroFocZoom',
+				'z_und' : 127,
+				'desc' : 'Microscope focus and zoom',
+				'eco_type' : 'endstations.alvra_prime.microscopeOpt'},
 
 #         'SARES22-GPS' : {
 #                 'alias' : 'Gps',

@@ -31,3 +31,11 @@ class table:
 		self.y3 = MotorRecord(Id+':MOTOR_Y3')
 		self.z1 = MotorRecord(Id+':MOTOR_Z1')
 		self.z2 = MotorRecord(Id+':MOTOR_Z2')
+		
+class microscopeOpt:
+	def __init__(self,Id,alias_namespace=None):
+		self.Id = Id
+		
+		### Microscope focus and zoom motors ###
+		self.focus = MotorRecord(Id+':FOCUS')
+		self.zoom = MotorRecord(Id+':ZOOM')
