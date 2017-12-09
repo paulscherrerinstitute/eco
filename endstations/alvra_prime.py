@@ -32,7 +32,7 @@ class table:
 		self.z1 = MotorRecord(Id+':MOTOR_Z1')
 		self.z2 = MotorRecord(Id+':MOTOR_Z2')
 		
-class microscopeOpt:
+class microscope:
 	def __init__(self,Id,alias_namespace=None):
 		self.Id = Id
 		
