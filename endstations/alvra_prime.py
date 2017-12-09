@@ -39,3 +39,4 @@ class microscope:
 		### Microscope focus and zoom motors ###
 		self.focus = MotorRecord(Id+':FOCUS')
 		self.zoom = MotorRecord(Id+':ZOOM')
+		

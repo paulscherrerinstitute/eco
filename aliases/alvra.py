@@ -211,7 +211,7 @@ aliases = {
                 'alias' : 'PhaseShifter',
                 'z_und' : 127,
                 'desc' : 'Experiment laser phase shifter',
-                'eco_type' : 'devices_general.timing.PhaseShifterAramis'},
+                'eco_type' : 'devices_general.alvratiming.PhaseShifterAramis'},
 #         'http://sf-daq-2:10000' : {
 #                 'alias' : 'DetJF',
 #                 'z_und' : 127,
@@ -219,7 +219,7 @@ aliases = {
 #                 'eco_type' : 'devices_general.detectors.JF'},
 #         'SLAAR21-LTIM01-EVR0' : {
 #                 'alias' : 'LaserShutter',
-#                 'z_und' : 142,
+#                 'z_und' : 127,
 #                 'desc' : 'Laser Shutter',
 #                 'eco_type' : 'loptics.laser_shutter.laser_shutter'},
 #         = dict(
