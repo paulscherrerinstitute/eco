@@ -173,6 +173,16 @@ aliases = {
 				'z_und' : 127,
 				'desc' : 'Sample XYZ manipulator',
 				'eco_type' : 'endstations.alvra_prime.huber'},
+		'SARES11-XCRY125' : {
+				'alias' : 'PrimeCry',
+				'z_und' : 127,
+				'desc' : 'Prime von Hamos X-trans (Bragg)',
+				'eco_type' : 'endstations.alvra_prime.vonHamosBragg'},
+		'SARES11-XOTA125' : {
+				'alias' : 'PrimeTable',
+				'z_und' : 127,
+				'desc' : 'Prime optical table',
+				'eco_type' : 'endstations.alvra_prime.table'},
 
 #         'SARES22-GPS' : {
 #                 'alias' : 'Gps',
