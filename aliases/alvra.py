@@ -184,10 +184,10 @@ aliases = {
 				'desc' : 'Prime optical table',
 				'eco_type' : 'endstations.alvra_prime.table'},
 		'SARES11-XMI125' : {
-				'alias' : 'MicroFocZoom',
+				'alias' : 'Microscope',
 				'z_und' : 127,
 				'desc' : 'Microscope focus and zoom',
-				'eco_type' : 'endstations.alvra_prime.microscopeOpt'},
+				'eco_type' : 'endstations.alvra_prime.microscope'},
 
 #         'SARES22-GPS' : {
 #                 'alias' : 'Gps',
