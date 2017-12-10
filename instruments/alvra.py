@@ -89,9 +89,8 @@ channellist = dict(alvra_channel_list=
         parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 
-## following seems JF specific so comment out for now
-# from eco.devices_general.detectors import JF_BS_writer
-# bsdaqJF = JF_BS_writer('bsdaqJF') 
+##CJM from eco.devices_general.alvradetectors import JF_BS_writer
+##CJM bsdaqJF = JF_BS_writer('bsdaqJF') 
 
 
 checkerPV=PV('SARFE10-PBPG050:HAMP-INTENSITY-CAL')
@@ -111,8 +110,7 @@ checker['kwargs'] = {}
 checker['wait_time'] = 3
 
 
-## removed below for JF
-# scansJF = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
+##CJM scansJF = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
 scansBsreadLocal = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaq])
 
 from ..timing.alvralasertiming import Lxt as _Lxt
