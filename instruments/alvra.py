@@ -89,8 +89,10 @@ channellist = dict(alvra_channel_list=
         parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 
-##CJM from eco.devices_general.alvradetectors import JF_BS_writer
-##CJM bsdaqJF = JF_BS_writer('bsdaqJF') 
+##CJM 
+from eco.devices_general.alvradetectors import JF_BS_writer
+##CJM 
+JF_4p5M = JF_BS_writer('JF_4p5M', api_address = "http://sf-daq-2:10000") 
 
 
 checkerPV=PV('SARFE10-PBPG050:HAMP-INTENSITY-CAL')

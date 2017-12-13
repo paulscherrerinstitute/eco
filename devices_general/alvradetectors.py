@@ -13,12 +13,18 @@ from threading import Thread
 
 from ..acquisition.utilities import Acquisition
 
+import subprocess
+
+
 try:
     import sys, os
     tpath = "/sf/alvra/config/jungfrau/envs/jungfrau_client/lib/python3.6/site-packages/" # os.path.dirname(__file__)
-    sys.path.insert(0,os.path.join(tpath,'/detector_integration_api'))
     sys.path.insert(0,os.path.join(tpath,'/jungfrau_utils'))
+    
+    #tpath = "/sf/alvra/config/src/python"
+    #sys.path.insert(0,os.path.join(tpath,'/detector_integration_api'))
     from detector_integration_api import DetectorIntegrationClient
+    print("DONE")
 except:
     print('NB: JF detector integration could not be imported!')
 
@@ -276,13 +282,15 @@ class JF_BS_writer:
                 "n_messages": 100
                 }
         self.backend_config = {
-                "n_frames": 100, 
-                "gain_corrections_filename": "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
-                "gain_corrections_dataset": "gains", 
-                "pede_corrections_filename": "/sf/alvra/data/res/p16581/JF_pedestal/pedestal_20171210_1628_res.h5", 
-                "pede_corrections_dataset": "gains", 
-                "activate_corrections_preview": True
-                }
+            "n_frames": 100, 
+            "gain_corrections_filename": "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
+            "gain_corrections_dataset": "gains", 
+            "pede_corrections_filename": "/sf/alvra/data/res/p16581/pedestal_20171210_1628_res.h5", 
+            "pede_corrections_dataset": "gains", 
+            "pede_mask_dataset": "pixel_mask", 
+            "activate_corrections_preview": True,
+            "is_HG0": True
+        }
         self.detector_config = {
                 "timing": "trigger", 
                 "exptime": 0.000005, 
@@ -304,7 +312,7 @@ class JF_BS_writer:
 
     def reset(self):
         self.client.reset()
-        pass
+        #pass
 
     def get_status(self):
         return self.client.get_status()
@@ -314,6 +322,7 @@ class JF_BS_writer:
         return config
 
     def set_config(self):
+        self.reset()
         self.client.set_config(writer_config=self.writer_config, backend_config=self.backend_config, detector_config=self.detector_config, bsread_config=self.bsread_config)
 
 #    def record(self,file_name,Npulses):
@@ -347,7 +356,9 @@ class JF_BS_writer:
                 sleep(time_interval)
 
     def start(self):
+        subprocess.check_call(["caput", "SIN-TIMAST-TMA:Evt-24-Ena-Sel", "0"])
         self.client.start()
+        subprocess.check_call(["caput", "SIN-TIMAST-TMA:Evt-24-Ena-Sel", "1"])
         print("start acquisition")
         pass
 
