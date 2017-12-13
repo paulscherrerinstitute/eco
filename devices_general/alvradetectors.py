@@ -377,7 +377,7 @@ class JF_BS_writer:
         return self.client.wait_for_status(*args,**kwargs)
 
     def acquire(self,file_name=None,Npulses=100,JF_factor=2,bsread_padding=50):
-        file_name_JF = file_name + '_JF1p5M.h5'
+        file_name_JF = file_name + '_JF4p5M.h5'
         file_name_bsread = file_name+'.h5'
         def acquire():
             self.detector_config.update({

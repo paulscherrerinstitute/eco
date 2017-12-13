@@ -212,11 +212,11 @@ aliases = {
                 'z_und' : 127,
                 'desc' : 'Experiment laser phase shifter',
                 'eco_type' : 'devices_general.alvratiming.PhaseShifterAramis'},
-#        'http://sf-daq-2:10000' : {
-#                'alias' : 'DetJF',
-#                'z_und' : 127,
-#                'desc' : '4.5M Jungfrau detector',
-#                'eco_type' : 'devices_general.alvradetectors.JF'},
+       'http://sf-daq-2:10000' : {
+               'alias' : 'DetJF',
+               'z_und' : 127,
+               'desc' : '4.5M Jungfrau detector',
+               'eco_type' : 'devices_general.alvradetectors.JF'},
 #         'SLAAR21-LTIM01-EVR0' : {
 #                 'alias' : 'LaserShutter',
 #                 'z_und' : 127,

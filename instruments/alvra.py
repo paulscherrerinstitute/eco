@@ -88,10 +88,8 @@ from ..acquisition import scan as _scan
 channellist = dict(alvra_channel_list=
         parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
-
-##CJM 
-from eco.devices_general.alvradetectors import JF_BS_writer
-##CJM 
+ 
+from eco.devices_general.alvradetectors import JF_BS_writer 
 JF_4p5M = JF_BS_writer('JF_4p5M', api_address = "http://sf-daq-2:10000") 
 
 
@@ -112,7 +110,7 @@ checker['kwargs'] = {}
 checker['wait_time'] = 3
 
 
-##CJM scansJF = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
+scansJF = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
 scansBsreadLocal = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaq])
 
 from ..timing.alvralasertiming import Lxt as _Lxt
