@@ -226,6 +226,41 @@ aliases = {
 #            alias = ''
 #            z_und = 
 #            desc = ''},
+         'SARES11-CMOV-SMA691110' : {
+                 'alias' : '_prism_gonio',
+                 'z_und' : 0,
+                 'desc' : 'PRISM gonio',
+                 'eco_type' : 'devices_general.smaract.SmarActRecord',
+                 'device' : 'prism',
+                 'axis' : 'gonio'},
+         'SARES11-CMOV-SMA691111' : {
+                 'alias' : '_prism_trans',
+                 'z_und' : 0,
+                 'desc' : 'PRISM trans',
+                 'eco_type' : 'devices_general.smaract.SmarActRecord',
+                 'device' : 'prism',
+                 'axis' : 'trans'},
+         'SARES11-CMOV-SMA691112' : {
+                 'alias' : '_prism_rot',
+                 'z_und' : 0,
+                 'desc' : 'PRISM rotation',
+                 'eco_type' : 'devices_general.smaract.SmarActRecord',
+                 'device' : 'prism',
+                 'axis' : 'rot'},
+         'SARES11-CMOV-SMA691113' : {
+                 'alias' : '_xmic_gon',
+                 'z_und' : 0,
+                 'desc' : 'Mirror of the microscope, gonio',
+                 'eco_type' : 'devices_general.smaract.SmarActRecord',
+                 'device' : 'microscope',
+                 'axis' : 'gonio'},
+         'SARES11-CMOV-SMA691114' : {
+                 'alias' : '_xmic_rot',
+                 'z_und' : 0,
+                 'desc' : 'Mirror of the microscope, rot',
+                 'eco_type' : 'devices_general.smaract.SmarActRecord',
+                 'device' : 'microscope',
+                 'axis' : 'rot'}
       }
 
 

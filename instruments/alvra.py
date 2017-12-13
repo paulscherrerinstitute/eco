@@ -38,6 +38,7 @@ def _attach_device(devDict,devId,args,kwargs):
     return error
 
 errors = []
+composed = {}
 for device_Id in _aliases.keys():
     if 'eco_type' in _aliases[device_Id].keys() \
     and _aliases[device_Id]['eco_type']:
@@ -54,7 +55,20 @@ for device_Id in _aliases.keys():
             kwargs = dict()
         
         e = _attach_device(_aliases[device_Id],device_Id,args,kwargs)
-        if e: errors.append((_aliases[device_Id]['alias'],e))
+        if e:
+            errors.append((_aliases[device_Id]['alias'],e))
+        else:
+            device = _aliases[device_Id]
+            if device['eco_type'].endswith('SmarActRecord') \
+            and device['device'] and device['axis']:
+                if device['device'] not in composed:
+                    composed[device['device']] = {}
+                composed[device['device']][device['axis']] = globals()[device['alias']]
+
+from ..devices_general.smaract import SmarActStage as _SmarActStage
+for key in composed.keys():
+    print('Composing %s(%s)'%(key,', '.join(map(str, list(composed[key].keys())))))
+    globals()[key] = _SmarActStage(composed[key])
 
 if len(errors)>0:
     print('Found errors when configuring %s'%[te[0] for te in errors])
