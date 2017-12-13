@@ -233,7 +233,7 @@ class JF:
         pass
 
     def acquire(self,file_name=None,Npulses=100):
-        file_name += '_JF1p5M.h5'
+        file_name += '_JF4p5M.h5'
         def acquire():
             self.reset()
             self.detector_config.update(dict(cycles=Npulses))
