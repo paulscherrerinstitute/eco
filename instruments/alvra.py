@@ -11,7 +11,7 @@ import traceback
 elog = _Elog(_elog_info['url'],user='gac-alvra',screenshot_directory=_elog_info['screenshot_directory'])
 screenshot = _Screenshot(screenshot_directory=_elog_info['screenshot_directory'])
 
-
+_smaractappends = []
 
 from ..aliases.alvra import aliases as _aliases
 def _attach_device(devDict,devId,args,kwargs):
@@ -38,37 +38,49 @@ def _attach_device(devDict,devId,args,kwargs):
     return error
 
 errors = []
-composed = {}
+_composed = {}
 for device_Id in _aliases.keys():
-    if 'eco_type' in _aliases[device_Id].keys() \
-    and _aliases[device_Id]['eco_type']:
-        if 'args' in _aliases[device_Id].keys() \
-        and _aliases[device_Id]['args']:
-            args = _aliases[device_Id]['args']
+    alias = _aliases[device_Id]
+    if 'eco_type' in alias.keys() \
+    and alias['eco_type']:
+        if 'args' in alias.keys() \
+        and alias['args']:
+            args = alias['args']
         else:
             args = tuple()
 
-        if 'kwargs' in _aliases[device_Id].keys() \
-        and _aliases[device_Id]['kwargs']:
-            kwargs = _aliases[device_Id]['kwargs']
+        if 'kwargs' in alias.keys() \
+        and alias['kwargs']:
+            kwargs = alias['kwargs']
         else:
             kwargs = dict()
         
-        e = _attach_device(_aliases[device_Id],device_Id,args,kwargs)
+        e = _attach_device(alias,device_Id,args,kwargs)
         if e:
-            errors.append((_aliases[device_Id]['alias'],e))
+            errors.append((alias['alias'],e))
         else:
-            device = _aliases[device_Id]
-            if device['eco_type'].endswith('SmarActRecord') \
-            and device['device'] and device['axis']:
-                if device['device'] not in composed:
-                    composed[device['device']] = {}
-                composed[device['device']][device['axis']] = globals()[device['alias']]
+            _device = globals()[alias['alias'][0].lower()+alias['alias'][1:]]
+            if hasattr(_device, '_smaractaxes'):
+                _smaractappends.append(_device)
+            else:
+                if alias['eco_type'].endswith('SmarActRecord') \
+                and 'device' in alias and 'axis' in alias:
+                    if alias['device'] not in _composed:
+                        _composed[alias['device']] = {}
+                    _composed[alias['device']][alias['axis']] = globals()[alias['alias']]
+
+print('Integrating SmarAct devices:')
+
+for _device in _smaractappends:
+    print("  Appending %s: %s" \
+            %(_device.name,', '.join(map(str, list(_device._smaractaxes.keys())))))
+    for _axis in _device._smaractaxes.keys():
+        setattr(_device, _axis, globals()[_device._smaractaxes[_axis]])
 
 from ..devices_general.smaract import SmarActStage as _SmarActStage
-for key in composed.keys():
-    print('Composing %s(%s)'%(key,', '.join(map(str, list(composed[key].keys())))))
-    globals()[key] = _SmarActStage(composed[key])
+for _key in _composed.keys():
+    print('  Composing %s: %s'%(_key,', '.join(map(str, list(_composed[_key].keys())))))
+    globals()[_key] = _SmarActStage(_composed[_key], _key)
 
 if len(errors)>0:
     print('Found errors when configuring %s'%[te[0] for te in errors])

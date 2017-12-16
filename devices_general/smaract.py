@@ -7,8 +7,6 @@ from ..eco_epics.device import Device
 
 _guiTypes = ['xdm']
 
-fpath = '/gpfs/sf-data/home/gac-alvra/eco_debug_2'         # DEBUG
-
 def _keywordChecker(kw_key_list_tups):
     for tkw,tkey,tlist in kw_key_list_tups:
         assert tkey in tlist, "Keyword %s should be one of %s"%(tkw,tlist)
@@ -19,17 +17,13 @@ class SmarActException(Exception):
         Exception.__init__(self, *args)
         self.msg = msg
     def __str__(self):
-        return str(self.msg)
-
+        return str(self.msg)      
             
 class SmarAct(Device):
     _extras =  {'disabled':'_able.VAL', }
     _init_list   = ('VAL', 'DESC', 'RTYP')
     _nonpvs = ('_prefix', '_pvs', '_delim', '_init', '_init_list', '_alias', '_extras')
     def __init__(self, name=None, timeout=3.0, record=None):
-        f=open(fpath,'a')                             # DEBUG
-        f.write('Processing '+self.__class__.__name__ +': '+ name +" : init \n")
-        f.flush
         if name is None:
             raise SmarActException("must supply SmarAct name")
 
@@ -52,8 +46,6 @@ class SmarAct(Device):
 #            self.add_pv(pvname, attr=key)
 
         # self.put('disabled', 0)
-        f.write('Processing '+self.__class__.__name__ +': '+ name +" : done \n")
-        f.flush
         
 class SmarActRecord:
     def __init__(self,Id, name=None, elog=None):
@@ -261,7 +253,8 @@ class SmarActRecord:
 
     # return string with motor value as variable representation
     def __str__(self):
-        return "SmarAct is at %s %s"%(self.wm(),self.units)
+        return "SmarAct is at %s"%(self.wm())
+        #return "SmarAct is at %s %s"%(self.wm(),self.units)
     
     def __repr__(self):
         return self.__str__()
@@ -278,9 +271,17 @@ class SmarActDevice(SmarActRecord):
 #        self.x = SmarActRecord(Id+':DRIVE')
 
 class SmarActStage:
-    def __init__(self, axes):
-        for axis in axes.keys():
+    def __init__(self, axes, name):
+        self._keys = axes.keys()
+        for axis in self._keys:
             self.__dict__[axis] = axes[axis]
+        self.name = name
+        
+    def __str__(self):
+        return "SmarAct positions\n%s" % "\n".join(["%s: %s"%(key,self.__dict__[key].wm()) for key in self._keys])
+        
+    def __repr__(self):
+        return str({key:self.__dict__[key].wm() for key in self._keys})
 
 class Changer:
     def __init__(self, target=None, parent=None, mover=None, hold=True, stopper=None):
