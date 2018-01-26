@@ -245,22 +245,20 @@ aliases = {
                  'z_und' : 0,
                  'desc' : 'PRISM rotation',
                  'eco_type' : 'devices_general.smaract.SmarActRecord',
-                 'device' : 'prism',
-                 'axis' : 'rot'},
+                 'device' : 'prism',    # a virtual stage for eco namespace
+                 'axis' : 'rot'},       # a axis of this virtual stage
          'SARES11-CMOV-SMA691113' : {
                  'alias' : '_xmic_gon',
                  'z_und' : 0,
                  'desc' : 'Mirror of the microscope, gonio',
-                 'eco_type' : 'devices_general.smaract.SmarActRecord',
-                 'device' : 'microscope',
-                 'axis' : 'gonio'},
+                 'eco_type' : 'devices_general.smaract.SmarActRecord'},
+                 # no 'device' becauses its appended to other stage in
+                 #   ..endstations/alvra_prime.py
          'SARES11-CMOV-SMA691114' : {
                  'alias' : '_xmic_rot',
                  'z_und' : 0,
                  'desc' : 'Mirror of the microscope, rot',
-                 'eco_type' : 'devices_general.smaract.SmarActRecord',
-                 'device' : 'microscope',
-                 'axis' : 'rot'}
+                 'eco_type' : 'devices_general.smaract.SmarActRecord'}
       }
 
 
