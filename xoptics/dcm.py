@@ -11,5 +11,6 @@ class Double_Crystal_Mono:
         self.roll1 = MotorRecord(Id+':RZ1')
         self.roll2 = MotorRecord(Id+':RZ2')
         self.pitch2 = MotorRecord(Id+':RX2')
+#        self.energy = MotorRecord(Id+':ENERGY')
 
-        self.energy = PV(self.Id+':ENERGY').value
+        self.energy = PV(Id+':ENERGY').value
