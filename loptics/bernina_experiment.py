@@ -1,13 +1,13 @@
 from ..devices_general.motors import MotorRecord
 from epics import PV
-
+from .delay_stage import DelayStageCA
 
 class Laser_Exp:
     def __init__(self,Id):
         self.Id = Id
         self.delay_stage_offset =160.
 
-        
+        self.deltest = DelayStageCA(Id+'-M521:MOTOR_1')
 
         ### Mirrors used in the expeirment ###
         try:
@@ -46,4 +46,4 @@ class Laser_Exp:
         self.delay_stage.mv(motor_pos)
         return (delay, motor_pos) 
 
-    
+   

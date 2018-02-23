@@ -2,11 +2,30 @@ from ..eco_epics.motor import Motor as _Motor
 import subprocess
 from threading import Thread
 from epics import PV
+from .utilities import Changer
 
 _MotorRocordStandardProperties = \
         {}
 _posTypes = ['user','dial','raw']
 _guiTypes = ['xdm']
+
+
+_status_messages = {
+          -13 : 'invalid value (cannot convert to float).  Move not attempted.',
+          -12 : 'target value outside soft limits.         Move not attempted.',
+          -11 : 'drive PV is not connected:                Move not attempted.',
+           -8 : 'move started, but timed-out.',
+           -7 : 'move started, timed-out, but appears done.',
+           -5 : 'move started, unexpected return value from PV.put()',
+           -4 : 'move-with-wait finished, soft limit violation seen',
+           -3 : 'move-with-wait finished, hard limit violation seen',
+            0 : 'move-with-wait finish OK.',
+            0 : 'move-without-wait executed, not comfirmed',
+            1 : 'move-without-wait executed, move confirmed' ,
+            3 : 'move-without-wait finished, hard limit violation seen',
+            4 : 'move-without-wait finished, soft limit violation seen',
+}
+
 
 def _keywordChecker(kw_key_list_tups):
     for tkw,tkey,tlist in kw_key_list_tups:
@@ -18,19 +37,28 @@ class MotorRecord:
         self._motor = _Motor(pvname)
         self._elog = elog
         self.name = name
+        self._currentChange = None
 
 
     # Conventional methods and properties for all Adjustable objects
     def changeTo(self, value, hold=False, check=True):
         """ Adjustable convention"""
 
-        mover = lambda value: self._motor.move(\
+        def changer(value):
+            self._status = self._motor.move(\
                 value, ignore_limits=(not check),
                 wait=True)
+            self._status_message = _status_messages[self._status]
+            if not self._status==0:
+                print(self._status_message)
+
+#        changer = lambda value: self._motor.move(\
+#                value, ignore_limits=(not check),
+#                wait=True)
         return Changer(
                 target=value,
                 parent=self,
-                mover=mover,
+                changer=changer,
                 hold=hold,
                 stopper=self._motor.stop)
     def stop(self):
@@ -154,7 +182,7 @@ class MotorRecord:
 
 
 
-class Changer:
+class ChangerOld:
     def __init__(self, target=None, parent=None, mover=None, hold=True, stopper=None):
         self.target = target
         self._mover = mover

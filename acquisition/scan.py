@@ -3,6 +3,7 @@ import os
 import json
 import numpy as np
 from time import sleep
+import traceback
 
 class ScanSimple:
     def __init__(self,adjustables,values,counterCallers,fina,Npulses=100,basepath='',scan_info_dir='',checker=None):
@@ -22,6 +23,7 @@ class ScanSimple:
                     'name':[ta.name for ta in adjustables ],
                     'Id':[ta.Id for ta in adjustables]
                     },
+                'scan_values_all':values,
                 'scan_values':[],
                 'scan_readbacks':[],
                 'scan_files':[],
@@ -102,7 +104,7 @@ class ScanSimple:
         except:
             tb = traceback.format_exc()
         else:
-            tb = "No error"
+            tb = "Ended all steps without interruption."
         finally:
             print(tb)
 

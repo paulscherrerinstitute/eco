@@ -120,7 +120,7 @@ _OSCILLATOR_PERIOD = 1/71.368704e6
 
 class Phase_shifter(PV):
     """ this class is needed to store the offset in files and read in ps """ 
-    def __init__(self,pv_basename="SLAAR01-TSPL-EPL",dial_max=14.0056e-9,precision=100e-15): 
+    def __init__(self,pv_basename="SLAAR02-TSPL-EPL",dial_max=14.0056e-9,precision=100e-15): 
         pvname = pv_basename+":CURR_DELTA_T" 
         PV.__init__(self,pvname) 
         self._filename = os.path.join(_basefolder,pvname) 
@@ -171,20 +171,21 @@ class Phase_shifter(PV):
         return "Phase Shifter: user,dial = %s , %s"%(user,dial)
 
 
-_slicer_gate  = Pockels_trigger("SLAAR-LTIM01-EVR0:Pul2-Delay")
-_sdg1 = Pockels_trigger("SLAAR-LTIM01-EVR0:Pul3-Delay")
-_phase_shifter = Phase_shifter("SLAAR01-TSPL-EPL")
+_slicer_gate  = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul3-Delay")
+_sdg1 = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul2-Delay")
+_phase_shifter = Phase_shifter("SLAAR02-TSPL-EPL")
 
 
 _POCKELS_CELL_RESOLUTION = 7e-9
 class Lxt(object):
-    def __init__(self):
+    def __init__(self,accuracy_poly=[100e-15,1e-7]):
         self.sdg1 = _sdg1
         self.slicer_gate   = _slicer_gate
         self.phase_shifter = _phase_shifter
-        self.Id = 'SLAAR01-TSPL-EPL'
+        self.Id = 'SLAAR02-TSPL-EPL'
         self.name = 'lxt'
         self.elog = None
+        self.accuracy_poly = accuracy_poly
 
     def move_sdg(self,value):
         self.sdg1.move(value)
@@ -192,6 +193,8 @@ class Lxt(object):
     def move(self,value,accuracy=None):
         self.sdg1.move(-value)
         self.slicer_gate.move(-value)
+        if not accuracy:
+            accuracy = np.abs(value)*self.accuracy_poly[1]+self.accuracy_poly[0]
         self.phase_shifter.move(value,accuracy=accuracy)
 
     def set(self,value):
