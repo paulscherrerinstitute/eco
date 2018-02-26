@@ -5,7 +5,7 @@ class Double_Crystal_Mono:
     def __init__(self,Id):	
         self.Id = Id
 
-        self.th = MotorRecord(Id+':RX12')
+        self.theta = MotorRecord(Id+':RX12')
         self.x = MotorRecord(Id+':TX12')
         self.gap = MotorRecord(Id+':T2')
         self.roll1 = MotorRecord(Id+':RZ1')
@@ -13,4 +13,6 @@ class Double_Crystal_Mono:
         self.pitch2 = MotorRecord(Id+':RX2')
 #        self.energy = MotorRecord(Id+':ENERGY')
 
-        self.energy = PV(Id+':ENERGY').value
+        self.energy = PV(Id+':ENERGY')
+		self.set_energy = PV(Id+':ENERGY_SP')
+		
