@@ -13,11 +13,11 @@ class huber:
         self.z = MotorRecord(Id+':MOTOR_Z1')
 
     def __str__(self):
-        return "Huber Stage %s\nx: %s mm\ny: %s mm\nz: %s mm" \
+        return "Huber Sample Stage %s\nx: %s mm\ny: %s mm\nz: %s mm" \
                 %(self.Id, self.x.wm(),self.y.wm(),self.z.wm())
 
     def __repr__(self):
-        return "{'x': %s, 'y': %s, 'z': %s}"%(self.x.wm(),self.y.wm(),self.z.wm())
+        return "{'X': %s, 'Y': %s, 'Z': %s}"%(self.x.wm(),self.y.wm(),self.z.wm())
 
 class vonHamosBragg:
     def __init__(self,Id,alias_namespace=None):
@@ -32,7 +32,7 @@ class vonHamosBragg:
                   % (self.cry1.wm(),self.cry2.wm())
 
     def __repr__(self):
-        return "{'cry 1': %s, 'cry 2': %s}" % (self.cry1.wm(),self.cry2.wm())
+        return "{'Crystal 1': %s, 'Crystal 2': %s}" % (self.cry1.wm(),self.cry2.wm())
 
 class table:
     def __init__(self,Id,alias_namespace=None):
@@ -70,7 +70,7 @@ class microscope:
             % (self.focus.wm(),self.zoom.wm(),self.gonio.wm(),self.rot.wm())
             
     def __repr__(self):
-        return "{'focus': %s, 'zoom': %s, 'gonio': %s, 'rot': %s}"\
+        return "{'Focus': %s, 'Zoom': %s, 'Gonio': %s, 'Rot': %s}"\
             % (self.focus.wm(),self.zoom.wm(),self.gonio.wm(),self.rot.wm())
             
 # prism (as a SmarAct-only stage) is defined purely in ../aliases/alvra.py
