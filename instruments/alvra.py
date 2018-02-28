@@ -113,7 +113,11 @@ from ..acquisition import scan as _scan
 
 channellist = dict(alvra_channel_list=
         parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list'))
+channellistPhotonDiag = dict(alvra_channel_list=
+        parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list_PhotonDiag'))
+
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
+bsdaqPhotonDiag = BStools(default_channel_list=channellistPhotonDiag,default_file_path='%s')
  
 from eco.devices_general.alvradetectors import JF_BS_writer 
 JF_4p5M = JF_BS_writer('JF_4p5M', api_address = "http://sf-daq-2:10000") 
@@ -136,9 +140,17 @@ checker['kwargs'] = {}
 checker['wait_time'] = 3
 
 
+
+
+
 #CJM scansJF = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[JF_4p5M],checker=checker)
+
+
+
+
 scansBsreadLocal = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaq])
 
+scansPhotonDiag = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/photon_diag/scan_data',scan_info_dir='/sf/alvra/config/com/data/photon_diag/scan_info',default_counters=[bsdaqPhotonDiag])
 from ..timing.alvralasertiming import Lxt as _Lxt
 
 lxt = _Lxt()

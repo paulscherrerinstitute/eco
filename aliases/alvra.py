@@ -258,7 +258,13 @@ aliases = {
                  'alias' : '_xmic_rot',
                  'z_und' : 0,
                  'desc' : 'Mirror of the microscope, rot',
-                 'eco_type' : 'devices_general.smaract.SmarActRecord'}
+                 'eco_type' : 'devices_general.smaract.SmarActRecord'},
+
+         'SLAAR11-LMOT' : {
+                 'alias' : 'psen',
+                 'z_und' : 0,
+                 'desc' : 'PSEN timing system',
+                 'eco_type' : 'xdiagnostics.PSEN.PSEN'}
       }
 
 
