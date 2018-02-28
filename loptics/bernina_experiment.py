@@ -1,13 +1,15 @@
 from ..devices_general.motors import MotorRecord
+from ..devices_general.smaract import SmarActRecord
 from epics import PV
-from .delay_stage import DelayStageCA
+from .delay_stage import DelayStage
 
 class Laser_Exp:
     def __init__(self,Id):
         self.Id = Id
         self.delay_stage_offset =160.
 
-        self.deltest = DelayStageCA(Id+'-M521:MOTOR_1')
+        self.delayStg = SmarActRecord('SARES23-ESB16')
+        self.deltest = DelayStage(self.delayStg)
 
         ### Mirrors used in the expeirment ###
         try:
