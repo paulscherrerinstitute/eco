@@ -161,7 +161,7 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Experiment laser optics',
                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
-        'SLAAR01-TSPL-EPL' : {
+        'SLAAR02-TSPL-EPL' : {
                 'alias' : 'PhaseShifter',
                 'z_und' : 142,
                 'desc' : 'Experiment laser phase shifter',
@@ -176,6 +176,11 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Laser Shutter',
                 'eco_type' : 'loptics.laser_shutter.laser_shutter'},
+        'SARES23' : {
+                'alias' : 'LasEOS',
+                'z_und' : 142,
+                'desc' : '800nm beam steering',
+                'eco_type' : 'loptics.bernina_smaract_tower.SmaractTower'},
 #         = dict(
 #            alias = ''
 #            z_und = 

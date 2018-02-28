@@ -84,10 +84,16 @@ def parseChannelListFile(fina):
 
 from ..acquisition.bs_data import BStools
 from ..acquisition import scan as _scan
+from ..acquisition.ioxos_data import Ioxostools
 
 channellist = dict(bernina_channel_list=
         parseChannelListFile('/sf/bernina/config/com/channel_lists/default_channel_list'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
+
+channellistioxos = dict(bernina_channel_list=
+        parseChannelListFile('/sf/bernina/config/default_channels/default_channel_list_ioxos'))
+ioxosdaq = Ioxostools(default_channel_list=channellistioxos,default_file_path='%s')
+
 
 from eco.devices_general.detectors import JF_BS_writer
 bsdaqJF = JF_BS_writer('bsdaqJF') 
@@ -110,7 +116,7 @@ checker['kwargs'] = {}
 checker['wait_time'] = 3
 
 
-
+scansIoxos = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[ioxosdaq])
 scansJF = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
 scansBsreadLocal = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaq])
 

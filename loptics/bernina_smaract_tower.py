@@ -1,18 +1,21 @@
-from ..devices_general.motors import MotorRecord
+from ..devices_general.smaract import SmarActRecord
 from epics import PV
 
-class Laser_Exp:
+class SmaractTower:
     def __init__(self,Id):
         self.Id = Id
 
         ### Mirrors used in the expeirment ###
         try:
-            self.phi = MotorRecord(Id+'-M517:MOT')
+            self.x = SmarActRecord(Id+'-ESB1')
         except:
-            print('No Standa steering phi mirror')
+            print('No Smaract x linear stage')
             pass
+
         try:
-            self.th = MotorRecord(Id+'-M518:MOT')
+            self.gonio = SmarActRecord(Id+'-ESB2')
         except:
-            print('No Standa steering theta mirror')
+            print('No Smaract Gonio')
             pass
+
+        
