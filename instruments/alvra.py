@@ -2,7 +2,7 @@
 from ..aliases.alvra import elog as _elog_info
 from ..utilities.elog import Elog as _Elog
 from ..utilities.elog import Screenshot as _Screenshot
-from ..utilties.newMsgPV import stationMessage as _stationMessage
+from ..utilities.newMsgPV import stationMessage as _stationMessage
 from epics import PV
 
 
