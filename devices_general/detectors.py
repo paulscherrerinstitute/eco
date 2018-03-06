@@ -153,13 +153,13 @@ class JF:
         config = self.client.get_config()
         return config
 
-    def set_config(self, pedestal_fname = '/gpfs/sf-data/bernina/derived/p16582/JF_pedestal/pedestal_20171128_1833_res.h5', fname = "/sf/bernina/data/JF.h5", N = 1000):
+    def set_config(self, pedestal_fname = '/sf/bernina/data/res/p16582/JF_pedestal/pedestal_20180302_1512_res.h5', fname = "/sf/bernina/data/raw/p16582/JF.h5", N = 1000):
         
         self.reset()
         self.detector_config = {
                "timing": "trigger",
                "exptime": 0.00001,
-               "delay"  : 0.00199, # this is the magic aldo number
+               "delay"  : 0.001987, # this is the magic aldo number
                "frames" : 1,
                "cycles": N}
 
@@ -173,10 +173,11 @@ class JF:
 
         self.backend_config = {
               "n_frames": N,
-              "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains.h5",
+              "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains_I0.h5",
               "gain_corrections_dataset": "gains",
               "pede_corrections_filename": pedestal_fname,
               "pede_corrections_dataset": "gains",
+              "pede_mask_dataset" : "pixel_mask",
               "activate_corrections_preview": True}
 
 

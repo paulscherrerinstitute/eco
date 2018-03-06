@@ -157,7 +157,7 @@ aliases = {
                     
                     },
         'SLAAR21-LMOT' : {
-                'alias' : 'LasExp',
+                'alias' : 'Las',
                 'z_und' : 142,
                 'desc' : 'Experiment laser optics',
                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
