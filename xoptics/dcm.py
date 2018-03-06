@@ -41,10 +41,19 @@ class Double_Crystal_Mono:
     def mvr(self,value,*args,**kwargs):
 
         if(self.get_moveDone == 1):
-            startvalue = self.get_current_value(readback=True,*args,**kwargs)
+            startvalue = self.get_current_value(*args,**kwargs)
         else:
-            startvalue = self.get_current_value(readback=False,*args,**kwargs)
+            startvalue = self.get_current_value(*args,**kwargs)
         self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)
     def wait(self):
         self._currentChange.wait()
         
+    # return string with motor value as variable representation
+    def __str__(self):
+        return "Motor is at %s"%self.wm()
+    
+    def __repr__(self):
+        return self.__str__()
+
+    def __call__(self,value):
+        self._currentChange = self.changeTo(value)
