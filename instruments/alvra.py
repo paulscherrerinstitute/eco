@@ -2,14 +2,18 @@
 from ..aliases.alvra import elog as _elog_info
 from ..utilities.elog import Elog as _Elog
 from ..utilities.elog import Screenshot as _Screenshot
+from ..utilties.newMsgPV import stationMessage as _stationMessage
 from epics import PV
 
 
 from colorama import Fore as _color
 import traceback
+import datetime
+import sys
 
 elog = _Elog(_elog_info['url'],user='gac-alvra',screenshot_directory=_elog_info['screenshot_directory'])
 screenshot = _Screenshot(screenshot_directory=_elog_info['screenshot_directory'])
+stationMessage = _stationMessage('ESA')
 
 _smaractappends = []
 
