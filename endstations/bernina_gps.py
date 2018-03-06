@@ -7,34 +7,29 @@ class GPS:
     def __init__(self,Id,alias_namespace=None):
         self.Id = Id
 
-        motors = {
-            'xhl' : Id+':MOT_GPS_TBL_TX',
-            'yhl' : Id+':MOT_GPS_TBL_TZ',
-            'zhl' : Id+':MOT_GPS_TBL_TY'}
-
             
         ### motors heavy load gps table ###
-        self.xhl = MotorRecord(Id+':MOT_GPS_TBL_TX')
-        self.yhl = MotorRecord(Id+':MOT_GPS_TBL_TZ')
-        self.zhl = MotorRecord(Id+':MOT_GPS_TBL_TY')
-        self.th = MotorRecord(Id+':MOT_GPS_MY_RYTH')
+        self.xhl = MotorRecord(Id+':MOT_TBL_TX')
+        self.yhl = MotorRecord(Id+':MOT_TBL_TZ')
+        self.zhl = MotorRecord(Id+':MOT_TBL_TY')
+        self.th = MotorRecord(Id+':MOT_MY_RYTH')
         try:
-            self.pitchhl = MotorRecord(Id+':MOT_GPS_TILT_RX')
+            self.rxhl = MotorRecord(Id+':MOT_TBL_RX')
         except:
             print ('GPS.pitch not found')
             pass
         try:
-            self.rollhl = MotorRecord(Id+':MOT_GPS_TILT_RY')
+            self.ryhl = MotorRecord(Id+':MOT_TBL_RY')
         except:
             print ('GPS.roll not found')
             pass
 
         ### motors heavy load gonio base ###
-        self.xmu = MotorRecord(Id+':MOT_GPS_PROBE_TX')
-        self.mu = MotorRecord(Id+':MOT_GPS_PROBE_RX')
-        self.tth = MotorRecord(Id+':MOT_GPS_NY_RY2TH')
-        self.xbase = MotorRecord(Id+':MOT_GPS_TX')
-        self.ybase = MotorRecord(Id+':MOT_GPS_TY')
+        self.xmu = MotorRecord(Id+':MOT_HEX_TX')
+        self.mu = MotorRecord(Id+':MOT_HEX_RX')
+        self.tth = MotorRecord(Id+':MOT_NY_RY2TH')
+        self.xbase = MotorRecord(Id+':MOT_TX')
+        self.ybase = MotorRecord(Id+':MOT_TY')
 
         self.hex_x = PV("SARES20-HEX_PI:POSI-X")
         self.hex_y = PV("SARES20-HEX_PI:POSI-Y")

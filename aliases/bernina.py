@@ -176,11 +176,6 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Laser Shutter',
                 'eco_type' : 'loptics.laser_shutter.laser_shutter'},
-        'SARES23' : {
-                'alias' : 'LasEOS',
-                'z_und' : 142,
-                'desc' : '800nm beam steering',
-                'eco_type' : 'loptics.bernina_smaract_tower.SmaractTower'},
 #         = dict(
 #            alias = ''
 #            z_und = 
