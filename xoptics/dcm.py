@@ -33,3 +33,18 @@ class Double_Crystal_Mono:
      inmotion = int(self.moving.get())
      return inmotion   
     
+    # spec-inspired convenience methods
+    def mv(self,value):
+        self._currentChange = self.changeTo(value)
+    def wm(self,*args,**kwargs):
+        return self.get_current_value(*args,**kwargs)
+    def mvr(self,value,*args,**kwargs):
+
+        if(self.get_moveDone == 1):
+            startvalue = self.get_current_value(readback=True,*args,**kwargs)
+        else:
+            startvalue = self.get_current_value(readback=False,*args,**kwargs)
+        self._currentChange = self.changeTo(value+startvalue,*args,**kwargs)
+    def wait(self):
+        self._currentChange.wait()
+        
