@@ -22,6 +22,7 @@ class Double_Crystal_Mono:
         self.energy_sp.put(value)
         #sleep(.1)
         while abs(self.get_current_value()-value)>precision:
+            print(abs(self.get_current_value()-value)):
             sleep(checktime)
 
     def changeTo(self,value):
