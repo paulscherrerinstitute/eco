@@ -2,6 +2,7 @@ from ..devices_general.motors import MotorRecord
 from epics import PV
 from ..devices_general.utilities import Changer
 from time import sleep
+import numpy as np
 
 class Double_Crystal_Mono:
     def __init__(self,Id):	
@@ -21,8 +22,7 @@ class Double_Crystal_Mono:
     def move_and_wait(self,value,checktime=.01,precision=.5):
         self.energy_sp.put(value)
         #sleep(.1)
-        while abs(self.get_current_value()-value)>precision:
-            print(abs(self.get_current_value()-value))
+        while abs(self.wait_for_valid_value()-value)>precision:
             sleep(checktime)
             print(abs(self.get_current_value()-value))
 
@@ -35,6 +35,12 @@ class Double_Crystal_Mono:
     def get_current_value(self):
      currentenergy = self.energy_rbk.get()
      return currentenergy
+
+    def wait_for_valid_value(self):
+        tval = np.nan
+        while not np.isfinite(tval)
+            tval = self.energy_rbk.get()
+        return(tval)
     
     def set_current_value(self,value):
      self.energy_sp.put(value)
