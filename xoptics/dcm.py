@@ -38,7 +38,7 @@ class Double_Crystal_Mono:
 
     def wait_for_valid_value(self):
         tval = np.nan
-        while not np.isfinite(tval)
+        while not np.isfinite(tval):
             tval = self.energy_rbk.get()
         return(tval)
     
