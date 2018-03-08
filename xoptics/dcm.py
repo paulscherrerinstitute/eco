@@ -24,7 +24,7 @@ class Double_Crystal_Mono:
         while abs(self.wait_for_valid_value()-value)>precision:
             sleep(checktime)
 
-    def changeTo(self,value):
+    def changeTo(self,value,hold=False):
         changer = lambda value: self.move_and_wait(value)
         return Changer(
                 target=value,
