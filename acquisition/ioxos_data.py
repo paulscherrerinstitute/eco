@@ -64,6 +64,7 @@ class Ioxostools:
         for (m, channel) in enumerate(channels):
             channel.add_callback(callback = cb_getdata, ch = channel, m=m)
         while True:
+            sleep(0.01)
             if np.mean(counters) == N_pulses-1:
                 break
 

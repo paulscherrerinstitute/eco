@@ -1,5 +1,7 @@
 from ..devices_general.motors import MotorRecord
 from epics import PV
+from ..devices_general.utilities import Changer
+from time import sleep
 
 class Double_Crystal_Mono:
     def __init__(self,Id):	
@@ -16,11 +18,17 @@ class Double_Crystal_Mono:
      self.moving = PV(Id+':MOVING')
      self._stop = PV(Id +':STOP.PROC')
 
+    def move_and_wait(self,value,checktime=.01):
+        self.energy_sp.put(value)
+        #sleep(.1)
+        while not self.moving:
+            sleep(checktime)
+
     def changeTo(self,value):
-     self.energy_sp.put(value)
+        self.energy_sp.put(value)
       
     def stop(self):
-     self._stop.put(1) 	
+        self._stop.put(1) 	
 
     def get_current_value(self):
      currentenergy = self.energy_rbk.get()
