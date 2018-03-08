@@ -21,7 +21,7 @@ class Double_Crystal_Mono:
     def move_and_wait(self,value,checktime=.01,precision=.5):
         self.energy_sp.put(value)
         #sleep(.1)
-        while not abs(self.get_current_value()-value)>precision:
+        while abs(self.get_current_value()-value)>precision:
             sleep(checktime)
 
     def changeTo(self,value):
