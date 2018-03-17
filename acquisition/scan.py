@@ -6,7 +6,7 @@ from time import sleep
 import traceback
 
 class ScanSimple:
-    def __init__(self,adjustables,values,counterCallers,fina,Npulses=100,basepath='',scan_info_dir='',checker=None):
+    def __init__(self,adjustables,values,counterCallers,fina,Npulses=100,basepath='',scan_info_dir='',checker=None,scan_directories=False):
         self.Nsteps = len(values)
         self.pulses_per_step = Npulses
         self.adjustables = adjustables
@@ -30,6 +30,7 @@ class ScanSimple:
                 'scan_step_info':[]}
         self.scan_info_filename = os.path.join(self.scan_info_dir,fina)
         self.scan_info_filename += '_scan_info.json'
+        self._scan_directories = scan_directories
         self.checker = checker
         self.initial_values = []
         for adj in self.adjustables:
@@ -40,6 +41,8 @@ class ScanSimple:
 
     def get_filename(self,stepNo,Ndigits=4):
         fina = os.path.join(self.basepath,self.fina)
+        if self._scan_directories:
+            fina = os.path.join(fina,self.fina)
         fina += '_step%04d'%stepNo
         return fina
 
@@ -116,16 +119,17 @@ class ScanSimple:
 
 
 class Scans:
-    def __init__(self,data_base_dir='',scan_info_dir='',default_counters=[],checker=None):
+    def __init__(self,data_base_dir='',scan_info_dir='',default_counters=[],checker=None,scan_directories=False):
         self.data_base_dir = data_base_dir
         self.scan_info_dir = scan_info_dir
         self._default_counters = default_counters
         self.checker = checker
+        self._scan_directories = scan_directories
 
     def ascan(self,adjustable,start_pos,end_pos,N_intervals,N_pulses,file_name=None,start_immediately=True):
         positions = np.linspace(start_pos,end_pos,N_intervals+1)
         values = [[tp] for tp in positions]
-        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker)
+        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker,scan_directories=self._scan_directories)
         if start_immediately:
             s.scanAll()
         return s
@@ -134,7 +138,7 @@ class Scans:
         positions = np.linspace(start_pos,end_pos,N_intervals+1)
         current = adjustable.get_current_value()
         values = [[tp+current] for tp in positions]
-        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker)
+        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker,scan_directories=self._scan_directories)
         if start_immediately:
             s.scanAll()
         return s
@@ -146,7 +150,7 @@ class Scans:
     def ascanList(self,adjustable,posList,N_pulses,file_name=None,start_immediately=True):
         positions = posList
         values = [[tp] for tp in positions]
-        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker)
+        s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker,scan_directories=self._scan_directories)
         if start_immediately:
             s.scanAll()
         return s

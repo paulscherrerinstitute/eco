@@ -10,8 +10,8 @@ class GPS:
             
         ### motors heavy load gps table ###
         self.xhl = MotorRecord(Id+':MOT_TBL_TX')
-        self.yhl = MotorRecord(Id+':MOT_TBL_TZ')
-        self.zhl = MotorRecord(Id+':MOT_TBL_TY')
+        self.zhl = MotorRecord(Id+':MOT_TBL_TZ')
+        self.yhl = MotorRecord(Id+':MOT_TBL_TY')
         self.th = MotorRecord(Id+':MOT_MY_RYTH')
         try:
             self.rxhl = MotorRecord(Id+':MOT_TBL_RX')

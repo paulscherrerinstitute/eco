@@ -170,7 +170,7 @@ aliases = {
                 'alias' : 'DetJF',
                 'z_und' : 142,
                 'desc' : '1.5M Jungfrau detector',
-                'eco_type' : 'devices_general.detectors.JF'},
+                'eco_type' : 'devices_general.detectors.DIAClient'},
         'SLAAR21-LTIM01-EVR0' : {
                 'alias' : 'LaserShutter',
                 'z_und' : 142,

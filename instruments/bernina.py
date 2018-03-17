@@ -2,8 +2,9 @@
 from ..aliases.bernina import elog as _elog_info
 from ..utilities.elog import Elog as _Elog
 from ..utilities.elog import Screenshot as _Screenshot
+from ..utilities.config import loadConfig
 from epics import PV
-
+import sys,os
 
 from colorama import Fore as _color
 import traceback
@@ -11,8 +12,14 @@ import traceback
 elog = _Elog(_elog_info['url'],user='gac-bernina',screenshot_directory=_elog_info['screenshot_directory'])
 screenshot = _Screenshot(screenshot_directory=_elog_info['screenshot_directory'])
 
+###########  configurations  ########################
+currexp_file_path = '/sf/bernina/config/current_experiment.json'
+if os.path.exists(currexp_file_path):
+    exp_config = loadConfig(currexp_file_path)
+else:
+    print('NB: Could not load experiment config in path %s .'%currexp_file_path)
 
-
+########### GENERAL IMPLEMENTATIONS ##################
 from ..aliases.bernina import aliases as _aliases
 def _attach_device(devDict,devId,args,kwargs):
     imp_p = devDict['eco_type'].split(sep='.')
@@ -34,6 +41,7 @@ def _attach_device(devDict,devId,args,kwargs):
         print((_color.GREEN+'OK'+_color.RESET).rjust(5))
     except Exception as e:
         print((_color.RED+'FAILED'+_color.RESET).rjust(5))
+        print(sys.exc_info())
         error = e
     return error
 
@@ -65,6 +73,7 @@ if len(errors)>0:
 
 
 
+########### DAQ SECTION  ########################
 # configuring bs daq
 
 def parseChannelListFile(fina):
@@ -95,9 +104,15 @@ channellistioxos = dict(bernina_channel_list=
 ioxosdaq = Ioxostools(default_channel_list=channellistioxos,default_file_path='%s')
 
 
-from eco.devices_general.detectors import JF_BS_writer
-bsdaqJF = JF_BS_writer('bsdaqJF') 
+#from eco.devices_general.detectors import JF_BS_writer
+#bsdaqJF = JF_BS_writer('bsdaqJF') d
+from eco.devices_general.detectors import DIAClient
+bsdaqJF = DIAClient('bsdaqJF', instrument="bernina", api_address = "http://sf-daq-1:10000") 
 
+try:
+    bsdaqJF.pgroup = int(exp_config['pgroup'][1:])
+except:
+    print('Could not set p group in bsdaqJF !!')
 
 checkerPV=PV('SARFE10-PBPG050:HAMP-INTENSITY-CAL')
 
@@ -117,9 +132,12 @@ checker['wait_time'] = 3
 
 
 scansIoxos = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[ioxosdaq])
-scansJF = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaqJF],checker=checker)
+scansJF = _scan.Scans(data_base_dir='scan_data',scan_info_dir='/sf/bernina/data/%s/res/scan_info'%exp_config['pgroup'],default_counters=[bsdaqJF],checker=checker,scan_directories=True)
 scansBsreadLocal = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_data',scan_info_dir='/sf/bernina/config/com/data/scan_info',default_counters=[bsdaq])
 
+
+
+###########  ADHOC IMPLEMENTED  ########################
 from ..timing.lasertiming import Lxt as _Lxt
 
 lxt = _Lxt()

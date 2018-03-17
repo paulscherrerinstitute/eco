@@ -123,9 +123,9 @@ channellistPhotonDiag = dict(alvra_channel_list=
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 bsdaqPhotonDiag = BStools(default_channel_list=channellistPhotonDiag,default_file_path='%s')
  
-from eco.devices_general.alvradetectors import JF_BS_writer 
-JF_4p5M = JF_BS_writer('JF_4p5M', api_address = "http://sf-daq-2:10000") 
-
+from eco.devices_general.alvradetectors import DIAClient
+#JF_4p5M = JF_BS_writer('JF_4p5M', api_address = "http://sf-daq-2:10000") 
+dia = DIAClient('JF_4p5M', api_address = "http://sf-daq-2:10000", instrument="bernina") 
 
 checkerPV=PV('SARFE10-PBPG050:HAMP-INTENSITY-CAL')
 
