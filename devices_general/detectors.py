@@ -283,18 +283,19 @@ class DIAClient:
 
     def acquire(self, file_name=None, Npulses=100, JF_factor=1, bsread_padding=0):
         """
-        JF_factor?
+        JF_factor?
         bsread_padding?
         """
         file_rootdir = '/sf/%s/data/raw/p%d/' % (self.instrument, self.pgroup)
         
         if file_name is None:
+            # FIXME /dev/null crashes the data taking (h5py can't close /dev/null and crashes)
             print("Not saving any data, as file_name is not set")
-            file_name_JF = "/dev/null"
-            file_name_bsread = "/dev/null"
+            file_name_JF = file_rootdir + "DelMe" + '_JF1p5M.h5'
+            file_name_bsread = file_rootdir + "DelMe" + '.h5'
         else:
             # FIXME hardcoded
-            file_name_JF = file_rootdir +file_name + '_JF1p5M.h5'
+            file_name_JF = file_rootdir + file_name + '_JF1p5M.h5'
             file_name_bsread = file_rootdir + file_name + '.h5'
 
         if self.pgroup == 0:

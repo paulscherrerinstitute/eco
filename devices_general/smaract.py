@@ -224,15 +224,22 @@ class SmarActRecord:
         """ Adjustable convention"""
         return self._llm.get('VAL'), self._hlm.get('VAL')
 
-#    def gui(self, guiType='xdm'):
-#        """ Adjustable convention"""
-#        cmd = ['caqtdm','-macro']
-#
-#        cmd.append('\"P=%s:,M=%s\"'%tuple(self.Id.split(':')))
+    def gui(self, guiType='xdm'):
+        """ Adjustable convention"""
+        cmd = ['caqtdm','-macro']
+
+        for i in range(len(self.Id)-1):
+            if self.Id[-i-1].isnumeric() is False:
+                M = self.Id[-i:]
+                P = self.Id[:-i]
+                print(P, M)
+                break
+        
+        cmd.append('\"P=%s,M=%s\"'%(P, M))
 #        #cmd.append('/sf/common/config/qt/motorx_more.ui')
-#        cmd.append('motorx_more.ui')
+        cmd.append('ESB_MX_SMARACT_mot_exp.ui')
 #        #os.system(' '.join(cmd))
-#        return subprocess.Popen(' '.join(cmd),shell=True)
+        return subprocess.Popen(' '.join(cmd),shell=True)
 
 
 

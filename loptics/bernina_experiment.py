@@ -65,3 +65,27 @@ class Laser_Exp:
         except:
             print('No Smaract ParZ')
             pass
+
+
+    def get_adjustable_positions_str(self):
+        ostr = '*****SmarAct motor positions******\n'
+
+        for tkey,item in self.__dict__.items():
+            if hasattr(item,'get_current_value'):
+                pos = item.get_current_value()
+                ostr += '  ' + tkey.ljust(10) + ' : % 14g\n'%pos
+        return ostr
+                
+
+
+    #def pos(self):
+    #    s = []
+    #    for i in sorted(self.__dict__.keys()):
+    #        s.append[i]
+    #    for n, mo^tor in enumerate (s):
+    #        s[n] += ':  ' + str(self.__dict__[motor])
+    #    return s
+
+    def __repr__(self):
+        return self.get_adjustable_positions_str()
+        
