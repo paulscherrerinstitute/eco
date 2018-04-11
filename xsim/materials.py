@@ -31,6 +31,9 @@ xu.materials.Material.transmission = _get_transmission
 crystal['Si'] = xu.materials.Si
 crystal['Ge'] = xu.materials.Ge
 crystal['GaAs'] = xu.materials.GaAs
+crystal['Al'] = xu.materials.Al
+crystal['Diamond'] = xu.materials.C
+
 amorphous['B4C'] = xu.materials.material.Amorphous('B4C',2520,[('B',4),('C',1)])
 amorphous['Mo'] = xu.materials.material.Amorphous('Mo',10220,[('Mo',1)])
 amorphous['polyimide'] = xu.materials.material.Amorphous('polyimide',1430,[('C',22),('H',10),('N',2),('O',5)])
