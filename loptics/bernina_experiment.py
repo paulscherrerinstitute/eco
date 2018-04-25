@@ -1,7 +1,7 @@
 from ..devices_general.motors import MotorRecord
 from ..devices_general.smaract import SmarActRecord
 from epics import PV
-from .delay_stage import DelayStage
+from ..devices_general.delay_stage import DelayStage
 
 class Laser_Exp:
     def __init__(self,Id):

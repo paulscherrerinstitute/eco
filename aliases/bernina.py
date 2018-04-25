@@ -176,6 +176,11 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Laser Shutter',
                 'eco_type' : 'loptics.laser_shutter.laser_shutter'},
+        'SLAAR21-LMOT' : {
+                'alias' : 'Palm',
+                'z_und' : 142,
+                'desc' : 'Streaking arrival time monitor',
+                'eco_type' : 'timing.palm.Palm'},
 #         = dict(
 #            alias = ''
 #            z_und = 
