@@ -96,11 +96,11 @@ from ..acquisition import scan as _scan
 from ..acquisition.ioxos_data import Ioxostools
 
 channellist = dict(bernina_channel_list=
-        parseChannelListFile('/sf/bernina/config/com/channel_lists/default_channel_list'))
+        parseChannelListFile('/sf/bernina/config/channel_lists/default_channel_list_bs'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 
 channellistioxos = dict(bernina_channel_list=
-        parseChannelListFile('/sf/bernina/config/default_channels/default_channel_list_ioxos'))
+        parseChannelListFile('/sf/bernina/config/channel_lists/default_channel_list_ioxos'))
 ioxosdaq = Ioxostools(default_channel_list=channellistioxos,default_file_path='%s')
 
 
