@@ -151,7 +151,7 @@ class DIAClient:
 
     def update_config(self, ):
         self.writer_config = {
-            "output_file": "/sf/%s/data/raw/p%d/test_data.h5" % (self.instrument, self.pgroup), 
+            "output_file": "/sf/%s/data/p%d/raw/test_data.h5" % (self.instrument, self.pgroup), 
             "user_id": self.pgroup, 
             "n_frames": self.n_frames,
             "general/user": str(self.pgroup),
@@ -204,7 +204,7 @@ class DIAClient:
         #    '/sf/alvra/config/com/channel_lists/default_channel_list')
 
         self.bsread_config = {
-            'output_file': '/sf/%s/data/raw/p%d/test_bsread.h5' % (self.instrument, self.pgroup), 
+            'output_file': '/sf/%s/data/p%d/raw/test_bsread.h5' % (self.instrument, self.pgroup), 
             'user_id': self.pgroup, 
             "general/user": str(self.pgroup),
             "general/process": __name__,
@@ -252,7 +252,7 @@ class DIAClient:
     
     def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True):
         from jungfrau_utils.scripts.jungfrau_run_pedestals import run as jungfrau_utils_run
-        directory = '/sf/%s/data/raw/p%d/JF_pedestal/' % (self.instrument, self.pgroup)
+        directory = '/sf/%s/data/p%d/raw/JF_pedestal/' % (self.instrument, self.pgroup)
         filename = "pedestal_%s.h5" % datetime.now().strftime("%Y%m%d_%H%M")
         jungfrau_utils_run(self._api_address, filename, directory, self.pgroup, 0.1, self.detector_config["exptime"],
                                      n_frames, 1, analyze, n_bad_modules, self.instrument, self.jf_name)
@@ -286,7 +286,7 @@ class DIAClient:
         JF_factor?
         bsread_padding?
         """
-        file_rootdir = '/sf/%s/data/raw/p%d/' % (self.instrument, self.pgroup)
+        file_rootdir = '/sf/%s/data/p%d/raw/' % (self.instrument, self.pgroup)
         
         if file_name is None:
             # FIXME /dev/null crashes the data taking (h5py can't close /dev/null and crashes)
