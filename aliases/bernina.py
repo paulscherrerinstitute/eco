@@ -181,6 +181,11 @@ aliases = {
                 'z_und' : 142,
                 'desc' : 'Streaking arrival time monitor',
                 'eco_type' : 'timing.palm.Palm'},
+        'SLAAR21-LMOT' : {
+                'alias' : 'Psen',
+                'z_und' : 142,
+                'desc' : 'Streaking arrival time monitor',
+                'eco_type' : 'timing.psen.Psen'}
 #         = dict(
 #            alias = ''
 #            z_und = 
