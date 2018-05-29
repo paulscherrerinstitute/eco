@@ -6,6 +6,7 @@ from ..utilities.config import loadConfig
 from epics import PV
 import sys,os
 
+
 from colorama import Fore as _color
 import traceback
 
@@ -139,12 +140,16 @@ scansBsreadLocal = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_d
 
 ###########  ADHOC IMPLEMENTED  ########################
 bsdaqJF.gain_file = "/sf/bernina/data/p16582/res/gains_I0.h5"
-
-import glob
-list_of_files = glob.glob('/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5') 
-latest_file = max(list_of_files, key=os.path.getctime)
-bsdaqJF.pede_file = latest_file
-
+try:
+    import glob
+    path = '/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5'
+    list_of_files = glob.glob('/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5')
+    latest_file = max(list_of_files, key=os.path.getctime)
+    bsdaqJF.pede_file = latest_file
+except (Exception, ArithmeticError) as e:
+    template = "An exception of type {0} occurred when trying to load lates JF files from {2}. Arguments:\n{1!r}"
+    message = template.format(type(e).__name__, e.args, path)
+    print (message)
 from ..timing.lasertiming import Lxt as _Lxt
 
 lxt = _Lxt()

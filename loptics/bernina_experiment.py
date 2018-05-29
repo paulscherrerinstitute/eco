@@ -1,7 +1,9 @@
 from ..devices_general.motors import MotorRecord
 from ..devices_general.smaract import SmarActRecord
+
 from epics import PV
 from ..devices_general.delay_stage import DelayStage
+from ..devices_general.user_to_motor import User_to_motor
 
 class Laser_Exp:
     def __init__(self,Id):
@@ -20,8 +22,8 @@ class Laser_Exp:
   
         #SmarAct ID
         self.IdSA = 'SARES23'
-        self._delayStg = SmarActRecord(self.IdSA+'-ESB17')
-        self.eos_delay = DelayStage(self._delayStg)
+        #self._delayStg = SmarActRecord(self.IdSA+'-ESB17')
+        #self.eos_delay = DelayStage(self._delayStg)
 
 
         ### Mirrors used in the expeirment ###
@@ -38,19 +40,20 @@ class Laser_Exp:
             pass
 
         try:
-            self.thz_rot = SmarActRecord(self.IdSA+'-ESB16')
+            self._pump_rot = SmarActRecord(self.IdSA+'-ESB16')
+            self.pump_rot = User_to_motor(self._pump_rot,180./35.7,0.)
         except:
             print('No Smaract THzrot')
             pass
 
         try:
-            self.thz_gonio = SmarActRecord(self.IdSA+'-ESB2')
+            self.pump_gonio = SmarActRecord(self.IdSA+'-ESB2')
         except:
             print('No Smaract THzGonio')
             pass
         
         try:
-            self.thz_z = SmarActRecord(self.IdSA+'-ESB1')
+            self.pump_x = SmarActRecord(self.IdSA+'-ESB1')
         except:
             print('No Smaract THzZ')
             pass

@@ -154,13 +154,7 @@ aliases = {
                 'desc' : 'Mobile X-ray eye in Bernina hutch',
                 'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE',
                 'kwargs' : {'bshost':'sf-daqsync-01.psi.ch','bsport':11173},
-                    
                     },
-        'SLAAR21-LMOT' : {
-                'alias' : 'Las',
-                'z_und' : 142,
-                'desc' : 'Experiment laser optics',
-                'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
         'SLAAR02-TSPL-EPL' : {
                 'alias' : 'PhaseShifter',
                 'z_und' : 142,
@@ -171,21 +165,27 @@ aliases = {
                 'z_und' : 142,
                 'desc' : '1.5M Jungfrau detector',
                 'eco_type' : 'devices_general.detectors.DIAClient'},
+        'SLAAR21-LMOT' : {
+                'alias' : 'Las',
+                'z_und' : 142,
+                'desc' : 'Experiment laser optics',
+                'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
         'SLAAR21-LTIM01-EVR0' : {
                 'alias' : 'LaserShutter',
                 'z_und' : 142,
                 'desc' : 'Laser Shutter',
-                'eco_type' : 'loptics.laser_shutter.laser_shutter'},
-        'SLAAR21-LMOT' : {
-                'alias' : 'Palm',
-                'z_und' : 142,
-                'desc' : 'Streaking arrival time monitor',
-                'eco_type' : 'timing.palm.Palm'},
-        'SLAAR21-LMOT' : {
-                'alias' : 'Psen',
-                'z_und' : 142,
-                'desc' : 'Streaking arrival time monitor',
-                'eco_type' : 'timing.psen.Psen'}
+                'eco_type' : 'loptics.laser_shutter.laser_shutter'}
+#        'SLAAR21-LMOT' : {
+#                'alias' : 'Palm',
+#                'z_und' : 142,
+#                'desc' : 'Streaking arrival time monitor',
+#                'eco_type' : 'timing.palm.Palm'},
+#        'SLAAR21-LMOT' : {
+#                'alias' : 'Psen',
+#                'z_und' : 142,
+#                'desc' : 'Streaking arrival time monitor',
+#                'eco_type' : 'timing.psen.Psen'}
+
 #         = dict(
 #            alias = ''
 #            z_und = 
