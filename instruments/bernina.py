@@ -14,7 +14,7 @@ elog = _Elog(_elog_info['url'],user='gac-bernina',screenshot_directory=_elog_inf
 screenshot = _Screenshot(screenshot_directory=_elog_info['screenshot_directory'])
 
 ###########  configurations  ########################
-currexp_file_path = '/sf/bernina/config/current_experiment.json'
+currexp_file_path = '/sf/bernina/config/exp/current_experiment.json'
 if os.path.exists(currexp_file_path):
     exp_config = loadConfig(currexp_file_path)
 else:
