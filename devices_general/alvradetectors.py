@@ -267,47 +267,76 @@ def parseChannelListFile(fina):
                    if not d[0]=='#':
                        out.append(d.strip())
     return out
-# JF client thing
 
-class JF_BS_writer:
-    def __init__(self, Id,api_address = "http://sf-daq-2:10000"):
+
+class DIAClient:
+    def __init__(self, Id, api_address = "http://sf-daq-2:10000"):
         self._api_address = api_address 
         self.client = DetectorIntegrationClient(api_address)
-        print("\nJungfrau Integration API on %s" % api_address)
+        print("\nDetector Integration API on %s" % api_address)
+        # No pgroup by default
+        self.pgroup = 0
+        self.n_frames = 100
+        self.jf_name = "JF 4.5M"
+        self.pede_file = ""
+        self.gain_file = ""
+        self.update_config()
+
+    def update_config(self, ):
         self.writer_config = {
-                "output_file": "/sf/alvra/data/raw/p16581/test_data.h5", 
-                "process_uid": 16581, 
-                "process_gid": 16581, 
-                "dataset_name": "jungfrau/data", 
-                "n_messages": 100
-                }
+            "output_file": "/sf/alvra/data/raw/p%d/test_data.h5" % self.pgroup, 
+            "user_id": self.pgroup, 
+            "n_frames": self.n_frames,
+            "general/user": str(self.pgroup),
+            "general/process": __name__,
+            "general/created": str(datetime.now()),
+            "general/instrument": self.jf_name,
+            # "general/correction": "test"
+        }
+
         self.backend_config = {
-            "n_frames": 100, 
-            "gain_corrections_filename": "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
-            "gain_corrections_dataset": "gains", 
-            "pede_corrections_filename": "/sf/alvra/data/res/p16581/pedestal_20171210_1628_res.h5", 
-            "pede_corrections_dataset": "gains", 
-            "pede_mask_dataset": "pixel_mask", 
-            "activate_corrections_preview": True,
+            "n_frames": self.n_frames, 
+            "bit_depth": 16, 
+            "gain_corrections_filename": self.gain_file,  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
+            #"gain_corrections_dataset": "gains", 
+            #"pede_corrections_filename": "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup, 
+            #"pede_corrections_dataset": "gains", 
+            #"pede_mask_dataset": "pixel_mask", 
+            #"activate_corrections_preview": True,
             "is_HG0": True
         }
+
+        if self.pede_file != "":
+            self.backend_config["gain_corrections_filename"] = self.gain_file  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
+            self.backend_config["gain_corrections_dataset"] = "gains"
+            self.backend_config["pede_corrections_filename"] = self.pede_file  # "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup, 
+            self.backend_config["pede_corrections_dataset"] = "gains"
+            self.backend_config["pede_mask_dataset"] = "pixel_mask"
+            self.backend_config["activate_corrections_preview"] = True
+
         self.detector_config = {
-                "timing": "trigger", 
-                "exptime": 0.000005, 
-                "cycles": 100,
-                "delay"  : 0.001992,
-                "frames" : 1
-                    }
+            "timing": "trigger", 
+            "exptime": 0.000005, 
+            "cycles": self.n_frames,
+            #"delay"  : 0.001992,
+            "frames" : 1,
+            "dr": 16,
+        }
         
-        default_channels_list = parseChannelListFile(
-                    '/sf/alvra/config/com/channel_lists/default_channel_list')
+        # Not needed anymore?
+        #default_channels_list = parseChannelListFile(
+        #    '/sf/alvra/config/com/channel_lists/default_channel_list')
+
         self.bsread_config = {
-                'output_file': '/sf/alvra/data/raw/p16581/test_bsread.h5', 
-                'process_uid': 16581, 
-                'process_gid': 16581, 
-                'n_pulses':100,
-                'channels': default_channels_list
-                }
+            'output_file': '/sf/alvra/data/raw/p%d/test_bsread.h5' % self.pgroup, 
+            'user_id': self.pgroup, 
+            "general/user": str(self.pgroup),
+            "general/process": __name__,
+            "general/created": str(datetime.now()),
+            "general/instrument": self.jf_name,
+            #'Npulses':100,
+            #'channels': default_channels_list
+        }
 #        self.default_channels_list = jungfrau_utils.load_default_channel_list()
 
     def reset(self):
@@ -321,32 +350,22 @@ class JF_BS_writer:
         config = self.client.get_config()
         return config
 
+    def set_pgroup(self, pgroup):
+        self.pgroup = pgroup
+        self.update_config()
+
+    def set_bs_channels(self, ):
+        print("Please update /sf/alvra/config/com/channel_lists/default_channel_list and restart all services on the DAQ server")
+
     def set_config(self):
         self.reset()
-        self.client.set_config(writer_config=self.writer_config, backend_config=self.backend_config, detector_config=self.detector_config, bsread_config=self.bsread_config)
-
-#    def record(self,file_name,Npulses):
-#        self.detector_config.update(dict(cycles=Npulses))
-#        self.writer_config.update(dict(output_file=file_name))
-#        self.reset()
-#        DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
-#        self.client.start()
-#
-#    def check_running(self,time_interval=.5):
-#        cfg = self.get_config()
-#        running = False
-#        while not running:
-#            if self.get_status()['status'][-7:]=='RUNNING':
-#                running = True
-#                break
-#            else:
-#                sleep(time_interval)
+        self.client.set_config({"writer": self.writer_config, "backend": self.backend_config, "detector": self.detector_config, "bsread": self.bsread_config})
         
-    def check_still_running(self,time_interval=.5):
+    def check_still_running(self, time_interval=.5):
         cfg = self.get_config()
         running = True
         while running:
-            if not self.get_status()['status'][-7:]=='RUNNING':
+            if not self.get_status()['status'][-7:] == 'RUNNING':
                 running = False
                 break
 #            elif not self.get_status()['status'][-20:]=='BSREAD_STILL_RUNNING':
@@ -354,11 +373,21 @@ class JF_BS_writer:
 #                break
             else:
                 sleep(time_interval)
+    
+    def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True):
+        import jungfrau_utils as ju
+        directory = '/sf/alvra/data/raw/p%d/' % self.pgroup
+        filename = "pedestal_%s.h5" % datetime.now().strftime("%Y%m%d_%H%M")
+        ju.jungfrau_run_pedestals.run(self._api_address, filename, directory, self.pgroup, 0.1, self.detector_config["exptime"], 
+                                     n_frames, 1, analyze, n_bad_modules)
 
+        if update_config:
+            self.pede_file = filename.replace("raw/", "res/").replace(".h5", "_res.h5")
+            print("Pedestal file updated to %s" % self.pede_file)
+        return self.pede_file
+        
     def start(self):
-        subprocess.check_call(["caput", "SIN-TIMAST-TMA:Evt-24-Ena-Sel", "0"])
         self.client.start()
-        subprocess.check_call(["caput", "SIN-TIMAST-TMA:Evt-24-Ena-Sel", "1"])
         print("start acquisition")
         pass
 
@@ -376,26 +405,46 @@ class JF_BS_writer:
     def wait_for_status(self,*args,**kwargs):
         return self.client.wait_for_status(*args,**kwargs)
 
-    def acquire(self,file_name=None,Npulses=100,JF_factor=2,bsread_padding=50):
-        file_name_JF = file_name + '_JF4p5M.h5'
-        file_name_bsread = file_name+'.h5'
+    def acquire(self, file_name=None, Npulses=100, JF_factor=1, bsread_padding=0):
+        """
+        JF_factor?
+        bsread_padding?
+        """
+        file_rootdir = '/sf/alvra/data/raw/p%d/' % self.pgroup
+        
+        if file_name is None:
+            print("Not saving any data, as file_name is not set")
+            file_name_JF = "/dev/null"
+            file_name_bsread = "/dev/null"
+        else:
+            file_name_JF = file_rootdir +file_name + '_JF4p5M.h5'
+            file_name_bsread = file_rootdir + file_name + '.h5'
+
+        if self.pgroup == 0:
+            raise ValueError("Please use set_pgroup() to set a pgroup value.")
+
         def acquire():
-            self.detector_config.update({
-                'cycles':Npulses*JF_factor})
+            self.n_frames = Npulses * JF_factor
+            self.update_config()
+            #self.detector_config.update({
+            #    'cycles': n_frames})
             self.writer_config.update({
-                'output_file':file_name_JF,
-                'n_messages':Npulses*JF_factor})
-            self.backend_config.update({
-                'n_frames':Npulses*JF_factor})
+                'output_file': file_name_JF,
+            #    'n_messages': n_frames
+            })
+            #self.backend_config.update({
+            #    'n_frames': n_frames})
             self.bsread_config.update({
                 'output_file':file_name_bsread,
-                'n_pulses':Npulses+bsread_padding
+            #    'Npulses': Npulses + bsread_padding
                 })
             
             self.reset()
             self.set_config()
+            print(self.get_config())
             self.client.start()
             done = False
+
             while not done:
                 stat = self.get_status()
                 if stat['status'] =='IntegrationStatus.FINISHED':
@@ -408,9 +457,7 @@ class JF_BS_writer:
                     done = True
                 sleep(.1)
 
-        return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name_bsread,file_name_JF], 'Npulses':Npulses},hold=False)
-        
-    
+        return Acquisition(acquire=acquire, acquisition_kwargs={'file_names': [file_name_bsread, file_name_JF], 'Npulses': Npulses},hold=False)
 
     def wait_done(self):
         self.check_running()

@@ -21,6 +21,35 @@ class BStools:
     def avail(self,*args,**kwargs):
         return dispatcher.get_current_channels(*args,**kwargs)
 
+    def check_channel_list(self, printResult=True, printOnlineChannels=False):
+        all_available = set([i['name'] for i in self.avail()])
+        status = {}
+        for listname in self._default_channel_list.keys():
+            tch = set(self._default_channel_list[listname])
+            status[listname] = {}
+            status[listname]['online'] = tch.intersection(all_available)
+            status[listname]['offline'] = tch.difference(all_available)
+        if printResult:
+            for listname in status.keys():
+                if printOnlineChannels:
+                    print('#### Online Channels in {} ####'.format(listname))
+                    print('\n'.join(status[listname]['online'])) 
+                    print('\n')
+                print('#### Offline Channels in {} ####'.format(listname))
+                print('\n'.join(status[listname]['offline']))
+        else:
+            return status
+ 
+    def cleanup_channel_list(self,listname):
+        status = self.check_channel_list(printResult=False)
+        self._default_channel_list[listname] = \
+                list(set(self._default_channel_list[listname]).difference(set(status[listname]['offline'])))
+        print('#### Temporarily removed Offline Channels in {} ####'.format(listname))
+        print('\n'.join(status[listname]['offline']))
+        print('NB: The channels will be back after restart if they originate from a config file.')
+
+
+        
     def h5(self,fina=None,channel_list=None,N_pulses=None,default_path=True,queue_size=100):
         if default_path:
             fina = self._default_file_path%fina
@@ -39,6 +68,7 @@ class BStools:
         source = dispatcher.request_stream(channel_list)
         mode = zmq.SUB
         receive(source, fina, queue_size=queue_size, mode=mode, n_messages=N_pulses)
+
     def db(self,channel_list=None,start_time_delta=dict(),end_time_delta=dict(),default_path=True):
         if not channel_list:
             print('No channels specified, using default list \'%s\' instead.'%list(self._default_channel_list.keys())[0])

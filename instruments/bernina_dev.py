@@ -6,7 +6,6 @@ from ..utilities.config import loadConfig
 from epics import PV
 import sys,os
 
-
 from colorama import Fore as _color
 import traceback
 
@@ -14,7 +13,7 @@ elog = _Elog(_elog_info['url'],user='gac-bernina',screenshot_directory=_elog_inf
 screenshot = _Screenshot(screenshot_directory=_elog_info['screenshot_directory'])
 
 ###########  configurations  ########################
-currexp_file_path = '/sf/bernina/config/exp/current_experiment.json'
+currexp_file_path = '/sf/bernina/config/current_experiment.json'
 if os.path.exists(currexp_file_path):
     exp_config = loadConfig(currexp_file_path)
 else:
@@ -22,55 +21,19 @@ else:
 
 ########### GENERAL IMPLEMENTATIONS ##################
 from ..aliases.bernina import aliases as _aliases
-def _attach_device(devDict,devId,args,kwargs):
-    imp_p = devDict['eco_type'].split(sep='.')
-    dev_alias = devDict['alias']
-    dev_alias = dev_alias[0].lower() + dev_alias[1:]
-    eco_type_name = imp_p[-1] 
-    istr = 'from ..'+'.'.join(imp_p[:-1])+' import '
-    istr += '%s as _%s'%(eco_type_name,eco_type_name)
-    #print(istr)
-    print(('Configuring %s '%(dev_alias)).ljust(25), end='')
-    print(('(%s)'%(devId)).ljust(25), end='')
-    error = None
-    try:
-        exec(istr)
-        tdev = eval('_%s(Id=\'%s\',*args,**kwargs)'%(eco_type_name,devId))
-        tdev.name = dev_alias
-        tdev._z_und = devDict['z_und']
-        globals().update([(dev_alias,tdev)])
-        print((_color.GREEN+'OK'+_color.RESET).rjust(5))
-    except Exception as e:
-        print((_color.RED+'FAILED'+_color.RESET).rjust(5))
-        print(sys.exc_info())
-        error = e
-    return error
+from .utilities_instruments import initDeviceAliasList
 
-errors = []
-for device_Id in _aliases.keys():
-    if 'eco_type' in _aliases[device_Id].keys() \
-    and _aliases[device_Id]['eco_type']:
-        if 'args' in _aliases[device_Id].keys() \
-        and _aliases[device_Id]['args']:
-            args = _aliases[device_Id]['args']
-        else:
-            args = tuple()
+_devices,_problems = initDeviceAliasList(_aliases,verbose=True,lazy=True)
+for tdev_id,talias,tdev in _devices:
+    globals().update([(talias,tdev)])
 
-        if 'kwargs' in _aliases[device_Id].keys() \
-        and _aliases[device_Id]['kwargs']:
-            kwargs = _aliases[device_Id]['kwargs']
-        else:
-            kwargs = dict()
-        
-        e = _attach_device(_aliases[device_Id],device_Id,args,kwargs)
-        if e: errors.append((_aliases[device_Id]['alias'],e))
 
-if len(errors)>0:
-    print('Found errors when configuring %s'%[te[0] for te in errors])
+if _problems:
+    print('Found errors when configuring %s'%[te[1] for te in _problems])
     if input('Would you like to see error traces? (y/n)')=='y':
-        for error in errors:
-            print('---> Error when configuring %s'%error[0])
-            traceback.print_tb(error[1].__traceback__)
+        for error in _problems:
+            print('---> Error when configuring %s (%s)'%(error[0],error[1]))
+            print(error[2])
 
 
 
@@ -97,11 +60,11 @@ from ..acquisition import scan as _scan
 from ..acquisition.ioxos_data import Ioxostools
 
 channellist = dict(bernina_channel_list=
-        parseChannelListFile('/sf/bernina/config/channel_lists/default_channel_list'))
+        parseChannelListFile('/sf/bernina/config/com/channel_lists/default_channel_list'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 
 channellistioxos = dict(bernina_channel_list=
-        parseChannelListFile('/sf/bernina/config/channel_lists/default_channel_list_ioxos'))
+        parseChannelListFile('/sf/bernina/config/default_channels/default_channel_list_ioxos'))
 ioxosdaq = Ioxostools(default_channel_list=channellistioxos,default_file_path='%s')
 
 
@@ -139,17 +102,13 @@ scansBsreadLocal = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_d
 
 
 ###########  ADHOC IMPLEMENTED  ########################
-bsdaqJF.gain_file = "/sf/bernina/data/p16582/res/gains_I0.h5"
-try:
-    import glob
-    path = '/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5'
-    list_of_files = glob.glob('/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5')
-    latest_file = max(list_of_files, key=os.path.getctime)
-    bsdaqJF.pede_file = latest_file
-except (Exception, ArithmeticError) as e:
-    template = "An exception of type {0} occurred when trying to load lates JF files from {2}. Arguments:\n{1!r}"
-    message = template.format(type(e).__name__, e.args, path)
-    print (message)
+bsdaqJF.gain_file = "/sf/bernina/config/com/data/gains_I0.h5"
+
+import glob
+list_of_files = glob.glob('/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5') 
+latest_file = max(list_of_files, key=os.path.getctime)
+bsdaqJF.pede_file = latest_file
+
 from ..timing.lasertiming import Lxt as _Lxt
 
 lxt = _Lxt()

@@ -1,7 +1,9 @@
 from ..devices_general.motors import MotorRecord
 from ..devices_general.smaract import SmarActRecord
+
 from epics import PV
-from .delay_stage import DelayStage
+from ..devices_general.delay_stage import DelayStage
+from ..devices_general.user_to_motor import User_to_motor
 
 class Laser_Exp:
     def __init__(self,Id):
@@ -20,8 +22,8 @@ class Laser_Exp:
   
         #SmarAct ID
         self.IdSA = 'SARES23'
-        self._delayStg = SmarActRecord(self.IdSA+'-ESB17')
-        self.eos_delay = DelayStage(self._delayStg)
+        #self._delayStg = SmarActRecord(self.IdSA+'-ESB17')
+        #self.eos_delay = DelayStage(self._delayStg)
 
 
         ### Mirrors used in the expeirment ###
@@ -38,19 +40,20 @@ class Laser_Exp:
             pass
 
         try:
-            self.thz_rot = SmarActRecord(self.IdSA+'-ESB16')
+            self._pump_rot = SmarActRecord(self.IdSA+'-ESB16')
+            self.pump_rot = User_to_motor(self._pump_rot,180./35.7,0.)
         except:
             print('No Smaract THzrot')
             pass
 
         try:
-            self.thz_gonio = SmarActRecord(self.IdSA+'-ESB2')
+            self.pump_gonio = SmarActRecord(self.IdSA+'-ESB2')
         except:
             print('No Smaract THzGonio')
             pass
         
         try:
-            self.thz_z = SmarActRecord(self.IdSA+'-ESB1')
+            self.pump_x = SmarActRecord(self.IdSA+'-ESB1')
         except:
             print('No Smaract THzZ')
             pass
@@ -65,3 +68,27 @@ class Laser_Exp:
         except:
             print('No Smaract ParZ')
             pass
+
+
+    def get_adjustable_positions_str(self):
+        ostr = '*****SmarAct motor positions******\n'
+
+        for tkey,item in self.__dict__.items():
+            if hasattr(item,'get_current_value'):
+                pos = item.get_current_value()
+                ostr += '  ' + tkey.ljust(10) + ' : % 14g\n'%pos
+        return ostr
+                
+
+
+    #def pos(self):
+    #    s = []
+    #    for i in sorted(self.__dict__.keys()):
+    #        s.append[i]
+    #    for n, mo^tor in enumerate (s):
+    #        s[n] += ':  ' + str(self.__dict__[motor])
+    #    return s
+
+    def __repr__(self):
+        return self.get_adjustable_positions_str()
+        

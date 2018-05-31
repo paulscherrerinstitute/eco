@@ -10,6 +10,7 @@ import subprocess
 import h5py
 from time import sleep
 from threading import Thread
+from datetime import datetime
 
 from ..acquisition.utilities import Acquisition
 
@@ -17,7 +18,8 @@ try:
     import sys, os
     tpath = os.path.dirname(__file__)
     sys.path.insert(0,os.path.join(tpath,'../../detector_integration_api'))
-    sys.path.insert(0,os.path.join(tpath,'../../jungfrau_utils'))
+    #ask Leo(2018.03.14):
+    #sys.path.insert(0,os.path.join(tpath,'../../jungfrau_utils')) 
     from detector_integration_api import DetectorIntegrationClient
 except:
     print('NB: detector integration could not be imported!')
@@ -129,183 +131,93 @@ class DiodeDigitizer:
         
         
 
-
-
-
-class JF:
-    def __init__(self, Id):
-        self.writer_config = ""
-        self.backend_config = ""
-        self.detector_config = ""
+class DIAClient:
+    def __init__(self, Id, instrument=None, api_address = "http://sf-daq-2:10000", jf_name="JF_1.5M"):
         self.Id = Id
-        self.api_address = self.Id
-        self.client = DetectorIntegrationClient(self.Id)
-
-    def reset(self):
-        self.client.reset()
-        pass
-
-    def get_status(self):
-        status = self.client.get_status()
-        return status
-
-    def get_config(self):
-        config = self.client.get_config()
-        return config
-
-    def set_config(self, pedestal_fname = '/sf/bernina/data/res/p16582/JF_pedestal/pedestal_20180302_1512_res.h5', fname = "/sf/bernina/data/raw/p16582/JF.h5", N = 1000):
-        
-        self.reset()
-        self.detector_config = {
-               "timing": "trigger",
-               "exptime": 0.00001,
-               "delay"  : 0.001987, # this is the magic aldo number
-               "frames" : 1,
-               "cycles": N}
-
-
-        self.writer_config = {
-              "output_file": fname,
-              "process_uid": 16582,
-              "process_gid": 16582,
-              "dataset_name": "jungfrau/data",
-              "n_messages": N}
-
-        self.backend_config = {
-              "n_frames": N,
-              "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains_I0.h5",
-              "gain_corrections_dataset": "gains",
-              "pede_corrections_filename": pedestal_fname,
-              "pede_corrections_dataset": "gains",
-              "pede_mask_dataset" : "pixel_mask",
-              "activate_corrections_preview": True}
-
-
-        DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
-        pass
-
-    def record(self,file_name,Npulses):
-        self.detector_config.update(dict(cycles=Npulses))
-        self.writer_config.update(dict(output_file=file_name))
-        self.reset()
-        DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
-        self.client.start()
-
-    def check_running(self,time_interval=.5):
-        cfg = self.get_config()
-        running = False
-        while not running:
-            if self.get_status()['status'][-7:]=='RUNNING':
-                running = True
-                break
-            else:
-                sleep(time_interval)
-        
-    def check_still_running(self,time_interval=.5):
-        cfg = self.get_config()
-        running = True
-        while running:
-            if not self.get_status()['status'][-7:]=='RUNNING':
-                running = False
-                break
-            else:
-                sleep(time_interval)
-
-    def start(self):
-        self.client.start()
-        print("start acquisition")
-        pass
-
-    def stop(self):
-        self.client.stop()
-        print("stop acquisition") 
-        pass
-
-    def config_and_start_test(self):
-        self.reset()
-        self.set_config()
-        self.start()
-        pass
-
-    def acquire(self,file_name=None,Npulses=100):
-        file_name += '_JF1p5M.h5'
-        def acquire():
-            self.reset()
-            self.detector_config.update(dict(cycles=Npulses))
-            self.writer_config.update(dict(output_file=file_name))
-            self.set_config(f = file_name, N = Npulses)
-            self.client.start()
-            self.check_running()
-            self.check_still_running()
-
-        return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name], 'Npulses':Npulses},hold=False)
-        
-    
-
-    def wait_done(self):
-        self.check_running()
-        self.check_still_running()
-
-
-
-
-def parseChannelListFile(fina):
-    out = []
-    with open(fina,'r') as f:
-        done = False
-        while not done:
-           d = f.readline()
-           if not d:
-               done=True
-           if len(d)>0:
-               if not d.isspace():
-                   if not d[0]=='#':
-                       out.append(d.strip())
-    return out
-# JF client thing
-
-class JF_BS_writer:
-    def __init__(self, Id,api_address = "http://sf-daq-1:10000"):
         self._api_address = api_address 
         self.client = DetectorIntegrationClient(api_address)
-        print("\nJungfrau Integration API on %s" % api_address)
+        print("\nDetector Integration API on %s" % api_address)
+        # No pgroup by default
+        self.pgroup = 0
+        self.n_frames = 100
+        self.jf_name = jf_name
+        self.pede_file = ""
+        self.gain_file = ""
+        self.instrument = instrument
+        if instrument is None:
+            print("ERROR: please configure the instrument parameter in DIAClient")
+        self.update_config()
+
+
+    def update_config(self, ):
         self.writer_config = {
-                "output_file": "/sf/bernina/data/raw/p16582/test_data.h5", 
-                "process_uid": 16582, 
-                "process_gid": 16582, 
-                "dataset_name": "jungfrau/data", 
-                "n_messages": 100
-                }
+            "output_file": "/sf/%s/data/p%d/raw/test_data.h5" % (self.instrument, self.pgroup), 
+            "user_id": self.pgroup, 
+            "n_frames": self.n_frames,
+            "general/user": str(self.pgroup),
+            "general/process": __name__,
+            "general/created": str(datetime.now()),
+            "general/instrument": self.instrument,
+            # "general/correction": "test"
+        }
+
         self.backend_config = {
-                "n_frames": 100, 
-                "gain_corrections_filename": "/sf/bernina/data/res/p16582/gains.h5", 
-                "gain_corrections_dataset": "gains", 
-                "pede_corrections_filename": "/sf/bernina//data/res/p16582/JF_pedestal/pedestal_20171128_1048_res.h5", 
-                "pede_corrections_dataset": "gains", 
-                "activate_corrections_preview": True
-                }
+            "n_frames": self.n_frames, 
+            "bit_depth": 16, 
+            "gain_corrections_filename": self.gain_file,  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
+            #"gain_corrections_dataset": "gains", 
+            #"pede_corrections_filename": "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup, 
+            #"pede_corrections_dataset": "gains", 
+            #"pede_mask_dataset": "pixel_mask", 
+            #"activate_corrections_preview": True,
+            # FIXME: HARDCODED!!!
+            "is_HG0": False
+        }
+
+        if self.pede_file != "":
+            self.backend_config["gain_corrections_filename"] = self.gain_file  # "/sf/alvra/config/jungfrau/jungfrau_4p5_gaincorrections_v0.h5", 
+            self.backend_config["gain_corrections_dataset"] = "gains"
+            self.backend_config["pede_corrections_filename"] = self.pede_file  # "/sf/alvra/data/res/p%d/pedestal_20171210_1628_res.h5" % self.pgroup, 
+            self.backend_config["pede_corrections_dataset"] = "gains"
+            self.backend_config["pede_mask_dataset"] = "pixel_mask"
+            self.backend_config["activate_corrections_preview"] = True
+        else:
+            self.backend_config["pede_corrections_dataset"] = "gains"
+            self.backend_config["pede_mask_dataset"] = "pixel_mask"
+            self.backend_config["gain_corrections_filename"] = ""
+            self.backend_config["pede_corrections_filename"] = ""
+            self.backend_config["activate_corrections_preview"] = False
+
         self.detector_config = {
-                "timing": "trigger", 
-                "exptime": 0.00001, 
-                "cycles": 100,
-                "delay"  : 0.00199,
-                "frames" : 1
-                    }
+            "timing": "trigger",
+
+            # FIXME: HARDCODED
+            "exptime": 0.000010, 
+            "cycles": self.n_frames,
+            #"delay"  : 0.001992,
+            "frames" : 1,
+            "dr": 16,
+        }
         
-        default_channels_list = parseChannelListFile(
-                    '/sf/bernina/config/com/channel_lists/default_channel_list')
+        # Not needed anymore?
+        #default_channels_list = parseChannelListFile(
+        #    '/sf/alvra/config/com/channel_lists/default_channel_list')
+
         self.bsread_config = {
-                'output_file': '/sf/bernina/data/raw/p16582/test_bsread.h5', 
-                'process_uid': 16582, 
-                'process_gid': 16582, 
-                'n_pulses':100,
-                'channels': default_channels_list
-                }
+            'output_file': '/sf/%s/data/p%d/raw/test_bsread.h5' % (self.instrument, self.pgroup), 
+            'user_id': self.pgroup, 
+            "general/user": str(self.pgroup),
+            "general/process": __name__,
+            "general/created": str(datetime.now()),
+            "general/instrument": self.instrument,
+            #'Npulses':100,
+            #'channels': default_channels_list
+        }
 #        self.default_channels_list = jungfrau_utils.load_default_channel_list()
 
     def reset(self):
         self.client.reset()
-        pass
+        #pass
 
     def get_status(self):
         return self.client.get_status()
@@ -314,31 +226,22 @@ class JF_BS_writer:
         config = self.client.get_config()
         return config
 
-    def set_config(self):
-        self.client.set_config(writer_config=self.writer_config, backend_config=self.backend_config, detector_config=self.detector_config, bsread_config=self.bsread_config)
+    def set_pgroup(self, pgroup):
+        self.pgroup = pgroup
+        self.update_config()
 
-#    def record(self,file_name,Npulses):
-#        self.detector_config.update(dict(cycles=Npulses))
-#        self.writer_config.update(dict(output_file=file_name))
-#        self.reset()
-#        DetectorIntegrationClient.set_config(self,self.writer_config, self.backend_config, self.detector_config)
-#        self.client.start()
-#
-#    def check_running(self,time_interval=.5):
-#        cfg = self.get_config()
-#        running = False
-#        while not running:
-#            if self.get_status()['status'][-7:]=='RUNNING':
-#                running = True
-#                break
-#            else:
-#                sleep(time_interval)
+    def set_bs_channels(self, ):
+        print("Please update /sf/%s/config/com/channel_lists/default_channel_list and restart all services on the DAQ server" % self.instrument)
+
+    def set_config(self):
+        self.reset()
+        self.client.set_config({"writer": self.writer_config, "backend": self.backend_config, "detector": self.detector_config, "bsread": self.bsread_config})
         
-    def check_still_running(self,time_interval=.5):
+    def check_still_running(self, time_interval=.5):
         cfg = self.get_config()
         running = True
         while running:
-            if not self.get_status()['status'][-7:]=='RUNNING':
+            if not self.get_status()['status'][-7:] == 'RUNNING':
                 running = False
                 break
 #            elif not self.get_status()['status'][-20:]=='BSREAD_STILL_RUNNING':
@@ -346,7 +249,19 @@ class JF_BS_writer:
 #                break
             else:
                 sleep(time_interval)
+    
+    def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True):
+        from jungfrau_utils.scripts.jungfrau_run_pedestals import run as jungfrau_utils_run
+        directory = '/sf/%s/data/p%d/raw/JF_pedestal/' % (self.instrument, self.pgroup)
+        filename = "pedestal_%s.h5" % datetime.now().strftime("%Y%m%d_%H%M")
+        jungfrau_utils_run(self._api_address, filename, directory, self.pgroup, 0.1, self.detector_config["exptime"],
+                                     n_frames, 1, analyze, n_bad_modules, self.instrument, self.jf_name)
 
+        if update_config:
+            self.pede_file = (directory + filename).replace("raw/", "res/").replace(".h5", "_res.h5")
+            print("Pedestal file updated to %s" % self.pede_file)
+        return self.pede_file
+        
     def start(self):
         self.client.start()
         print("start acquisition")
@@ -366,26 +281,48 @@ class JF_BS_writer:
     def wait_for_status(self,*args,**kwargs):
         return self.client.wait_for_status(*args,**kwargs)
 
-    def acquire(self,file_name=None,Npulses=100,JF_factor=2,bsread_padding=50):
-        file_name_JF = file_name + '_JF1p5M.h5'
-        file_name_bsread = file_name+'.h5'
+    def acquire(self, file_name=None, Npulses=100, JF_factor=1, bsread_padding=0):
+        """
+        JF_factor?
+        bsread_padding?
+        """
+        file_rootdir = '/sf/%s/data/p%d/raw/' % (self.instrument, self.pgroup)
+        
+        if file_name is None:
+            # FIXME /dev/null crashes the data taking (h5py can't close /dev/null and crashes)
+            print("Not saving any data, as file_name is not set")
+            file_name_JF = file_rootdir + "DelMe" + '_JF1p5M.h5'
+            file_name_bsread = file_rootdir + "DelMe" + '.h5'
+        else:
+            # FIXME hardcoded
+            file_name_JF = file_rootdir + file_name + '_JF1p5M.h5'
+            file_name_bsread = file_rootdir + file_name + '.h5'
+
+        if self.pgroup == 0:
+            raise ValueError("Please use set_pgroup() to set a pgroup value.")
+
         def acquire():
-            self.detector_config.update({
-                'cycles':Npulses*JF_factor})
+            self.n_frames = Npulses * JF_factor
+            self.update_config()
+            #self.detector_config.update({
+            #    'cycles': n_frames})
             self.writer_config.update({
-                'output_file':file_name_JF,
-                'n_messages':Npulses*JF_factor})
-            self.backend_config.update({
-                'n_frames':Npulses*JF_factor})
+                'output_file': file_name_JF,
+            #    'n_messages': n_frames
+            })
+            #self.backend_config.update({
+            #    'n_frames': n_frames})
             self.bsread_config.update({
                 'output_file':file_name_bsread,
-                'n_pulses':Npulses+bsread_padding
+            #    'Npulses': Npulses + bsread_padding
                 })
             
             self.reset()
             self.set_config()
+            #print(self.get_config())
             self.client.start()
             done = False
+
             while not done:
                 stat = self.get_status()
                 if stat['status'] =='IntegrationStatus.FINISHED':
@@ -398,10 +335,11 @@ class JF_BS_writer:
                     done = True
                 sleep(.1)
 
-        return Acquisition(acquire=acquire,acquisition_kwargs={'file_names':[file_name_bsread,file_name_JF], 'Npulses':Npulses},hold=False)
-        
-    
+        return Acquisition(acquire=acquire, acquisition_kwargs={'file_names': [file_name_bsread, file_name_JF], 'Npulses': Npulses},hold=False)
 
     def wait_done(self):
         self.check_running()
         self.check_still_running()
+
+
+
