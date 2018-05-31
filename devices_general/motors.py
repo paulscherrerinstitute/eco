@@ -124,7 +124,7 @@ class MotorRecord:
             ll_name, hl_name = 'DLLM', 'DHLM'
         if relative_to_present:
             v = self.get_current_value(posType=posType)
-            values = [v-values[0],v-values[1]]
+            values = [v+values[0],v+values[1]]
         self._motor.put(ll_name,values[0])
         self._motor.put(hl_name,values[1])
 
