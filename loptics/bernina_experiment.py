@@ -18,13 +18,18 @@ class Laser_Exp:
             pass
         
         #Waveplate and Delay stage
-        self.wp = MotorRecord(Id+'-M533:MOT')
+        self.wp = MotorRecord(Id+'-M534:MOT')
   
+        self._delayStg = MotorRecord(self.Id+'-M521:MOTOR_1')
+        self.pump_delay = DelayStage(self._delayStg)
+
+        #LAM delay stage
+        self._lam_delayStg = SmarActRecord('SLAAR21-LMTS-LAM11')
+        self.lam_delay = DelayStage(self._lam_delayStg)
+
+
         #SmarAct ID
         self.IdSA = 'SARES23'
-        #self._delayStg = SmarActRecord(self.IdSA+'-ESB17')
-        #self.eos_delay = DelayStage(self._delayStg)
-
 
         ### Mirrors used in the expeirment ###
         try:

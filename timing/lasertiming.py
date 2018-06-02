@@ -5,7 +5,7 @@ import time
 from ..devices_general.utilities import Changer
 
 
-_basefolder = "/sf/bernina/config/src/python/devel/eco/timing"
+_basefolder = "/sf/bernina/config/src/python/eco/timing"
 
 def timeToStr(value,n=12):
     fmt = "%%+.%df" % n

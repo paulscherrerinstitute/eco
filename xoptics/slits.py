@@ -44,7 +44,9 @@ class SlitBlades:
         self.set_vg(height)
 
     def __repr__(self):
-        return '(%s,%s) mm'%(self.get_hg(),self.get_vg())
+        string1 = 'gap: (%g,%g) mm'%(self.get_hg(),self.get_vg())
+        string2 = 'pos: (%g,%g) mm'%(self.get_ho(),self.get_vo())
+        return '\n'.join((string1,string2))
 
 
 class SlitFourBlades:
@@ -103,7 +105,9 @@ class SlitFourBlades:
         self.set_vg(height)
 
     def __str__(self):
-        return '(%g,%g) mm'%(self.get_hg(),self.get_vg())
+        string1 = 'gap: (%g,%g) mm'%(self.get_hg(),self.get_vg())
+        string2 = 'pos: (%g,%g) mm'%(self.get_ho(),self.get_vo())
+        return '\n'.join((string1,string2))
 
     def __repr__(self):
         return self.__str__()
@@ -146,4 +150,6 @@ class SlitPosWidth:
         self.set_vg(height)
 
     def __repr__(self):
-        return '(%s,%s) mm'%(self.get_hg(),self.get_vg())
+        string1 = 'gap: (%g,%g) mm'%(self.get_hg(),self.get_vg())
+        string2 = 'pos: (%g,%g) mm'%(self.get_ho(),self.get_vo())
+        return '\n'.join((string1,string2))

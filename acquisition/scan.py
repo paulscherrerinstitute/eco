@@ -99,11 +99,11 @@ class ScanSimple:
         with open(self.scan_info_filename,'w') as f:
             json.dump(self.scan_info,f,indent=4,sort_keys=True)
 
-    def scanAll(self):
+    def scanAll(self, step_info=None):
         done = False
         try:
             while not done:
-                done = not self.doNextStep()
+                done = not self.doNextStep(step_info=step_info)
         except:
             tb = traceback.format_exc()
         else:
@@ -126,12 +126,12 @@ class Scans:
         self.checker = checker
         self._scan_directories = scan_directories
 
-    def ascan(self,adjustable,start_pos,end_pos,N_intervals,N_pulses,file_name=None,start_immediately=True):
+    def ascan(self,adjustable,start_pos,end_pos,N_intervals,N_pulses,file_name=None,start_immediately=True, step_info = None):
         positions = np.linspace(start_pos,end_pos,N_intervals+1)
         values = [[tp] for tp in positions]
         s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker,scan_directories=self._scan_directories)
         if start_immediately:
-            s.scanAll()
+            s.scanAll(step_info=step_info)
         return s
 
     def rscan(self,adjustable,start_pos,end_pos,N_intervals,N_pulses,file_name=None,start_immediately=True):

@@ -253,8 +253,17 @@ class DIAClient:
     def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True):
         from jungfrau_utils.scripts.jungfrau_run_pedestals import run as jungfrau_utils_run
         directory = '/sf/%s/data/p%d/raw/JF_pedestal/' % (self.instrument, self.pgroup)
+        if not os.path.exists(directory):
+            print("Directory %s not existing, creating it" % directory)
+            os.makedirs(directory)
+        
+        res_dir = directory.replace("/raw/", "/res/")
+        if not os.path.exists(res_dir):
+            print("Directory %s not existing, creating it" % res_dir)
+            os.makedirs(res_dir)
         filename = "pedestal_%s.h5" % datetime.now().strftime("%Y%m%d_%H%M")
-        jungfrau_utils_run(self._api_address, filename, directory, self.pgroup, 0.1, self.detector_config["exptime"],
+        period = 0.04
+        jungfrau_utils_run(self._api_address, filename, directory, self.pgroup, period, self.detector_config["exptime"],
                                      n_frames, 1, analyze, n_bad_modules, self.instrument, self.jf_name)
 
         if update_config:
