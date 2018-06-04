@@ -53,11 +53,11 @@ class table:
         self.pitch = MotorRecord(Id+':W_RX')
         
     def __str__(self):
-        return "Table positions\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mm\nyaw: %s mm" \
+        return "Table positions\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mrad\nyaw: %s mrad" \
             % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm())
 
     def __repr__(self):
-        return "{'x': %s, 'y': %s,'z': %s,'pitch': %s, 'yaw': %s}" \
+        return "{'x': %.4f, 'y': %.4f,'z': %.4f,'pitch': %.2f, 'yaw': %.2f}" \
             % (self.x,self.y,self.z,self.pitch,self.yaw)
 
 class microscope:
