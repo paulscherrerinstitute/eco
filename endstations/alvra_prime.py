@@ -57,7 +57,7 @@ class table:
             % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm())
 
     def __repr__(self):
-        return "{'x': %.4f, 'y': %.4f,'z': %.4f,'pitch': %.2f, 'yaw': %.2f}" \
+        return "{'x': %s, 'y': %s,'z': %s,'pitch': %s, 'yaw': %s}" \
             % (self.x,self.y,self.z,self.pitch,self.yaw)
 
 class microscope:
