@@ -56,11 +56,11 @@ class table:
                 
     def __str__(self):
         return "Table positions\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mrad\nyaw: %s mrad\nmode SP: %s \nstatus: %s" \
-            % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm(),self.modeSP.get(),self.status.get())
+            % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm(),self.modeSP.get(),self.status.get(as_string=True))
 
     def __repr__(self):
         return "{'x': %s, 'y': %s,'z': %s,'pitch': %s, 'yaw': %s, 'mode set point': %s,'status': %s}" \
-            % (self.x,self.y,self.z,self.pitch,self.yaw,self.modeSP.get(),self.status.get())
+            % (self.x,self.y,self.z,self.pitch,self.yaw,self.modeSP.get(),self.status.get(as_string=True))
 
 class microscope:
     def __init__(self,Id,alias_namespace=None):
