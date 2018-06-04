@@ -39,12 +39,12 @@ class table:
         self.Id = Id
 
         ### ADC optical table ###
-        self.x1 = MotorRecord(Id+':MOTOR_X1')
-        self.y1 = MotorRecord(Id+':MOTOR_Y1')
-        self.y2 = MotorRecord(Id+':MOTOR_Y2')
-        self.y3 = MotorRecord(Id+':MOTOR_Y3')
-        self.z1 = MotorRecord(Id+':MOTOR_Z1')
-        self.z2 = MotorRecord(Id+':MOTOR_Z2')
+        self.x.x1 = MotorRecord(Id+':MOTOR_X1')
+        self.y.y1 = MotorRecord(Id+':MOTOR_Y1')
+        self.y.y2 = MotorRecord(Id+':MOTOR_Y2')
+        self.y.y3 = MotorRecord(Id+':MOTOR_Y3')
+        self.z.z1 = MotorRecord(Id+':MOTOR_Z1')
+        self.z.z2 = MotorRecord(Id+':MOTOR_Z2')
         self.x = MotorRecord(Id+':W_X')
         self.y = MotorRecord(Id+':W_Y')
         self.z = MotorRecord(Id+':W_Z')
@@ -55,7 +55,7 @@ class table:
         self.status = PV(Id+':SS_STATUS')
                 
     def __str__(self):
-        return "Table positions\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mrad\nyaw: %s mrad\nmode SP: %s \nstatus: %s" \
+        return "Prime Table position\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mrad\nyaw: %s mrad\nmode SP: %s \nstatus: %s" \
             % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm(),self.modeSP.get(as_string=True),self.status.get())
 
     def __repr__(self):
