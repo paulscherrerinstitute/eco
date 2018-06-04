@@ -51,7 +51,7 @@ class table:
         self.pitch = MotorRecord(Id+':W_RX')
         self.yaw = MotorRecord(Id+':W_RY')
         self.pitch = MotorRecord(Id+':W_RX')
-        self.modeSP = PV(Id+'MODE_SP')
+        self.modeSP = PV(Id+':MODE_SP')
         self.status = PV(Id+':SS_STATUS')
                 
     def __str__(self):
