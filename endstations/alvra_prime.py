@@ -51,15 +51,14 @@ class table:
         self.pitch = MotorRecord(Id+':W_RX')
         self.yaw = MotorRecord(Id+':W_RY')
         self.pitch = MotorRecord(Id+':W_RX')
-        self.status = MotorRecord(Id+':SS_STATUS')
         
     def __str__(self):
-        return "Table positions\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mm\nyaw: %s mm\nstatus: %s" \
-            % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm(),self.status.wm())
+        return "Table positions\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mm\nyaw: %s mm" \
+            % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm())
 
     def __repr__(self):
-        return "{'x': %s, 'y': %s,'z': %s,'pitch': %s, 'yaw': %s, 'status': %s}" \
-            % (self.x,self.y,self.z,self.pitch,self.yaw,self.status)
+        return "{'x': %s, 'y': %s,'z': %s,'pitch': %s, 'yaw': %s}" \
+            % (self.x,self.y,self.z,self.pitch,self.yaw)
 
 class microscope:
     def __init__(self,Id,alias_namespace=None):
