@@ -68,18 +68,18 @@ aliases = {
              'z_und' : 105,
              'desc' : 'Alvra DCM Monochromator',
              'eco_type' : 'xoptics.dcm.Double_Crystal_Mono'},
-        'SAROP11-PSCR106' : {
-             'alias' : 'ProfMono',
-             'z_und' : 106,
-             'desc' : 'Profile Monitor after Mono (PSCR)'},
+#         'SAROP11-PSCR106' : {
+#              'alias' : 'ProfMono',
+#              'z_und' : 106,
+#              'desc' : 'Profile Monitor after Mono (PSCR)'},
          'SAROP11-OOMV108' : {
              'alias' : 'MirrV1',
              'z_und' : 108,
              'desc' : 'Alvra Vertical offset Mirror 1 (OMV108)'},
-        'SAROP11-PSCR109' : {
-             'alias' : 'ProfMirrV1',
-             'z_und' : 109,
-             'desc' : 'Profile Monitor after Vertical Mirror 1 (PSCR)'},
+#         'SAROP11-PSCR109' : {
+#              'alias' : 'ProfMirrV1',
+#              'z_und' : 109,
+#              'desc' : 'Profile Monitor after Vertical Mirror 1 (PSCR)'},
          'SAROP11-OOMV109' : {
              'alias' : 'MirrV2',
              'z_und' : 109,
@@ -105,7 +105,7 @@ aliases = {
              'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
              'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
         'SAROP11-PPRM117' : {
-                'alias' : 'ProfOpt',
+                'alias' : 'ProfOPEnd',
                 'z_und' : 117,
                 'desc' : 'Profile monitor after Optics hutch (PPRM)',
             	'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
