@@ -83,6 +83,8 @@ class ScanSimple:
                 return True
         if callable(step_info):
             tstepinfo = step_info()
+        else:
+            tstepinfo = step_info
         self.values_done.append(self.values_todo.pop(0))
         self.readbacks.append(readbacks_step)
         self.appendScanInfo(values_step,readbacks_step,step_files=filenames,step_info=tstepinfo)
