@@ -45,14 +45,22 @@ class table:
         self.y3 = MotorRecord(Id+':MOTOR_Y3')
         self.z1 = MotorRecord(Id+':MOTOR_Z1')
         self.z2 = MotorRecord(Id+':MOTOR_Z2')
-        
+        self.x = MotorRecord(Id+':W_X')
+        self.y = MotorRecord(Id+':W_Y')
+        self.z = MotorRecord(Id+':W_Z')
+        self.pitch = MotorRecord(Id+':W_RX')
+        self.yaw = MotorRecord(Id+':W_RY')
+        self.pitch = MotorRecord(Id+':W_RX')
+        self.modeSP = PV(Id+':MODE_SP')
+        self.status = PV(Id+':SS_STATUS')
+                
     def __str__(self):
-        return "Table positions\nx1: %s mm\ny1: %s mm\ny2: %s\ny3: %s mm\nz1: %s mm\nz2: %s mm" \
-            % (self.x1.wm(),self.y1.wm(),self.y2.wm(),self.y3.wm(),self.z1.wm(),self.z2.wm())
+        return "Prime Table position\nx: %s mm\ny: %s mm\nz: %s\npitch: %s mrad\nyaw: %s mrad\nmode SP: %s \nstatus: %s" \
+            % (self.x.wm(),self.y.wm(),self.z.wm(),self.pitch.wm(),self.yaw.wm(),self.modeSP.get(as_string=True),self.status.get())
 
     def __repr__(self):
-        return "{'x1': %s, 'y1': %s,'y2': %s,'y3': %s, 'z1': %s, 'z2': %s}" \
-            % (self.x1,self.y1,self.y2,self.y3,self.z1,self.z2)
+        return "{'x': %s, 'y': %s,'z': %s,'pitch': %s, 'yaw': %s, 'mode set point': %s,'status': %s}" \
+            % (self.x,self.y,self.z,self.pitch,self.yaw,self.modeSP.get(as_string=True),self.status.get())
 
 class microscope:
     def __init__(self,Id,alias_namespace=None):

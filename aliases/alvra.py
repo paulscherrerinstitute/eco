@@ -17,7 +17,7 @@ aliases = {
             'z_und' : 50,
             'desc' : 'Gas Monitor Intensity (PBIG)'},
         'SARFE10-PBPS053' : {
-            'alias' : 'MonUnd',
+            'alias' : 'PBPSUnd',
             'z_und' : 44,
             'desc' : 'Intensity position monitor after Undulator (PBPS)'},
         'SARFE10-OATT053' : {
@@ -68,18 +68,18 @@ aliases = {
              'z_und' : 105,
              'desc' : 'Alvra DCM Monochromator',
              'eco_type' : 'xoptics.dcm.Double_Crystal_Mono'},
-        'SAROP11-PSCR106' : {
-             'alias' : 'ProfMono',
-             'z_und' : 106,
-             'desc' : 'Profile Monitor after Mono (PSCR)'},
+#         'SAROP11-PSCR106' : {
+#              'alias' : 'ProfMono',
+#              'z_und' : 106,
+#              'desc' : 'Profile Monitor after Mono (PSCR)'},
          'SAROP11-OOMV108' : {
              'alias' : 'MirrV1',
              'z_und' : 108,
              'desc' : 'Alvra Vertical offset Mirror 1 (OMV108)'},
-        'SAROP11-PSCR109' : {
-             'alias' : 'ProfMirrV1',
-             'z_und' : 109,
-             'desc' : 'Profile Monitor after Vertical Mirror 1 (PSCR)'},
+#         'SAROP11-PSCR109' : {
+#              'alias' : 'ProfMirrV1',
+#              'z_und' : 109,
+#              'desc' : 'Profile Monitor after Vertical Mirror 1 (PSCR)'},
          'SAROP11-OOMV109' : {
              'alias' : 'MirrV2',
              'z_und' : 109,
@@ -90,7 +90,7 @@ aliases = {
              'desc' : 'Profile monitor after Vertical Mirror 2 (PPRM)',
              'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP11-OPPI110' : {
-             'alias' : 'Pick',
+             'alias' : 'PulsePicker',
              'z_und' : 110,
              'desc' : 'X-ray pulse picker'},
         'SAROP11-SBST114' : {
@@ -98,34 +98,32 @@ aliases = {
              'z_und' : 114,
              'desc' : 'Shutter after Optics hutch'},
 ##	Experimental hutch components
-##	The following PBPS isn't implemented yet
-#         'SAROP11-PBPS117' : {
-#              'alias' : 'MonOpt',
-#              'z_und' : 117,
-#              'desc' : 'Intensity/position monitor after Optics hutch (PBPS)',
-#              'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
-#              the following is the trigger for this PBPS, I've changed it to SAROP11 but this definitely isn't correct
-#             'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
+         'SAROP11-PBPS117' : {
+             'alias' : 'PBPSOpt',
+             'z_und' : 117,
+             'desc' : 'Intensity/position monitor after Optics hutch (PBPS)',
+             'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
+             'kwargs' : {'VME_crate':'SAROP11-CVME-PBPS1','link':9} },
         'SAROP11-PPRM117' : {
-                'alias' : 'ProfOpt',
+                'alias' : 'ProfOPEnd',
                 'z_und' : 117,
                 'desc' : 'Profile monitor after Optics hutch (PPRM)',
             	'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP11-PALM118' : {
-                'alias' : 'TimTof',
+                'alias' : 'DelayPALM',
                 'z_und' : 118,
                 'desc' : 'Timing diagnostics THz streaking (PALM)'},
         'SAROP11-PSEN119' : {
-                'alias' : 'TimRef',
+                'alias' : 'DelayPSEN',
                 'z_und' : 119,
                 'desc' : 'Timing diagnostics spectral encoding (PSEN)'},
         'SAROP11-OATT120' : {
-                'alias' : 'Att',
+                'alias' : 'AttExp',
                 'z_und' : 120,
                 'desc' : 'Attenuator Alvra',
                 'eco_type' : 'xoptics.attenuator_aramis.AttenuatorAramis'},
         'SAROP11-OAPU120' : {
-                'alias' : 'SlitAtt',
+                'alias' : 'SlitAttExp',
                 'z_und' : 120,
                 'desc' : 'Slits behind attenuator',
             	'eco_type' : 'xoptics.slits.SlitPosWidth'},
@@ -135,7 +133,7 @@ aliases = {
                 'desc' : 'Alvra beamline reference laser before KBs (OLAS)',
             	'eco_type' : 'xoptics.reflaser.RefLaser_Aramis'},
         'SAROP11-PBPS122' : {
-                'alias' : 'MonAtt',
+                'alias' : 'PBPSAtt',
                 'z_und' : 122,
                 'desc' : 'Intensity/Position monitor after Attenuator',
            		'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
@@ -184,7 +182,7 @@ aliases = {
 				'desc' : 'Prime optical table',
 				'eco_type' : 'endstations.alvra_prime.table'},
 		'SARES11-XMI125' : {
-				'alias' : 'Microscope',
+				'alias' : 'PrimeMicroscope',
 				'z_und' : 127,
 				'desc' : 'Microscope focus and zoom',
 				'eco_type' : 'endstations.alvra_prime.microscope'},
@@ -210,7 +208,7 @@ aliases = {
         'SLAAR01-TSPL-EPL' : {
                 'alias' : 'PhaseShifter',
                 'z_und' : 127,
-                'desc' : 'Experiment laser phase shifter',
+                'desc' : 'Experiment laser phase shifter (Globi)',
                 'eco_type' : 'devices_general.alvratiming.PhaseShifterAramis'},
 #        'http://sf-daq-2:10000' : {
 #                'alias' : 'DetJF',
@@ -229,37 +227,36 @@ aliases = {
          'SARES11-CMOV-SMA691110' : {
                  'alias' : '_prism_gonio',
                  'z_und' : 0,
-                 'desc' : 'PRISM gonio',
+                 'desc' : 'Prime laser prism gonio',
                  'eco_type' : 'devices_general.smaract.SmarActRecord',
                  'device' : 'prism',
                  'axis' : 'gonio'},
          'SARES11-CMOV-SMA691111' : {
                  'alias' : '_prism_trans',
                  'z_und' : 0,
-                 'desc' : 'PRISM trans',
+                 'desc' : 'Prime laser prism trans',
                  'eco_type' : 'devices_general.smaract.SmarActRecord',
                  'device' : 'prism',
                  'axis' : 'trans'},
          'SARES11-CMOV-SMA691112' : {
                  'alias' : '_prism_rot',
                  'z_und' : 0,
-                 'desc' : 'PRISM rotation',
+                 'desc' : 'Prime laser prism rotation',
                  'eco_type' : 'devices_general.smaract.SmarActRecord',
                  'device' : 'prism',    # a virtual stage for eco namespace
                  'axis' : 'rot'},       # a axis of this virtual stage
          'SARES11-CMOV-SMA691113' : {
                  'alias' : '_xmic_gon',
                  'z_und' : 0,
-                 'desc' : 'Mirror of the microscope, gonio',
+                 'desc' : 'Prime microscope mirror gonio',
                  'eco_type' : 'devices_general.smaract.SmarActRecord'},
                  # no 'device' becauses its appended to other stage in
                  #   ..endstations/alvra_prime.py
          'SARES11-CMOV-SMA691114' : {
                  'alias' : '_xmic_rot',
                  'z_und' : 0,
-                 'desc' : 'Mirror of the microscope, rot',
+                 'desc' : 'Prime microscope mirror rotation',
                  'eco_type' : 'devices_general.smaract.SmarActRecord'},
-
          'SLAAR11-LMOT' : {
                  'alias' : 'psen',
                  'z_und' : 0,
