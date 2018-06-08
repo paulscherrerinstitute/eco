@@ -81,10 +81,11 @@ class ScanSimple:
         if self.checker:
             if not self.checker['checker_call'](*self.checker['args'],**self.checker['kwargs']):
                 return True
-
+        if callable(step_info):
+            tstepinfo = step_info()
         self.values_done.append(self.values_todo.pop(0))
         self.readbacks.append(readbacks_step)
-        self.appendScanInfo(values_step,readbacks_step,step_files=filenames,step_info=step_info)
+        self.appendScanInfo(values_step,readbacks_step,step_files=filenames,step_info=tstepinfo)
         self.writeScanInfo()
         self.nextStep +=1
         return True

@@ -142,8 +142,8 @@ scansBsreadLocal = _scan.Scans(data_base_dir='/sf/bernina/config/com/data/scan_d
 bsdaqJF.gain_file = "/sf/bernina/data/p16582/res/gains_I0.h5"
 try:
     import glob
-    path = '/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5'
-    list_of_files = glob.glob('/sf/bernina/data/p17247/res/JF_pedestal/pedestal_*_res.h5')
+    path = '/sf/bernina/data/p17295/res/JF_pedestal/pedestal_*_res.h5'
+    list_of_files = glob.glob('/sf/bernina/data/p17295/res/JF_pedestal/pedestal_*_res.h5')
     latest_file = max(list_of_files, key=os.path.getctime)
     bsdaqJF.pede_file = latest_file
 except (Exception, ArithmeticError) as e:
@@ -153,3 +153,15 @@ except (Exception, ArithmeticError) as e:
 from ..timing.lasertiming import Lxt as _Lxt
 
 lxt = _Lxt()
+
+
+from ..xoptics.dcm import MonoEcolEnergy, EcolEnergy
+monoEcol = MonoEcolEnergy('SAROP21-ODCM098')
+ecol = EcolEnergy('dummy')
+
+
+
+if 'eco_path' in list(exp_config.keys()):
+    pass
+else:
+    eco_path = '/sf/bernina/'+ exp_config['pgroup']

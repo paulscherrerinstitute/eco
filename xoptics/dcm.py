@@ -77,3 +77,80 @@ class Double_Crystal_Mono:
 
     def __call__(self,value):
         self._currentChange = self.changeTo(value)
+
+
+class EcolEnergy:
+    def __init__(self,Id, val='SARCL02-MBND100:P-SET',rb='SARCL02-MBND100:P-READ' ,dmov='SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK'):
+        self.Id = Id
+        self.setter = PV(val)
+        self.readback = PV(rb)
+        self.dmov = PV(dmov)
+        self.done = False
+
+    def get_current_value(self):
+        return self.readback.get()
+
+    def move_and_wait(self,value,checktime=.01,precision=2):
+        curr = self.setter.get()
+        while abs(curr-value)>0.1:
+            curr = self.setter.get()
+            self.setter.put(curr + np.sign(value-curr)*.1)
+            sleep(0.3)
+
+        self.setter.put(value)
+        while abs(self.get_current_value() - value)>precision:
+            sleep(checktime)
+        while not self.dmov.get():
+            #print(self.dmov.get())
+            sleep(checktime)
+    
+    def changeTo(self,value,hold=False):
+        changer = lambda value: self.move_and_wait(value)
+        return Changer(
+                target=value,
+                parent=self,
+                changer=changer,
+                hold=hold,
+                stopper=None)
+
+
+class MonoEcolEnergy:
+    def __init__(self,Id):
+        self.Id = Id
+        self.name = 'energy_collimator'
+        self.dcm = Double_Crystal_Mono(Id)
+        self.ecol = EcolEnergy('ecol_dummy')
+        self.offset = None
+        self.MeVperEV = 0.78333
+        
+
+    def get_current_value(self):
+        return self.dcm.get_current_value()
+
+    def move_and_wait(self,value):
+        ch = [self.dcm.changeTo(value),
+                self.ecol.changeTo(self.calcEcol(value))]
+        for tc in ch:
+            tc.wait()
+
+    def changeTo(self,value,hold=False):
+        changer = lambda value: self.move_and_wait(value)
+        return Changer(
+                target=value,
+                parent=self,
+                changer=changer,
+                hold=hold,
+                stopper=self.dcm.stop)
+
+    def alignOffsets(self):
+        mrb = self.dcm.get_current_value()
+        erb = self.ecol.get_current_value()
+        self.offset = {'dcm':mrb, 'ecol':erb}
+
+    def calcEcol(self,eV):
+        return (eV-self.offset['dcm'])*self.MeVperEV + self.offset['ecol']
+
+
+
+
+

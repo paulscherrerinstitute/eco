@@ -43,6 +43,7 @@ def niceTimeToStr(delay,fmt="%+.0f"):
     
 
 class Storage(object):
+    """ this class is needed to store the offset in files and read in s """
     def __init__(self,pvname):
         self._filename = os.path.join(_basefolder,pvname)
         self.pvname = pvname
@@ -79,11 +80,11 @@ class Storage(object):
         
 
 class Pockels_trigger(PV):
-    """ this class is needed to store the offset in files and read in s """
-    def __init__(self,pv_basename):
-        pvname = pv_basename + "-RB"
+    def __init__(self, pv_get, pv_set, pv_offset_get=None):
+        pvname = pv_get
         PV.__init__(self,pvname)
-        self._pv_setvalue = PV(pv_basename + "-SP") 
+        self._pv_offset_get = PV(pv_offset_get)
+        self._pv_setvalue = PV(pv_set) 
         self._filename = os.path.join(_basefolder,pvname)
         self._storage  = Storage(pvname)
 
@@ -91,7 +92,7 @@ class Pockels_trigger(PV):
     def offset(self): return self._storage.value
     
     def get_dial(self):
-        return np.round(super().get()*1e-6,9)
+        return np.round(super().get()*1e-6,9)+self._pv_offset_get.get()*1e-9 - 7.41e-9
 
     def get(self):
         """ convert time to sec """
@@ -171,8 +172,16 @@ class Phase_shifter(PV):
         return "Phase Shifter: user,dial = %s , %s"%(user,dial)
 
 
-_slicer_gate  = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul3-Delay")
-_sdg1 = Pockels_trigger("SLAAR-LTIM02-EVR0:Pul2-Delay")
+_slicer_gate  = Pockels_trigger(
+        "SLAAR-LTIM02-EVR0:Pul3-Delay-RB", 
+        "SLAAR-LTIM02-EVR0:Pul3_NEW_DELAY", 
+        pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay1-RB")
+
+_sdg1 = Pockels_trigger(
+        "SLAAR-LTIM02-EVR0:Pul2-Delay-RB", 
+        "SLAAR-LTIM02-EVR0:Pul2_NEW_DELAY", 
+        pv_offset_get="SLAAR-LTIM02-EVR0:UnivDlyModule1-Delay0-RB")
+
 _phase_shifter = Phase_shifter("SLAAR02-TSPL-EPL")
 
 
@@ -199,6 +208,7 @@ class Lxt(object):
 
     def set(self,value):
         self.phase_shifter.set(value)
+        self.slicer_gate.set(-value)
         self.sdg1.set(-value)
 
     def get(self):
