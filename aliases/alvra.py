@@ -147,12 +147,12 @@ aliases = {
                 'alias' : 'KbVer',
                 'z_und' : 123,
                 'desc' : 'Alvra vertical KB mirror',
-                'eco_type' : 'xoptics.KB.KB'},
+                'eco_type' : 'xoptics.KBver.KBver'},
         'SAROP11-OKBH124' : {
                 'alias' : 'KbHor',
                 'z_und' : 124,
                 'desc' : 'Alvra horizontal KB mirror',
-                'eco_type' : 'xoptics.KB.KB'},                
+                'eco_type' : 'xoptics.KBhor.KBhor'},                
 #         'SAROP11-PIPS125-1' : {
 #                 'alias' : 'PIPS1',
 #                 'z_und' : 127,

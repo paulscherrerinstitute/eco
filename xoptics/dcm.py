@@ -68,9 +68,15 @@ class Double_Crystal_Mono:
     def wait(self):
         self._currentChange.wait()
         
-    # return string with motor value as variable representation
     def __str__(self):
-        return "Motor is at %s"%self.wm()
+        s = "**Double crystal monochromator**\n\n"
+        motors = "theta gap x roll1 roll2 pitch2".split()
+        for motor in motors:
+            s+= " - %s = %.4f\n" %(motor, getattr(self,motor).wm())
+        pvs = "energy_rbk".split()
+        for pv in pvs:
+            s+= " - %s = %.4f\n" %(pv, getattr(self,pv).value)
+        return s
     
     def __repr__(self):
         return self.__str__()
