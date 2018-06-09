@@ -137,12 +137,12 @@ aliases = {
                 'alias' : 'KbVer',
                 'z_und' : 139,
                 'desc' : 'Vertically focusing Bernina KB mirror',
-                'eco_type' : 'xoptics.KB.KB'},
+                'eco_type' : 'xoptics.KBver.KBver'},
         'SAROP21-OKBH140' : {
                 'alias' : 'KbHor',
                 'z_und' : 140,
                 'desc' : 'Horizontally focusing Bernina KB mirror',
-                'eco_type' : 'xoptics.KB.KB'},
+                'eco_type' : 'xoptics.KBhor.KBhor'},
         'SARES22-GPS' : {
                 'alias' : 'Gps',
                 'z_und' : 142,
