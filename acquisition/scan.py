@@ -150,11 +150,11 @@ class Scans:
         print('Warning: dscan will be deprecated for rscan unless someone explains what it stands for in spec!')
         return self.rscan(*args,**kwargs)
 
-    def ascanList(self,adjustable,posList,N_pulses,file_name=None,start_immediately=True, step_info = None):
+    def ascanList(self,adjustable,posList,N_pulses,file_name=None,start_immediately=True):
         positions = posList
         values = [[tp] for tp in positions]
         s = ScanSimple([adjustable],values,self._default_counters,file_name,Npulses=N_pulses,basepath=self.data_base_dir,scan_info_dir=self.scan_info_dir,checker=self.checker,scan_directories=self._scan_directories)
         if start_immediately:
-            s.scanAll(step_info=step_info)
+            s.scanAll()
         return s
 

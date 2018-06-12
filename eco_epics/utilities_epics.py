@@ -32,31 +32,6 @@ class EnumWrapper:
 
 
 
-class MonitorAccumulator:
-    def __init__(self,pv,attr=None,keywords=['value','timestamp']):
-        self.pv = pv
-        self.attr = attr
-        self.values = []
-        self.keywords = keywords
-
-    def _accumulate(self,**kwargs):
-        self.values.append([kwargs[kw] for kw in self.keywords])
-
-    def accumulate(self):
-        self.pv.add_callback(self._accumulate,self.attr)
-
-    def stop(self):
-        self.pv.remove_callbacks(self.attr)
-
-    def cycle(self):
-        self.stop()
-        d = self.values.copy()
-        self.values = []
-        self.accumulate()
-        return d
-        
-
-
 
 class Positioner:
     def __init__(self,list_of_name_func_tuples):
