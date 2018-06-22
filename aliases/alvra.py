@@ -226,40 +226,40 @@ aliases = {
 #            desc = ''},
          'SARES11-CMOV-SMA691110' : {
                  'alias' : '_prism_gonio',
-                 'z_und' : 0,
+                 'z_und' : 127,
                  'desc' : 'Prime laser prism gonio',
                  'eco_type' : 'devices_general.smaract.SmarActRecord',
                  'device' : 'prism',
                  'axis' : 'gonio'},
          'SARES11-CMOV-SMA691111' : {
                  'alias' : '_prism_trans',
-                 'z_und' : 0,
+                 'z_und' : 127,
                  'desc' : 'Prime laser prism trans',
                  'eco_type' : 'devices_general.smaract.SmarActRecord',
                  'device' : 'prism',
                  'axis' : 'trans'},
          'SARES11-CMOV-SMA691112' : {
                  'alias' : '_prism_rot',
-                 'z_und' : 0,
+                 'z_und' : 127,
                  'desc' : 'Prime laser prism rotation',
                  'eco_type' : 'devices_general.smaract.SmarActRecord',
                  'device' : 'prism',    # a virtual stage for eco namespace
                  'axis' : 'rot'},       # a axis of this virtual stage
          'SARES11-CMOV-SMA691113' : {
                  'alias' : '_xmic_gon',
-                 'z_und' : 0,
+                 'z_und' : 127,
                  'desc' : 'Prime microscope mirror gonio',
                  'eco_type' : 'devices_general.smaract.SmarActRecord'},
                  # no 'device' becauses its appended to other stage in
                  #   ..endstations/alvra_prime.py
          'SARES11-CMOV-SMA691114' : {
                  'alias' : '_xmic_rot',
-                 'z_und' : 0,
+                 'z_und' : 127,
                  'desc' : 'Prime microscope mirror rotation',
                  'eco_type' : 'devices_general.smaract.SmarActRecord'},
          'SLAAR11-LMOT' : {
                  'alias' : 'psen',
-                 'z_und' : 0,
+                 'z_und' : 119,
                  'desc' : 'PSEN timing system',
                  'eco_type' : 'xdiagnostics.PSEN.PSEN'}
       }
