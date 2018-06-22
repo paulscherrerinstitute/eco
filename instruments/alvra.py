@@ -129,7 +129,7 @@ channellist = dict(alvra_channel_list=
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 
 #channellistioxos = dict(alvra_channel_list=
-        parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list_ioxos'))
+#        parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list_ioxos'))
 #ioxosdaq = Ioxostools(default_channel_list=channellistioxos,default_file_path='%s')
 
 channellistPhotonDiag = dict(alvra_channel_list=
