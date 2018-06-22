@@ -13,7 +13,7 @@ import datetime
 
 elog = _Elog(_elog_info['url'],user='gac-alvra',screenshot_directory=_elog_info['screenshot_directory'])
 screenshot = _Screenshot(screenshot_directory=_elog_info['screenshot_directory'])
-stationMessage = _stationMessage('ESA')
+#stationMessage = _stationMessage('ESA')
 
 _smaractappends = []
 
