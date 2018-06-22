@@ -122,15 +122,15 @@ def parseChannelListFile(fina):
 
 from ..acquisition.bs_data import BStools
 from ..acquisition import scan as _scan
-from ..acquisition.ioxos_data import Ioxostools
+#from ..acquisition.ioxos_data import Ioxostools
 
 channellist = dict(alvra_channel_list=
         parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list'))
 bsdaq = BStools(default_channel_list=channellist,default_file_path='%s')
 
-channellistioxos = dict(alvra_channel_list=
+#channellistioxos = dict(alvra_channel_list=
         parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list_ioxos'))
-ioxosdaq = Ioxostools(default_channel_list=channellistioxos,default_file_path='%s')
+#ioxosdaq = Ioxostools(default_channel_list=channellistioxos,default_file_path='%s')
 
 channellistPhotonDiag = dict(alvra_channel_list=
         parseChannelListFile('/sf/alvra/config/com/channel_lists/default_channel_list_PhotonDiag'))
@@ -160,7 +160,7 @@ checker['kwargs'] = {}
 checker['wait_time'] = 3
 
 
-scansIoxos = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[ioxosdaq])
+#scansIoxos = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[ioxosdaq])
 scansJF = _scan.Scans(data_base_dir='scan_data',scan_info_dir='/sf/alvra/data/%s/res/scan_info'%exp_config['pgroup'],default_counters=[bsdaqJF],checker=checker,scan_directories=True)
 scansBsreadLocal = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/scan_data',scan_info_dir='/sf/alvra/config/com/data/scan_info',default_counters=[bsdaq])
 
