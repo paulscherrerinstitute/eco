@@ -205,11 +205,11 @@ aliases = {
 #                 'kwargs' : {'bshost':'sf-daqsync-01.psi.ch','bsport':11173},
 #                     
 #                     },
-#         'SLAAR21-LMOT' : {
-#                 'alias' : 'LasExp',
-#                 'z_und' : 127,
-#                 'desc' : 'Experiment laser optics',
-#                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
+        'SLAAR21-LMOT' : {
+                'alias' : 'LasExp',
+                'z_und' : 127,
+                'desc' : 'Experiment laser optics',
+                'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
         'SLAAR01-TSPL-EPL' : {
                 'alias' : 'phaseShifter',
                 'z_und' : 127,
