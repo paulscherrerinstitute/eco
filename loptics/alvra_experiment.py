@@ -1,5 +1,5 @@
 from ..devices_general.motors import MotorRecord
-from ..devices_general.smaract import SmarActRecord
+#from ..devices_general.smaract import SmarActRecord
 
 from epics import PV
 from ..devices_general.delay_stage import DelayStage
@@ -35,7 +35,7 @@ class Laser_Exp:
         self.palm_delayTime = DelayStage(self.palm_delay)
         
 		self.palmEO_delay = MotorRecord(self.Id+'-M422:MOT')
-        self.palmEO_delayTime = DelayStage(self.palm_delay)
+        self.palmEO_delayTime = DelayStage(self.palmEO_delay)
 
         #PSEN delay stages
         self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
@@ -88,14 +88,14 @@ class Laser_Exp:
 #             pass
 
 
-#     def get_adjustable_positions_str(self):
-#         ostr = '*****SmarAct motor positions******\n'
-# 
-#         for tkey,item in self.__dict__.items():
-#             if hasattr(item,'get_current_value'):
-#                 pos = item.get_current_value()
-#                 ostr += '  ' + tkey.ljust(10) + ' : % 14g\n'%pos
-#         return ostr
+    def get_adjustable_positions_str(self):
+        ostr = '*****SmarAct motor positions******\n'
+
+        for tkey,item in self.__dict__.items():
+            if hasattr(item,'get_current_value'):
+                pos = item.get_current_value()
+                ostr += '  ' + tkey.ljust(10) + ' : % 14g\n'%pos
+        return ostr
                 
 
 

@@ -211,9 +211,9 @@ aliases = {
                 'desc' : 'Experiment laser phase shifter (Globi)',
                 'eco_type' : 'devices_general.alvratiming.PhaseShifterAramis'},
          'SLAAR11-LMOT' : {
-                 'alias' : 'laser',
+                 'alias' : 'Laser',
                  'z_und' : 119,
-                 'desc' : 'Experimental laser components',
+                 'desc' : 'Experimental laser devices',
                  'eco_type' : 'loptics.alvra_experiment.Laser_Exp'},
 #          'SLAAR11-LMOT' : {
 #                  'alias' : 'palm',
