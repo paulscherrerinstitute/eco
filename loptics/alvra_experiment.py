@@ -7,7 +7,7 @@ from ..devices_general.user_to_motor import User_to_motor
 
 class Laser_Exp:
     def __init__(self,Id):
-        self.Id = Id
+		self.Id = Id
 
 
 
@@ -31,15 +31,15 @@ class Laser_Exp:
 #         self.lam_delay = DelayStage(self._lam_delayStg)
 
         #PALM delay stages 
-        self.palm_delay = MotorRecord(self.Id+'-M423:MOT')
-        self.palm_delayTime = DelayStage(self.palm_delay)
+		self.palm_delay = MotorRecord(self.Id+'-M423:MOT')
+		self.palm_delayTime = DelayStage(self.palm_delay)
         
 		self.palmEO_delay = MotorRecord(self.Id+'-M422:MOT')
-        self.palmEO_delayTime = DelayStage(self.palmEO_delay)
+		self.palmEO_delayTime = DelayStage(self.palmEO_delay)
 
         #PSEN delay stages
-        self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
-        self.psen_delayTime = DelayStage(self.psen_delay)
+		self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
+		self.psen_delayTime = DelayStage(self.psen_delay)
 
         #SmarAct ID
 #         self.IdSA = 'SARES23'
@@ -89,7 +89,7 @@ class Laser_Exp:
 
 
     def get_adjustable_positions_str(self):
-        ostr = '*****SmarAct motor positions******\n'
+        ostr = '*****Motor positions******\n'
 
         for tkey,item in self.__dict__.items():
             if hasattr(item,'get_current_value'):
