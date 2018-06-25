@@ -261,7 +261,7 @@ aliases = {
                  'alias' : 'psen',
                  'z_und' : 119,
                  'desc' : 'PSEN timing system',
-                 'eco_type' : 'xdiagnostics.psen.psen}
+                 'eco_type' : 'xdiagnostics.psen.psen'}
       }
 
 
