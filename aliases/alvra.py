@@ -210,6 +210,21 @@ aliases = {
                 'z_und' : 127,
                 'desc' : 'Experiment laser phase shifter (Globi)',
                 'eco_type' : 'devices_general.alvratiming.PhaseShifterAramis'},
+         'SLAAR11-LMOT' : {
+                 'alias' : 'psen',
+                 'z_und' : 119,
+                 'desc' : 'PSEN delay line',
+                 'eco_type' : 'xdiagnostics.psen.psen'},
+         'SLAAR11-LMOT' : {
+                 'alias' : 'palm',
+                 'z_und' : 119,
+                 'desc' : 'PALM delay line',
+                 'eco_type' : 'xdiagnostics.palm.palm'},
+         'SLAAR11-LMOT' : {
+                 'alias' : 'palm_eo',
+                 'z_und' : 119,
+                 'desc' : 'PALM EO-sampling delay line',
+                 'eco_type' : 'xdiagnostics.palm.eo'},
 #        'http://sf-daq-2:10000' : {
 #                'alias' : 'DetJF',
 #                'z_und' : 127,
@@ -256,12 +271,7 @@ aliases = {
                  'alias' : '_xmic_rot',
                  'z_und' : 127,
                  'desc' : 'Prime microscope mirror rotation',
-                 'eco_type' : 'devices_general.smaract.SmarActRecord'},
-         'SLAAR11-LMOT' : {
-                 'alias' : 'psen',
-                 'z_und' : 119,
-                 'desc' : 'PSEN timing system',
-                 'eco_type' : 'xdiagnostics.psen.psen'}
+                 'eco_type' : 'devices_general.smaract.SmarActRecord'}
       }
 
 
