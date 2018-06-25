@@ -211,20 +211,20 @@ aliases = {
                 'desc' : 'Experiment laser phase shifter (Globi)',
                 'eco_type' : 'devices_general.alvratiming.PhaseShifterAramis'},
          'SLAAR11-LMOT' : {
-                 'alias' : 'psen',
+                 'alias' : 'laser',
                  'z_und' : 119,
-                 'desc' : 'PSEN delay line',
-                 'eco_type' : 'xdiagnostics.psen.psen'},
-         'SLAAR11-LMOT' : {
-                 'alias' : 'palm',
-                 'z_und' : 119,
-                 'desc' : 'PALM delay line',
-                 'eco_type' : 'xdiagnostics.palm.palm'},
-         'SLAAR11-LMOT' : {
-                 'alias' : 'palm_eo',
-                 'z_und' : 119,
-                 'desc' : 'PALM EO-sampling delay line',
-                 'eco_type' : 'xdiagnostics.palm.eo'},
+                 'desc' : 'Experimental laser components',
+                 'eco_type' : 'loptics.alvra_experiment.Laser_Exp'},
+#          'SLAAR11-LMOT' : {
+#                  'alias' : 'palm',
+#                  'z_und' : 119,
+#                  'desc' : 'PALM delay line',
+#                  'eco_type' : 'xdiagnostics.palm.palm'},
+#          'SLAAR11-LMOT' : {
+#                  'alias' : 'palm_eo',
+#                  'z_und' : 119,
+#                  'desc' : 'PALM EO-sampling delay line',
+#                  'eco_type' : 'xdiagnostics.palm.eo'},
 #        'http://sf-daq-2:10000' : {
 #                'alias' : 'DetJF',
 #                'z_und' : 127,
