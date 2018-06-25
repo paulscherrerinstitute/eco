@@ -211,7 +211,7 @@ aliases = {
 #                 'desc' : 'Experiment laser optics',
 #                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
         'SLAAR01-TSPL-EPL' : {
-                'alias' : 'PhaseShifter',
+                'alias' : 'phaseShifter',
                 'z_und' : 127,
                 'desc' : 'Experiment laser phase shifter (Globi)',
                 'eco_type' : 'devices_general.alvratiming.PhaseShifterAramis'},

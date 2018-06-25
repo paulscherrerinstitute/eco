@@ -10,15 +10,27 @@ class Laser_Exp:
 		self.Id = Id
 
         #PALM delay stages 
-		self.palm_delay = MotorRecord(self.Id+'-M423:MOT')
-		self.palm_delayTime = DelayStage(self.palm_delay)
+        try:
+			self.palm_delay = MotorRecord(self.Id+'-M423:MOT')
+			self.palm_delayTime = DelayStage(self.palm_delay)
+		except:
+            print('No PALM delay line')
+            pass
         
-		self.palmEO_delay = MotorRecord(self.Id+'-M422:MOT')
-		self.palmEO_delayTime = DelayStage(self.palmEO_delay)
+        try:
+			self.palmEO_delay = MotorRecord(self.Id+'-M422:MOT')
+			self.palmEO_delayTime = DelayStage(self.palmEO_delay)
+		except:
+            print('No PALM-EO sampiing delay line')
+            pass
 
         #PSEN delay stages
-		self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
-		self.psen_delayTime = DelayStage(self.psen_delay)
+        try:
+			self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
+			self.psen_delayTime = DelayStage(self.psen_delay)
+		except:
+            print('No PSEN delay line')
+            pass
 
 	def get_adjustable_positions_str(self):
         ostr = '*****Motor positions******\n'
