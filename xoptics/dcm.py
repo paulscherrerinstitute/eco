@@ -173,7 +173,7 @@ class AlvraDCM_FEL:
 		
 	def status(self):
 		ioc = self.IOCstatus.get()
-		if ioc = 0:
+		if ioc == 0:
 			iocStr = "Soft IOC running"
 		else:
 			iocStr = "Soft IOC not running"
