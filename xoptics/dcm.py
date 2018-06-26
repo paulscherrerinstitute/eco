@@ -171,7 +171,7 @@ class AlvraDCM_FEL:
 		self.dcmMoving = PV('SAROP11-ODCM105:MOVING')	# DCM moving field
 		self.alvraMode = PV('SAROP11-ARAMIS:MODE')		# string Aramis SAROP11 mode
 		
-	def status(self):
+	def __str__(self):
 		ioc = self.IOCstatus.get()
 		if ioc == 0:
 			iocStr = "Soft IOC running"
@@ -210,7 +210,9 @@ class AlvraDCM_FEL:
 				changer=changer,
 				hold=hold,
 				stopper=None)
-                
+				
+	def __repr__(self):
+		return self.__str__()       
 		
 
 
