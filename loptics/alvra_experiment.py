@@ -43,6 +43,14 @@ class Laser_Exp:
         
         #Experimental compressor delay stage
         self.compressorDiag_delay = MotorRecord(self.Id+'-M421:MOT')
+        
+        #Pump A/C delay stage
+        self.pump_autocorr_delay = MotorRecord(self.Id+'-M444:MOT')
+        self.psen_autocorr_delayTime = DelayStage(self.pump_autocorr_delay)
+        
+        #Experiment-FEL timing delay stage
+        self.pump_toFEL_delay = MotorRecord(self.Id+'-M441:MOT')
+        self.psen_toFEL_delayTime = DelayStage(self.pump_toFEL_delay)
 
         #SmarAct ID
 #        self.IdSA = 'SARES23'
@@ -92,7 +100,7 @@ class Laser_Exp:
 
 
     def get_adjustable_positions_str(self):
-        ostr = '*****Laser motor positions******\n'
+        ostr = '*****Laser table motor positions*****\n'
 
         for tkey,item in self.__dict__.items():
             if hasattr(item,'get_current_value'):
