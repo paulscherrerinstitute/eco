@@ -201,14 +201,14 @@ class AlvraDCM_FEL:
 		while dcmMoving.get()==1:
 			sleep(checktime)
 
-    def changeTo(self,value,hold=False):
-        changer = lambda value: self.move_and_wait(value)
-        return Changer(
-                target=value,
-                parent=self,
-                changer=changer,
-                hold=hold,
-                stopper=None)
+	def changeTo(self,value,hold=False):
+		changer = lambda value: self.move_and_wait(value)
+		return Changer(
+				target=value,
+				parent=self,
+				changer=changer,
+				hold=hold,
+				stopper=None)
                 
 		
 
