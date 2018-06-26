@@ -182,13 +182,14 @@ class AlvraDCM_FEL:
 		currEnergy = self.getEnergy.get()
 		
 		s = 'Alvra DCM status\n\n'
-# 		print('%s'%iocStr)
-# 		print('FEL coupling %s'%FELcouplingStr)
-# 		print('Alvra beamline mode %s'%alvraModeStr)
+		print('%s'%iocStr)
+ 		print('FEL coupling %s'%FELcouplingStr)
+ 		print('Alvra beamline mode %s'%alvraModeStr)
+ 		print('Photon energy (eV) %'%currEnergy)
 		s += '%s\n\n'%iocStr
-		s += 'FEL coupling: %s\n\n'%FELcouplingStr
-		s += 'Alvra beamline mode: %s\n\n'%alvraModeStr
-		s += 'Photon energy (eV): %s\n\n'%currEnergy
+		s += 'FEL coupling: %s\n'%FELcouplingStr
+		s += 'Alvra beamline mode: %s\n'%alvraModeStr
+		s += 'Photon energy (eV): %s\n'%currEnergy
 		return s
 		
 	def get_current_value(self):
