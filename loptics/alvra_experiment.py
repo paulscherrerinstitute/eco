@@ -24,8 +24,8 @@ class Laser_Exp:
         self.pump_delayTime = DelayStage(self.pump_delay)
 
         #LAM delay stages
-#         self._lam_delayStg_Smar = SmarActRecord('SLAAR11-LMTS-LAM11')
-#         self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
+        self._lam_delayStg_Smar = SmarActRecord('SLAAR11-LMTS-LAM11')
+        self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 # 
 #         self._lam_delayStg = MotorRecord(self.Id+'-M548:MOT')
 #         self.lam_delay = DelayStage(self._lam_delayStg)
