@@ -33,6 +33,9 @@ class Laser_Exp:
         #PALM delay stages
         self.palm_delay = MotorRecord(self.Id+'-M423:MOT')
         self.palm_delayTime = DelayStage(self.palm_delay)
+        
+        self.palmEO_delay = MotorRecord(self.Id+'-M422:MOT')
+        self.palmEO_delayTime = DelayStage(self.palmEO_delay)
 
         #PSEN delay stage
         self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
