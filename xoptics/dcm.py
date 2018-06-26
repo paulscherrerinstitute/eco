@@ -160,7 +160,7 @@ class MonoEcolEnergy:
 class AlvraDCM_FEL:
 	def __init__(self,Id):
 		self.Id = Id
-		self.name = 'ALvra DCM monochromator coupled to FEL beam'
+		self.name = 'Alvra DCM monochromator coupled to FEL beam'
 		self.IOCstatus = PV('ALVRA:running')			# bool 0 running, 1 not running
 		self.FELcoupling = PV('ALVRA:SetIDON')			# string "Off" or "e-beam"
 		self.setEnergy = PV('ALVRA:SetEnergy')			# float eV
@@ -195,7 +195,7 @@ class AlvraDCM_FEL:
 	def get_current_value(self):
 		return self.getEnergy.get()
 		
-	def move_and_wait(self,value,checktime=.01,precision=0.1):
+	def move_and_wait(self,value,checktime=.01,precision=0.5):
 		self.setEnergy.put(value)
 		while abs(self.ebeamEnergy.get()-self.ebeamEnergySP.get())>precision:
 			sleep(checktime)
