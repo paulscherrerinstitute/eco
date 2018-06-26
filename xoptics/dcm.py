@@ -181,7 +181,7 @@ class AlvraDCM_FEL:
 		alvraModeStr = self.alvraMode.get(as_string=True)
 		currEnergy = self.getEnergy.get()
 		
-		s = 'Alvra DCM-FEL status\n\n'
+		s = '**Alvra DCM-FEL status**\n\n'
 # 		print('%s'%iocStr)
 #  		print('FEL coupling %s'%FELcouplingStr)
 #  		print('Alvra beamline mode %s'%alvraModeStr)
@@ -199,7 +199,7 @@ class AlvraDCM_FEL:
 		self.setEnergy.put(value)
 		while abs(self.ebeamEnergy.get()-self.ebeamEnergySP.get())>precision:
 			sleep(checktime)
-		while dcmMoving.get()==1:
+		while self.dcmMoving.get()==1:
 			sleep(checktime)
 
 	def changeTo(self,value,hold=False):
