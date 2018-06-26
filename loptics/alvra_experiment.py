@@ -24,8 +24,8 @@ class Laser_Exp:
         self.pump_delayTime = DelayStage(self.pump_delay)
 
         #LAM delay stages
-#         self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
-#         self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
+         self._lam_delayStg_Smar = SmarActRecord('SLAAR11-LMTS-LAM11')
+         self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
 # 
 #         self._lam_delayStg = MotorRecord(self.Id+'-M548:MOT')
 #         self.lam_delay = DelayStage(self._lam_delayStg)
@@ -61,32 +61,32 @@ class Laser_Exp:
 #             print('No Smaract THzrot')
 #             pass
 
-        try:
-            self.pump_gonio = SmarActRecord(self.IdSA+'-ESB2')
-        except:
-            print('No Smaract THzGonio')
-            pass
+#         try:
+#             self.pump_gonio = SmarActRecord(self.IdSA+'-ESB2')
+#         except:
+#             print('No Smaract THzGonio')
+#             pass
         
-        try:
-            self.pump_x = SmarActRecord(self.IdSA+'-ESB1')
-        except:
-            print('No Smaract THzZ')
-            pass
+#         try:
+#             self.pump_x = SmarActRecord(self.IdSA+'-ESB1')
+#         except:
+#             print('No Smaract THzZ')
+#             pass
 
-        try:
-            self.par_x = SmarActRecord(self.IdSA+'-ESB5')
-        except:
-            print('No Smaract ParX')
-            pass
-        try:
-            self.par_z = SmarActRecord(self.IdSA+'-ESB4')
-        except:
-            print('No Smaract ParZ')
-            pass
+#         try:
+#             self.par_x = SmarActRecord(self.IdSA+'-ESB5')
+#         except:
+#             print('No Smaract ParX')
+#             pass
+#         try:
+#             self.par_z = SmarActRecord(self.IdSA+'-ESB4')
+#         except:
+#             print('No Smaract ParZ')
+#             pass
 
 
     def get_adjustable_positions_str(self):
-        ostr = '*****SmarAct motor positions******\n'
+        ostr = '*****Laser motor positions******\n'
 
         for tkey,item in self.__dict__.items():
             if hasattr(item,'get_current_value'):
