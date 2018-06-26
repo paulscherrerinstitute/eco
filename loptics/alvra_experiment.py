@@ -23,20 +23,26 @@ class Laser_Exp:
         self.pump_delay = MotorRecord(self.Id+'-M451:MOTOR_1')
         self.pump_delayTime = DelayStage(self.pump_delay)
 
-        #LAM delay stages
-        self._lam_delayStg_Smar = SmarActRecord('SLAAR11-LMTS-LAM11')
-        self.lam_delay_Smar = DelayStage(self._lam_delayStg_Smar)
+        #LAM delay stage
+        self.lam_delay = SmarActRecord('SLAAR11-LMTS-LAM11')
+        self.lam_delayTime = DelayStage(self.lam_delay)
 # 
 #         self._lam_delayStg = MotorRecord(self.Id+'-M548:MOT')
 #         self.lam_delay = DelayStage(self._lam_delayStg)
 
-        #PALM delay stages 
+        #PALM delay stages
         self.palm_delay = MotorRecord(self.Id+'-M423:MOT')
         self.palm_delayTime = DelayStage(self.palm_delay)
 
-        #PSEN delay stages
+        #PSEN delay stage
         self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
         self.psen_delayTime = DelayStage(self.psen_delay)
+        
+        #Experimental compressor delay stage
+        self.compressorExp_delay = MotorRecord(self.Id+'-M431:MOT')
+        
+        #Experimental compressor delay stage
+        self.compressorDiag_delay = MotorRecord(self.Id+'-M421:MOT')
 
         #SmarAct ID
 #        self.IdSA = 'SARES23'
