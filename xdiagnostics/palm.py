@@ -9,7 +9,9 @@ class palm:
   
         self.delay = MotorRecord(self.Id+'-M423:MOT')
         self.delayTime = DelayStage(self.delay)
-
+		
+		self.delay2 = MotorRecord(self.Id+'-M422:MOT')
+        self.delayTime2 = DelayStage(self.delay)
 
     def get_adjustable_positions_str(self):
         ostr = '***** PALM motor positions ******\n'
