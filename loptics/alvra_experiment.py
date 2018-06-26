@@ -31,12 +31,12 @@ class Laser_Exp:
 #         self.lam_delay = DelayStage(self._lam_delayStg)
 
         #PALM delay stages 
-        self._palm_delayStg = MotorRecord(self.Id+'-M423:MOT')
-        self.palm_delay = DelayStage(self._palm_delayStg)
+        self.palm_delay = MotorRecord(self.Id+'-M423:MOT')
+        self.palm_delayTime = DelayStage(self._palm_delay)
 
         #PSEN delay stages
-        self._psen_delayStg = MotorRecord(self.Id+'-M424:MOT')
-        self.psen_delay = DelayStage(self._psen_delayStg)
+        self.psen_delay = MotorRecord(self.Id+'-M424:MOT')
+        self.psen_delayTime = DelayStage(self._psen_delay)
 
         #SmarAct ID
         self.IdSA = 'SARES23'
