@@ -178,17 +178,17 @@ class AlvraDCM_FEL:
 		else:
 			iocStr = "Soft IOC not running"
 		FELcouplingStr = self.FELcoupling.get()
-		alvraModeStr = self.alvraMode.get()
+		alvraModeStr = self.alvraMode.get(as_string=True)
 		currEnergy = self.getEnergy.get()
 		
-		s = 'Alvra DCM status\n'
+		s = 'Alvra DCM status\n\n'
 # 		print('%s'%iocStr)
 # 		print('FEL coupling %s'%FELcouplingStr)
 # 		print('Alvra beamline mode %s'%alvraModeStr)
-		s += '%s\n'%iocStr
-		s += 'FEL coupling: %s\n'%FELcouplingStr
-		s += 'Alvra beamline mode: %s\n'%alvraModeStr
-		s += 'Photon energy (eV): %s\n'%currEnergy
+		s += '%s\n\n'%iocStr
+		s += 'FEL coupling: %s\n\n'%FELcouplingStr
+		s += 'Alvra beamline mode: %s\n\n'%alvraModeStr
+		s += 'Photon energy (eV): %s\n\n'%currEnergy
 		return s
 		
 	def get_current_value(self):
