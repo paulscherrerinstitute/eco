@@ -11,11 +11,11 @@ class Laser_Exp:
 
 
 
-        try:
-            self.lensx = MotorRecord('SARES20-EXP:MOT_DIODE')
-        except:
-            print('No owis lens x motor')
-            pass
+#         try:
+#             self.lensx = MotorRecord('SARES20-EXP:MOT_DIODE')
+#         except:
+#             print('No owis lens x motor')
+#             pass
         
         #Waveplate and Delay stage
         self.wp = MotorRecord(Id+'-M442:MOT')
@@ -39,20 +39,20 @@ class Laser_Exp:
         self.psen_delayTime = DelayStage(self.psen_delay)
 
         #SmarAct ID
-        self.IdSA = 'SARES23'
+#        self.IdSA = 'SARES23'
 
         ### Mirrors used in the expeirment ###
-        try:
-            self.eos_rot = SmarActRecord(self.IdSA+'-ESB18')
-        except:
-            print('No Smaract EOSrot')
-            pass
+#         try:
+#             self.eos_rot = SmarActRecord(self.IdSA+'-ESB18')
+#         except:
+#             print('No Smaract EOSrot')
+#             pass
 
-        try:
-            self.eos_gonio = SmarActRecord(self.IdSA+'-ESB3')
-        except:
-            print('No Smaract EOSGonio')
-            pass
+#         try:
+#             self.eos_gonio = SmarActRecord(self.IdSA+'-ESB3')
+#         except:
+#             print('No Smaract EOSGonio')
+#             pass
 
 #         try:
 #             self._pump_rot = SmarActRecord(self.IdSA+'-ESB16')
