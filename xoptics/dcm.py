@@ -195,7 +195,7 @@ class AlvraDCM_FEL:
 	def get_current_value(self):
 		return self.getEnergy.get()
 		
-	def move_and_wait(self,value,checktime=.01,precision=0.5):
+	def move_and_wait(self,value,checktime=.1,precision=0.5):
 		self.setEnergy.put(value)
 		while abs(self.ebeamEnergy.get()-self.ebeamEnergySP.get())>precision:
 			sleep(checktime)
