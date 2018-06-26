@@ -20,8 +20,8 @@ class Laser_Exp:
         #Waveplate and Delay stage
         self.wp = MotorRecord(Id+'-M442:MOT')
   
-        self._pump_delayStg = MotorRecord(self.Id+'-M451:MOTOR_1')
-        self.pump_delay = DelayStage(self._pump_delayStg)
+        self.pump_delay = MotorRecord(self.Id+'-M451:MOTOR_1')
+        self.pump_delayTime = DelayStage(self.pump_delay)
 
         #LAM delay stages
 #         self._lam_delayStg_Smar = SmarActRecord('SLAAR21-LMTS-LAM11')
