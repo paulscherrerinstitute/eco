@@ -157,6 +157,60 @@ class MonoEcolEnergy:
         return (eV-self.offset['dcm'])*self.MeVperEV + self.offset['ecol']
 
 
+class AlvraDCM_FEL:
+	def __init__(self,Id):
+		self.Id = Id
+		self.name = 'ALvra DCM monochromator coupled to FEL beam'
+		self.IOCstatus = PV('ALVRA:running')			# bool 0 running, 1 not running
+		self.FELcoupling = PV('ALVRA:SetIDON')			# string "Off" or "e-beam"
+		self.setEnergy = PV('ALVRA:SetEnergy')			# float eV
+		self.getEnergy = PV('SAROP11-ARAMIS:ENERGY')	# float eV
+		self.ebeamEnergy = PV('SARCL02-MBND100:P-READ')	# float MeV/c
+		self.ebeamEnergySP = PV('ALVRA:Energy_SP')		# float MeV
+		self.dcmStop = PV('SAROP11-ODCM105:STOP.PROC')	# stop the DCM motors
+		self.dcmMoving = PV('SAROP11-ODCM105:MOVING')	# DCM moving field
+		self.alvraMode = PV('SAROP11-ARAMIS:MODE')		# string Aramis SAROP11 mode
+		
+	def status(self):
+		ioc = self.IOCstatus.get()
+		if ioc = 0:
+			iocStr = "Soft IOC running"
+		else:
+			iocStr = "Soft IOC not running"
+		FELcouplingStr = self.FELcoupling.get()
+		alvraModeStr = self.alvraMode.get()
+		currEnergy = self.getEnergy.get()
+		
+		s = 'Alvra DCM status\n'
+# 		print('%s'%iocStr)
+# 		print('FEL coupling %s'%FELcouplingStr)
+# 		print('Alvra beamline mode %s'%alvraModeStr)
+		s += '%s\n'%iocStr
+		s += 'FEL coupling: %s\n'%FELcouplingStr
+		s += 'Alvra beamline mode: %s\n'%alvraModeStr
+		s += 'Photon energy (eV): %s\n'%currEnergy
+		return s
+		
+	def get_current_value(self):
+		return self.getEnergy.get()
+		
 
+    def move_and_wait(self,value,checktime=.01,precision=0.1):
+        self.setEnergy.put(value)
+        while abs(self.ebeamEnergy.get()-self.ebeamEnergySP.get())>precision:
+            sleep(checktime)
+        while dcmMoving.get()=1:
+            sleep(checktime)
+
+    def changeTo(self,value,hold=False):
+        changer = lambda value: self.move_and_wait(value)
+        return Changer(
+                target=value,
+                parent=self,
+                changer=changer,
+                hold=hold,
+                stopper=None)
+                
+		
 
 

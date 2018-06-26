@@ -168,5 +168,7 @@ scansPhotonDiag = _scan.Scans(data_base_dir='/sf/alvra/config/com/data/photon_di
 
 ###########  ADHOC IMPLEMENTED  ########################
 from ..timing.alvralasertiming import Lxt as _Lxt
-
 lxt = _Lxt()
+
+from ..xoptics.dcm import AlvraDCM_FEL
+monoFEL = AlvraDCM_FEL('SAROP11-ODCM105')
