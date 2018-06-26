@@ -220,11 +220,11 @@ aliases = {
 #                 'z_und' : 127,
 #                 'desc' : 'Experiment laser optics',
 #                 'eco_type' : 'loptics.alvra_experiment.Laser_Exp'},
-#         'SLAAR21-LMOT' : {
-#                 'alias' : 'Las',
-#                 'z_und' : 142,
-#                 'desc' : 'Experiment laser optics',
-#                 'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
+        'SLAAR21-LMOT' : {
+                'alias' : 'Las',
+                'z_und' : 142,
+                'desc' : 'Experiment laser optics',
+                'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
          'SLAAR11-LMOT' : {
                  'alias' : 'palm',
                  'z_und' : 119,
