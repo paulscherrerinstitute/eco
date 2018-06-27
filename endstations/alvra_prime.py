@@ -114,7 +114,7 @@ class vacuum:
 		currSamTurbo = self.sampleTurbo.get()
 		
 		s = '**Prime chamber vacuum status**\n\n'
-		s += '%s'%regStatusStr
+		s += 'Regulation mode: %s\n'%regStatusStr
 		s += '%s\n'%valveStr
 		s += 'Spectrometer pressure: %.3g mbar\n'%currSpecP
 		s += 'Spectrometer Turbo pump: %s Hz\n'%currSpecTurbo
