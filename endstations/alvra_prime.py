@@ -83,3 +83,9 @@ class microscope:
             
 # prism (as a SmarAct-only stage) is defined purely in ../aliases/alvra.py
             
+class vacuum:
+	def __init__(self,Id):
+		self.Id.Id
+		
+		# Vacuum PVs for Prime chamber
+		self.spectrometerVac = PV('SARES11-VMFR126-600:PRESSURE')

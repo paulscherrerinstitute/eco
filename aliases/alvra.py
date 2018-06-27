@@ -230,16 +230,16 @@ aliases = {
                 'z_und' : 125,
                 'desc' : '4.5M Jungfrau detector',
                 'eco_type' : 'devices_general.alvradetectors.DIAClient'},
-#        'http://sf-daq-2:10000' : {
-#                'alias' : 'DetJF',
-#                'z_und' : 127,
-#                'desc' : '4.5M Jungfrau detector',
-#                'eco_type' : 'devices_general.alvradetectors.JF'},
-#         'SLAAR21-LTIM01-EVR0' : {
-#                 'alias' : 'LaserShutter',
-#                 'z_und' : 127,
-#                 'desc' : 'Laser Shutter',
-#                 'eco_type' : 'loptics.laser_shutter.laser_shutter'},
+       'SARES11-V' : {
+               'alias' : 'vacuum',
+               'z_und' : 127,
+               'desc' : 'Prime vacuum system',
+               'eco_type' : 'endstations.alvra_prime.vacuum'},
+        'SLAAR11-LTIM01-EVR0' : {
+                'alias' : 'laserShutter',
+                'z_und' : 122,
+                'desc' : 'Laser Shutter',
+                'eco_type' : 'loptics.laser_shutter.laser_shutter'},
 #         = dict(
 #            alias = ''
 #            z_und = 
