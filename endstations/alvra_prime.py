@@ -88,4 +88,41 @@ class vacuum:
 		self.Id.Id
 		
 		# Vacuum PVs for Prime chamber
-		self.spectrometerVac = PV('SARES11-VMFR126-600:PRESSURE')
+		self.spectrometerP = PV(Id + 'MFR126-600:PRESSURE')
+		self.intermediateP = PV(Id + 'MCP125-510:PRESSURE')
+		self.sampleP = PV(Id + 'MCP125-410:PRESSURE')
+		self.pDiff = PV('SARES11-EVSP-010:DIFFERENT')
+		self.regulationStatus = PV('SARES11-EVGA-STM010:ACTIV_MODE')
+		self.spectrometerTurbo = PV(Id + 'PTM125-600:HZ')
+		self.intermediateTurbo = PV(Id + 'PTM125-400:HZ')
+		self.sampleTurbo = PV(Id + 'PTM125-500:HZ')
+		self.KBvalve = PV(Id + 'VPG124-230:PLC_OPEN')
+		
+	def __str__(self):
+		valveStr = self.KBvalve.get()
+		if ioc == 0:
+			iocStr = "KB valve closed"
+		else:
+			iocStr = "KB valve open"
+		currSpecP = self.spectrometerP.get()
+		currInterP = self.intermediateP.get()
+		currSamP = self.sampleP.get()
+		currPDiff = self.pDiff.get()
+		regStatusStr = self.regulationStatus.get(as_string=True)
+		currSpecTurbo = self.spectrometerTurbo.get()
+		currInterTurbo = self.intermediateTurbo.get()
+		currSamTurbo = self.sampleTurbo.get()
+		
+		s = '**Prime chamber vacuum status**\n\n'
+		s += '%s\n'%valveStr
+		s += 'Spectrometer pressure: %s mbar\n'%currSpecP
+		s += 'Spectrometer Turbo pump: %s Hz'%currSpecTurbo
+		s += 'Intermediate pressure: %s mbar\n'%currInterP
+		s += 'Intermediate Turbo pump: %s Hz'%currInterTurbo
+		s += 'Sample pressure: %s mbar\n'%currSamP
+		s += 'Sample Turbo pump: %s Hz'%currSamTurbo
+		s += 'Intermediate/Sample pressure difference: %s mbar\n'%currPDiff
+		return s
+		
+	def __repr__(self):
+		return self.__str__()
