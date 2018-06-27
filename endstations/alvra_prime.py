@@ -85,7 +85,7 @@ class microscope:
             
 class vacuum:
 	def __init__(self,Id):
-		self.Id.Id
+		self.Id = Id
 		
 		# Vacuum PVs for Prime chamber
 		self.spectrometerP = PV(Id + 'MFR126-600:PRESSURE')
