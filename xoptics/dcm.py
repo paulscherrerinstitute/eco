@@ -170,6 +170,7 @@ class AlvraDCM_FEL:
 		self.dcmStop = PV('SAROP11-ODCM105:STOP.PROC')	# stop the DCM motors
 		self.dcmMoving = PV('SAROP11-ODCM105:MOVING')	# DCM moving field
 		self.alvraMode = PV('SAROP11-ARAMIS:MODE')		# string Aramis SAROP11 mode
+		self.ebeamOK = PV('SFB_BEAM_ENERGY_ECOL:SUM-ERROR-OK')	# is ebeam no longer changing
 		
 	def __str__(self):
 		ioc = self.IOCstatus.get()
@@ -189,7 +190,8 @@ class AlvraDCM_FEL:
 		s += '%s\n'%iocStr
 		s += 'FEL coupling: %s\n'%FELcouplingStr
 		s += 'Alvra beamline mode: %s\n'%alvraModeStr
-		s += 'Photon energy (eV): %s\n'%currEnergy
+		s += 'Photon energy: %.2f eV\n'%currEnergy
+		s+= 'Electron energy: %.2f MeV\n'%ebeamEnergy
 		return s
 		
 	def get_current_value(self):
@@ -197,6 +199,8 @@ class AlvraDCM_FEL:
 		
 	def move_and_wait(self,value,checktime=.1,precision=0.5):
 		self.setEnergy.put(value)
+		while self.ebeamOK.get()==0:
+			sleep(checktime)
 		while abs(self.ebeamEnergy.get()-self.ebeamEnergySP.get())>precision:
 			sleep(checktime)
 		while self.dcmMoving.get()==1:
