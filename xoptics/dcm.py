@@ -181,6 +181,7 @@ class AlvraDCM_FEL:
 		FELcouplingStr = self.FELcoupling.get(as_string=True)
 		alvraModeStr = self.alvraMode.get(as_string=True)
 		currEnergy = self.getEnergy.get()
+		currebeamEnergy = self.ebeamEnergy.get()
 		
 		s = '**Alvra DCM-FEL status**\n\n'
 # 		print('%s'%iocStr)
@@ -191,7 +192,7 @@ class AlvraDCM_FEL:
 		s += 'FEL coupling: %s\n'%FELcouplingStr
 		s += 'Alvra beamline mode: %s\n'%alvraModeStr
 		s += 'Photon energy: %.2f eV\n'%currEnergy
-		s+= 'Electron energy: %.2f MeV\n'%ebeamEnergy
+		s += 'Electron energy: %.2f MeV\n'%currebeamEnergy
 		return s
 		
 	def get_current_value(self):
