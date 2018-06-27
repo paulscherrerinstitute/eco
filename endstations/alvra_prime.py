@@ -99,11 +99,11 @@ class vacuum:
 		self.KBvalve = PV(Id + 'VPG124-230:PLC_OPEN')
 		
 	def __str__(self):
-		valveStr = self.KBvalve.get()
-		if ioc == 0:
-			iocStr = "KB valve closed"
+		valve = self.KBvalve.get()
+		if valve == 0:
+			valveStr = "KB valve closed"
 		else:
-			iocStr = "KB valve open"
+			valveStr = "KB valve open"
 		currSpecP = self.spectrometerP.get()
 		currInterP = self.intermediateP.get()
 		currSamP = self.sampleP.get()
