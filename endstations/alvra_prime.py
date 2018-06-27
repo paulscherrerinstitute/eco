@@ -115,13 +115,13 @@ class vacuum:
 		
 		s = '**Prime chamber vacuum status**\n\n'
 		s += '%s\n'%valveStr
-		s += 'Spectrometer pressure: %g mbar\n'%currSpecP
+		s += 'Spectrometer pressure: %s mbar\n'%currSpecP
 		s += 'Spectrometer Turbo pump: %s Hz\n'%currSpecTurbo
-		s += 'Intermediate pressure: %g mbar\n'%currInterP
+		s += 'Intermediate pressure: %s mbar\n'%currInterP
 		s += 'Intermediate Turbo pump: %s Hz\n'%currInterTurbo
-		s += 'Sample pressure: %g mbar\n'%currSamP
+		s += 'Sample pressure: %s mbar\n'%currSamP
 		s += 'Sample Turbo pump: %s Hz\n'%currSamTurbo
-		s += 'Intermediate/Sample pressure difference: %g mbar\n'%currPDiff
+		s += 'Intermediate/Sample pressure difference: %s mbar\n'%currPDiff
 		return s
 		
 	def __repr__(self):
