@@ -225,6 +225,11 @@ aliases = {
 #                  'z_und' : 119,
 #                  'desc' : 'PALM EO-sampling delay line',
 #                  'eco_type' : 'xdiagnostics.palm.eo'},
+        'http://sf-daq-4:10000' : {
+                'alias' : 'DetJF',
+                'z_und' : 125,
+                'desc' : '4.5M Jungfrau detector',
+                'eco_type' : 'devices_general.alvradetectors.DIAClient'},
 #        'http://sf-daq-2:10000' : {
 #                'alias' : 'DetJF',
 #                'z_und' : 127,
