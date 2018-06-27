@@ -88,7 +88,7 @@ class vacuum:
 		self.Id = Id
 		
 		# Vacuum PVs for Prime chamber
-		self.spectrometerP = PV(Id + 'MFR126-600:PRESSURE')
+		self.spectrometerP = PV(Id + 'MFR125-600:PRESSURE')
 		self.intermediateP = PV(Id + 'MCP125-510:PRESSURE')
 		self.sampleP = PV(Id + 'MCP125-410:PRESSURE')
 		self.pDiff = PV('SARES11-EVSP-010:DIFFERENT')
@@ -114,14 +114,15 @@ class vacuum:
 		currSamTurbo = self.sampleTurbo.get()
 		
 		s = '**Prime chamber vacuum status**\n\n'
+		s += '%s'%regStatusStr
 		s += '%s\n'%valveStr
-		s += 'Spectrometer pressure: %s mbar\n'%currSpecP
+		s += 'Spectrometer pressure: %.3g mbar\n'%currSpecP
 		s += 'Spectrometer Turbo pump: %s Hz\n'%currSpecTurbo
-		s += 'Intermediate pressure: %s mbar\n'%currInterP
+		s += 'Intermediate pressure: %.3g mbar\n'%currInterP
 		s += 'Intermediate Turbo pump: %s Hz\n'%currInterTurbo
-		s += 'Sample pressure: %s mbar\n'%currSamP
+		s += 'Sample pressure: %.3g mbar\n'%currSamP
 		s += 'Sample Turbo pump: %s Hz\n'%currSamTurbo
-		s += 'Intermediate/Sample pressure difference: %s mbar\n'%currPDiff
+		s += 'Intermediate/Sample pressure difference: %.3g mbar\n'%currPDiff
 		return s
 		
 	def __repr__(self):
