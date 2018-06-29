@@ -18,7 +18,7 @@ class laser_shutter:
             return "unknown"
 
     def open(self):
-        caput(self.Id+":FrontUnivOut3_SOURCE",4)
+        caput(self.Id+":FrontUnivOut5_SOURCE",4)
 
     def close(self):
-        caput(self.Id+":FrontUnivOut3_SOURCE",3)
+        caput(self.Id+":FrontUnivOut5_SOURCE",3)
