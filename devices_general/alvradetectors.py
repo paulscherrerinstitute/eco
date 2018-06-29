@@ -417,7 +417,7 @@ class DiodeDigitizer:
 #             file_name_bsread = file_rootdir + file_name + '.h5'
 # 
 #         if self.pgroup == 0:
-#             raise ValueError("Please use set_pgroup() to set a pgroup value.")
+#             raise ValuepError("Please use set_pgroup() to set a pgroup value.")
 # 
 #         def acquire():
 #             self.n_frames = Npulses * JF_factor
@@ -519,8 +519,8 @@ class DIAClient:
         self.detector_config = {
             "timing": "trigger",
 
-            # FIXME: HARDCODED
-            "exptime": 0.000010, 
+            # FIXME: HARDCODED 
+            "exptime": 0.000005, 
             "cycles": self.n_frames,
             #"delay"  : 0.001992,
             "frames" : 1,
@@ -580,7 +580,7 @@ class DIAClient:
     
     def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True):
         from jungfrau_utils.scripts.jungfrau_run_pedestals import run as jungfrau_utils_run
-        directory = '/sf/%s/data/p%d/raw/JF_pedestal/' % (self.instrument, self.pgroup)
+        directory = '/sf/%s/data/p%d/raw/' % (self.instrument, self.pgroup)
         if not os.path.exists(directory):
             print("Directory %s not existing, creating it" % directory)
             os.makedirs(directory)
@@ -590,7 +590,7 @@ class DIAClient:
             print("Directory %s not existing, creating it" % res_dir)
             os.makedirs(res_dir)
         filename = "pedestal_%s.h5" % datetime.now().strftime("%Y%m%d_%H%M")
-        period = 0.04
+        period = 0.02	# for 25 Hz this is 0.04, for 10 Hz this 0.1
         jungfrau_utils_run(self._api_address, filename, directory, self.pgroup, period, self.detector_config["exptime"],
                                      n_frames, 1, analyze, n_bad_modules, self.instrument, self.jf_name)
 
