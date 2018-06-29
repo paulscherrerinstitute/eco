@@ -460,7 +460,7 @@ class DiodeDigitizer:
 #         self.check_still_running()
 
 class DIAClient:
-    def __init__(self, Id, instrument=None, api_address = "http://sf-daq-4:10000", jf_name="JF_4.5M"):
+    def __init__(self, Id, instrument=None, api_address = "http://sf-daq-alvra:10000", jf_name="JF_4.5M"):
         self.Id = Id
         self._api_address = api_address 
         self.client = DetectorIntegrationClient(api_address)

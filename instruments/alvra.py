@@ -137,7 +137,7 @@ channellistPhotonDiag = dict(alvra_channel_list=
 bsdaqPhotonDiag = BStools(default_channel_list=channellistPhotonDiag,default_file_path='%s')
  
 from eco.devices_general.alvradetectors import DIAClient
-bsdaqJF = DIAClient('bsdaqJF', instrument="alvra", api_address = "http://sf-daq-4:10000")
+bsdaqJF = DIAClient('bsdaqJF', instrument="alvra", api_address = "http://sf-daq-alvra:10000")
 
 try:
     bsdaqJF.pgroup = int(exp_config['pgroup'][1:])
