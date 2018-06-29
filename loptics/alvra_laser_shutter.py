@@ -9,16 +9,21 @@ class laser_shutter:
     
     def get_status(self):
         Id = self.Id
-        status = caget(Id+":FrontUnivOut5_SOURCE")
-        if status == 4:
+        status = caget(Id+":FrontUnivOut5_Ena-SP")
+        if status == 0:
             return 'open'
-        elif status == 3:
+        elif status == 1:
             return 'close'
         else:
             return "unknown"
 
     def open(self):
         caput(self.Id+":FrontUnivOut5_SOURCE",4)
+        caput(self.Id+":FrontUnivOut5_SOURCE2",3)
+        caput(self.Id+":FrontUnivOut5-Ena-SP",0)
 
     def close(self):
-        caput(self.Id+":FrontUnivOut5_SOURCE",3)
+        caput(self.Id+":FrontUnivOut5_SOURCE",4)
+        caput(self.Id+":FrontUnivOut5_SOURCE2",3)
+		caput(self.Id+":FrontUnivOut5-Ena-SP",1)
+		
