@@ -9,7 +9,7 @@ class laser_shutter:
     
 	def get_status(self):
 		Id = self.Id
-		status = caget(Id+":FrontUnivOut5_Ena-SP")
+		status = caget(Id+":FrontUnivOut5-Ena-SP")
 		if status == 0:
 			return 'open'
 		elif status == 1:
