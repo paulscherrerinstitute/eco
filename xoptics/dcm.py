@@ -211,7 +211,7 @@ class AlvraDCM_FEL:
 		return self._getEnergy.get()
 		
 	def move_and_wait(self,value,checktime=.1,precision=0.5):
-		self.FELcoupling.put(1)			# ensure the FEL coupling is turned on
+		self._FELcoupling.put(1)			# ensure the FEL coupling is turned on
 		self._setEnergy.put(value)
 # 		while self.ebeamOK.get()==0:
 # 			sleep(checktime)
