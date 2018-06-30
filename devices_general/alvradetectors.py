@@ -460,7 +460,7 @@ class DiodeDigitizer:
 #         self.check_still_running()
 
 class DIAClient:
-    def __init__(self, Id, instrument=None, api_address = "http://sf-daq-alvra:10000", jf_name="JF_4.5M"):
+    def __init__(self, Id, instrument=None, api_address = None, jf_name=None):
         self.Id = Id
         self._api_address = api_address 
         self.client = DetectorIntegrationClient(api_address)
@@ -580,7 +580,7 @@ class DIAClient:
     
     def take_pedestal(self, n_frames, analyze=True, n_bad_modules=0, update_config=True):
         from jungfrau_utils.scripts.jungfrau_run_pedestals import run as jungfrau_utils_run
-        directory = '/sf/%s/data/p%d/raw/' % (self.instrument, self.pgroup)
+        directory = '/sf/%s/data/p%d/raw' % (self.instrument, self.pgroup)
         if not os.path.exists(directory):
             print("Directory %s not existing, creating it" % directory)
             os.makedirs(directory)
