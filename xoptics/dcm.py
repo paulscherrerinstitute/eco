@@ -178,7 +178,7 @@ class AlvraDCM_FEL:
 		self.ebeamCalib2 = PV('SGE-OP2E-ARAMIS:PH2E_Y2')		# electron energy calibration high calibration point
 		
 	def __str__(self):
-		ioc = self.IOCstatus.get()
+#		ioc = self.IOCstatus.get()
 # 		if ioc == 0:
 # 			iocStr = "Soft IOC running"
 # 		else:
