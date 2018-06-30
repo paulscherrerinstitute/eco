@@ -219,7 +219,11 @@ class AlvraDCM_FEL:
 # 			sleep(checktime)
 # 		while self.dcmMoving.get()==1:
 # 			sleep(checktime)
+<<<<<<< Updated upstream
 		while self.energyChanging == 1
+=======
+		while self.energyChanging == 1:
+>>>>>>> Stashed changes
 			sleep(checktime)
 
 
