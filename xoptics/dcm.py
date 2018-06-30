@@ -203,8 +203,8 @@ class AlvraDCM_FEL:
 		s += 'Photon energy: %.2f eV\n'%currEnergy
 		s += 'Electron energy: %.2f MeV\n'%currebeamEnergy
 		s += 'Calibration set points:\n'
-		s += 'Low: Photon %.2f, Electron %.2f'%(photCalib1Str, ebeamCalib1Str)
-		s += 'High: Photon %.2f, Electron %.2f'%(photCalib2Str, ebeamCalib2Str)
+		s += 'Low: Photon %.2f keV, Electron %.2f MeV\n'%(photCalib1Str, ebeamCalib1Str)
+		s += 'High: Photon %.2f keV, Electron %.2f MeV\n'%(photCalib2Str, ebeamCalib2Str)
 		return s
 		
 	def get_current_value(self):
