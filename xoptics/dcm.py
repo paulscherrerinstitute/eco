@@ -219,13 +219,8 @@ class AlvraDCM_FEL:
 # 			sleep(checktime)
 # 		while self.dcmMoving.get()==1:
 # 			sleep(checktime)
-<<<<<<< Updated upstream
-		while self.energyChanging == 1
-=======
 		while self.energyChanging == 1:
->>>>>>> Stashed changes
 			sleep(checktime)
-
 
 	def changeTo(self,value,hold=False):
 		changer = lambda value: self.move_and_wait(value)
