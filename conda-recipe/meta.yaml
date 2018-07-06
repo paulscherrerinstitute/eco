@@ -1,0 +1,26 @@
+package:
+    name: eco
+    version: 0.0.1
+#source:
+#    git_tag: 0.0.14
+#    git_url: git@git.psi.ch:sf_daq/bsread_python.git
+source:
+    path: ..
+
+build:
+    number: 1
+
+requirements:
+    build:
+        - python
+        - setuptools
+    run:
+        - python
+
+#build:
+#  entry_points:
+#    - bs = bsread.bs:main
+
+about:
+#    home: git@git.psi.ch:sf_daq/bsread_python.git
+    summary: "Eco ..."
