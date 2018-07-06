@@ -15,6 +15,6 @@ setup(
     author_email='@psi.ch',
     url='https://github.com/paulscherrerinstitute/eco',
     packages=find_packages(),
-    requires=['numpy'],
+    requires=['numpy', 'xrayutilities', 'xraylib'],
 
 )

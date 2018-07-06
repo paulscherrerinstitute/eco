@@ -62,10 +62,6 @@ def QE2theta(Q,energy):
     return np.arcsin(E2lam(energy)/4/np.pi*Q)
 
 
-
-
-
-
 def absorptionEdge(element,edge=None):
     if type(element) is str:
         element = xl.SymbolToAtomicNumber(element)
@@ -80,4 +76,3 @@ def absorptionEdge(element,edge=None):
             print('  '\
                   +shells[shell_ind].ljust(3)\
                   +' = %7.1f eV'%(xl.EdgeEnergy(element,shell_ind)*1000))
-

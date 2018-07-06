@@ -10,12 +10,22 @@ source:
 build:
     number: 1
 
+channel:
+  - paulscherrerinstitute
+  - conda-forge
+
 requirements:
     build:
         - python
         - setuptools
     run:
         - python
+        - elog
+        - pyepics
+        - bread
+        - jungfrau_utils
+        - xrayutilities
+        - xraylib
 
 #build:
 #  entry_points:

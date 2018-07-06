@@ -8,7 +8,7 @@ class OffsetMirror:
     def out(self):
         pass
 
-    def in(self):
+    def move_in(self):
         pass
 
 
