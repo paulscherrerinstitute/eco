@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/paulscherrerinstitute/eco.svg?branch=master)](https://travis-ci.org/paulscherrerinstitute/eco)
+
 # Experiment Control
 Python based control environment for experiments at SwissFEL
 
