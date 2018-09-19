@@ -1,7 +1,47 @@
-elog = {'url': 'https://elog-gfa.psi.ch/Bernina',
-        'screenshot_directory': '/sf/bernina/config/screenshots'}
+# # New configuration of components:
+# components is an ordered list of 
+# - name in parent package
+# - type, describing the python Class or factory function.
+# - arguments of that type args
+# - kwargs of that type
 
-aliases = {
+# # Conventions for the type
+# the call of type will try to pass a kwarg 'name' with the 
+# name of the component, before only calling args and kwargs.
+# if arg or kwarg is of type eco.utilities.Component (dummy class) 
+# this indicates that an earlier initialized object is used 
+# (e.g. from same configuration).
+from ..utilities.config import Component,Alias,init_device,initFromConfigList
+
+components = [
+#        {
+#            'name'  : 'device_alias_name',
+#            'type'  : 'package.module.submodule:ClassOrFactory',
+#            'args'  : ['all','the','requires','args'],
+#            'kwargs': {}
+#            }
+        {
+            'name'  : 'elog',
+            'type'  : 'eco.utilities.elog:Elog',
+            'args'  : [
+                'https://elog-gfa.psi.ch/Bernina'],
+            'kwargs': {
+                'user':'gac-bernina',
+                'screenshot_directory':'/sf/bernina/config/screenshots'
+                }
+            },
+        {
+            'name'  : 'screenshot',
+            'type'  : 'eco.utilities.elog:Screenshot',
+            'args'  : [],
+            'kwargs': {
+                'screenshot_directory':'/sf/bernina/config/screenshots'}
+            }
+        ]
+            
+
+
+components_old = {
         'SARFE10-OPSH044' : {
             'alias' : 'ShutUnd',
             'z_und' : 44,

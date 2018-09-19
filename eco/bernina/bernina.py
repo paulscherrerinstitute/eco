@@ -21,13 +21,12 @@ else:
     print('NB: Could not load experiment config in path %s .'%currexp_file_path)
 
 ########### GENERAL IMPLEMENTATIONS ##################
-from .config import aliases as _aliases
+from .config import components_old
 from ..utilities.utilities_instruments import initDeviceAliasList
 
-dev = initDeviceAliasList(_aliases,lazy=True,verbose=True)
+dev,problems = initDeviceAliasList(components_old,lazy=True,verbose=True)
 
 if 0:
-
     def _attach_device(devDict,devId,args,kwargs):
         imp_p = devDict['eco_type'].split(sep='.')
         dev_alias = devDict['alias']

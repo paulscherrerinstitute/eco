@@ -1,5 +1,7 @@
 import traceback
 from colorama import Fore as _color
+from importlib import import_module
+import copy
 
 try:
     from lazy_object_proxy import Proxy as LazyProxy
@@ -34,10 +36,9 @@ def init_device(devDict,devId,args,kwargs,verbose=True):
             #print(sys.exc_info())
         raise expt
 
-
 def initDeviceAliasList(aliases,lazy=False,verbose=True):
-    devices = []
-    problems = []
+    devices = {}
+    problems = {}
     for device_Id in aliases.keys():
         alias = aliases[device_Id]['alias']
         alias = alias[0].lower() + alias[1:]
@@ -55,12 +56,18 @@ def initDeviceAliasList(aliases,lazy=False,verbose=True):
             else:
                 kwargs = dict()
             try: 
+                devices[alias] = {}
+                devices[alias]['device_Id'] = device_Id
                 if lazy:
-                    dev = LazyProxy(lambda:init_device(aliases[device_Id],device_Id,args,kwargs,verbose=verbose))
+                    devices[alias]['factory'] = lambda:init_device(aliases[device_Id],device_Id,args,kwargs,verbose=verbose)
+                    dev = LazyProxy(devices[alias]['factory'])
                 else:
                     dev = init_device(aliases[device_Id],device_Id,args,kwargs,verbose=verbose)
-                devices.append((device_Id,alias,dev))
+                devices[alias]['instance'] = dev
             except:
-                problems.append((device_Id,alias,traceback.format_exc()))
+                device.pop(alias)
+                problems[alias] = {}
+                problems[alias]['device_Id'] = device_Id
+                problems[alias]['trace'] = traceback.format_exc()
     return devices, problems 
 
