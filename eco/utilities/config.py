@@ -3,44 +3,19 @@ import importlib
 from colorama import Fore as _color
 from functools import partial
 from .lazy_proxy import Proxy
+from ..aliases import Alias
 
 class Component:
     def __init__(self,namestring):
         self.name = namestring
 
-class Alias:
-    def __init__(self,alias,channel=None,channeltype=None):
-        self.alias = alias
-        self.channel = channel
-        self.channeltype = channeltype
-        self.children = []
+def init_name_obj(obj,args,kwargs,name=None):
+    try:
+        return obj(*args,**kwargs,name=name)
+    except TypeError:
+        return obj(*args,**kwargs)
 
-    def append(self,subalias):
-        assert type(subalias) is Alias, 'You can only append aliases to aliases!'
-        assert not (subalias.alias in [tc.alias for tc in self.children]),\
-                f'Alias {subalias.alias} exists already!'
-        self.children.append(subalias)
-
-    def get_all(self):
-        aa = []
-        if self.channel:
-            ta = {}
-            ta['alias'] = self.alias
-            ta['channel'] = self.channel
-            if self.channeltype:
-                ta['channeltype'] = self.channeltype
-            aa.append(ta)
-        if self.children:
-            for tc in self.children:
-                taa = tc.get_all()
-                for ta in taa:
-                    ta['alias'] = self.alias + ta['alias']
-                    aa.append(ta)
-
-
-
-
-def init_device(type_string,name,args=[],kwargs={},verbose=True,lazy=False):
+def init_device(type_string,name,args=[],kwargs={},verbose=True,lazy=True):
     imp_p,type_name = type_string.split(sep=':')
     imp_p = imp_p.split(sep='.')
     if verbose:
