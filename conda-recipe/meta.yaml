@@ -25,7 +25,7 @@ requirements:
 
 build:
   entry_points:
-    - eco = eco.utilities.startup:main
+    - eco = startup:main
 
 about:
 #    home: git@git.psi.ch:sf_daq/bsread_python.git

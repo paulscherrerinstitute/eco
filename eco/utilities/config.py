@@ -1,5 +1,6 @@
 import json
 import importlib
+import sys
 from colorama import Fore as _color
 from functools import partial
 from .lazy_proxy import Proxy
@@ -16,11 +17,14 @@ def init_name_obj(obj,args,kwargs,name=None):
         return obj(*args,**kwargs)
 
 def init_device(type_string,name,args=[],kwargs={},verbose=True,lazy=True):
+    if verbose:
+        print(('Configuring %s '%(name)).ljust(25), end='')
+        sys.stdout.flush()
     imp_p,type_name = type_string.split(sep=':')
     imp_p = imp_p.split(sep='.')
     if verbose:
-        print(('Configuring %s '%(name)).ljust(25), end='')
         print(('(%s)'%(type_name)).ljust(25), end='')
+        sys.stdout.flush()
     try:
         tg = importlib.import_module('.'.join(imp_p)).__dict__[type_name]
 
@@ -28,10 +32,12 @@ def init_device(type_string,name,args=[],kwargs={},verbose=True,lazy=True):
             tdev = Proxy(partial(init_name_obj,tg,args,kwargs,name=name))
             if verbose:
                 print((_color.YELLOW+'LAZY'+_color.RESET).rjust(5))
+                sys.stdout.flush()
         else:
             tdev = init_name_obj(tg,args,kwargs,name=name)
             if verbose:
                 print((_color.GREEN+'OK'+_color.RESET).rjust(5))
+                sys.stdout.flush()
         return tdev
     except Exception as expt:
         #tb = traceback.format_exc()
