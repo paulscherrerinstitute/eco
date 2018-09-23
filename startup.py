@@ -1,4 +1,4 @@
-from eco.scopes import scopes
+from eco import ecocnf
 
 def main():
     import argparse
@@ -10,6 +10,9 @@ def main():
     parser.add_argument(
             '-a', '--scopes_available', action='store_true', default=False,
             help='print available scopes.')
+    parser.add_argument(
+            '-l', '--lazy', action='store_true', default=False,
+            help='lazy initialisation')
     parser.add_argument(
             '--shell', type=bool, default=True,
             help='open eco in ipython shell')
@@ -24,11 +27,10 @@ def main():
 
     if arguments.scopes_available:
         print('{:<15s}{:<15s}{:<15s}'.format('module', 'name', 'facility'))
-        for ts in scopes:
+        for ts in ecocnf.scopes:
             print(' {:<14s} {:<14s} {:<14s}'.format(ts['module'], ts['name'], ts['facility']))
 
         return
-
 
 
 
@@ -37,13 +39,15 @@ def main():
     
     
     if scope:
-        print(scope)
         #import importlib
         #eco = importlib.import_module('eco')
         #mdl = importlib.import_module(scope,package=eco)
         #mdl = importlib.import_module('eco.bernina')
-        exec(f'from eco.{scope} import *')
+        if arguments.lazy:
+            ecocnf.startup_lazy = True
         exec(f'import eco.{scope} as {scope}')
+        #exec(f'{scope}.init(lazy=ecocnf.startup_lazy)')
+        exec(f'from eco.{scope} import *')
         # is there an __all__?  if so respect it
         #if "__all__" in mdl.__dict__:
         #    names = mdl.__dict__["__all__"]

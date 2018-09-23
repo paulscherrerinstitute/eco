@@ -25,7 +25,7 @@ def init_device(type_string,name,args=[],kwargs={},verbose=True,lazy=True):
         tg = importlib.import_module('.'.join(imp_p)).__dict__[type_name]
 
         if lazy:
-            tdev = Proxy(init_name_obj(tg,args,kwargs,name=name))
+            tdev = Proxy(partial(init_name_obj,tg,args,kwargs,name=name))
             if verbose:
                 print((_color.YELLOW+'LAZY'+_color.RESET).rjust(5))
         else:
@@ -40,7 +40,7 @@ def init_device(type_string,name,args=[],kwargs={},verbose=True,lazy=True):
             #print(sys.exc_info())
         raise expt
 
-def initFromConfigList(config_list):
+def initFromConfigList(config_list,lazy=False):
     op = {}
     for td in config_list:
         args = [op[ta.name] 
@@ -49,13 +49,9 @@ def initFromConfigList(config_list):
         kwargs = {tkwk:op[tkwv.name]
                 if isinstance(tkwv,Component) 
                 else tkwv for tkwk,tkwv in td['kwargs'].items()}
-        op[td['name']] = init_device(td['type'],td['name'],args,kwargs)
+        op[td['name']] = init_device(td['type'],td['name'],args,kwargs,lazy=lazy)
     return op
 
-
-
-def initializeFromConfig(config):
-    pass
 
 
 def loadConfig(fina):

@@ -1,1 +1,1 @@
-from .bernina_dev import *
+from .bernina import *

@@ -13,6 +13,8 @@
 # (e.g. from same configuration).
 from ..utilities.config import Component,Alias,init_device,initFromConfigList
 
+_eco_lazy_init = False
+
 components = [
 #        {
 #            'name'  : 'device_alias_name',
@@ -36,7 +38,191 @@ components = [
             'args'  : [],
             'kwargs': {
                 'screenshot_directory':'/sf/bernina/config/screenshots'}
-            }
+            },
+        {
+            'name'  : 'slitUnd',
+            'type'  : 'eco.xoptics.slits:SlitFourBlades',
+            'args'  : ['SARFE10-OAPU044'],
+            'kwargs': {},
+            'desc'  : 'Slit after Undulator'
+            },
+        {
+            'name'  : 'attFE',
+            'type'  : 'eco.xoptics.attenuator_aramis:AttenuatorAramis',
+            'args'  : ['SARFE10-OATT053'],
+            'kwargs': {},
+            'desc'  : 'Attenuator in Front End'
+            },
+        {
+            'name'  : 'profFE',
+            'args'  : ['SARFE10-PPRM064'],
+            'kwargs': {},
+            'z_und' : 64,
+            'desc'  : 'Profile monitor after Front End',
+            'type'  : 'eco.xdiagnostics.profile_monitors:Pprm'
+            },
+        {
+            'name'  : 'profMirrAlv1',
+            'args'  : ['SAROP11-PPRM066'],
+            'kwargs': {},
+            'z_und' : 66,
+            'desc'  : 'Profile monitor after Alvra Mirror 1',
+            'type'  : 'eco.xdiagnostics.profile_monitors:Pprm',
+            },
+        {
+            'name'  : 'slitSwitch',
+            'z_und' : 92,
+            'desc'  : 'Slit in Optics hutch after Photon switchyard and before Bernina optics',
+            'type'  : 'eco.xoptics.slits:SlitBlades',
+            'args'  : ['SAROP21-OAPU092'],
+            'kwargs': {}
+            },
+        {
+            'name'  : 'profMirr1',
+            'args'  : ['SAROP21-PPRM094'],
+            'kwargs': {},
+            'z_und' : 94,
+            'desc'  : 'Profile monitor after Mirror 1',
+            'type'  : 'eco.xdiagnostics.profile_monitors:Pprm'
+            },
+        {
+            'name'  : 'mono',
+            'args'  : ['SAROP21-ODCM098'],
+            'kwargs': {},
+            'z_und' : 98,
+            'desc'  : 'DCM Monochromator',
+            'type'  : 'eco.xoptics.dcm:Double_Crystal_Mono'
+            },
+        {
+            'name'  : 'profMono',
+            'args'  : ['SAROP21-PPRM102'],
+            'kwargs': {},
+            'z_und' : 102,
+            'desc'  : 'Profile monitor after Monochromator',
+            'type'  : 'eco.xdiagnostics.profile_monitors:Pprm'
+            },
+        {
+            'name'  : 'monOpt',
+            'z_und' : 133,
+            'desc'  : 'Intensity/position monitor after Optics hutch',
+            'type'  : 'eco.xdiagnostics.intensity_monitors:SolidTargetDetectorPBPS',
+            'args'  : ['SAROP21-PBPS133'],
+            'kwargs': {'VME_crate':'SAROP21-CVME-PBPS1','link':9}
+            },
+        {
+            'name'  : 'profOpt',
+            'args'  : ['SAROP21-PPRM133'],
+            'kwargs': {},
+            'z_und' : 133,
+            'desc'  : 'Profile monitor after Optics hutch',
+            'type'  : 'eco.xdiagnostics.profile_monitors:Pprm'
+            },
+        {
+            'name'  : 'att',
+            'args'  : ['SAROP21-OATT135'],
+            'kwargs': {},
+            'z_und' : 135,
+            'desc'  : 'Attenuator Bernina',
+            'type'  : 'eco.xoptics.attenuator_aramis:AttenuatorAramis'
+            },
+        {
+            'name'  : 'refLaser',
+            'args'  : ['SAROP21-OLAS136'],
+            'kwargs': {},
+            'z_und' : 136,
+            'desc'  : 'Bernina beamline reference laser before KBs',
+            'type'  : 'eco.xoptics.reflaser:RefLaser_Aramis'
+            },
+        {
+            'name'  : 'slitAtt',
+            'args'  : ['SAROP21-OAPU136'],
+            'kwargs': {},
+            'z_und' : 136,
+            'desc'  : 'Slits behind attenuator',
+            'type'  : 'eco.xoptics.slits:SlitPosWidth'
+            },
+        {
+            'name'  : 'monAtt',
+            'args'  : ['SAROP21-PBPS138'],
+            'z_und' : 138,
+            'desc'  : 'Intensity/Position monitor after Attenuator',
+            'type'  : 'eco.xdiagnostics.intensity_monitors:SolidTargetDetectorPBPS',
+            'kwargs': {'VME_crate':'SAROP21-CVME-PBPS2','link':9}
+            },
+        {
+            'name'  : 'detDio',
+            'args'  : ['SAROP21-PDIO138'],
+            'z_und' : 138,
+            'desc'  : 'Diode digitizer for exp data',
+            'type'  : 'eco.devices_general.detectors:DiodeDigitizer',
+            'kwargs': {'VME_crate':'SAROP21-CVME-PBPS2','link':9}
+            },
+        {
+            'name'  : 'profAtt',
+            'args'  : ['SAROP21-PPRM138'],
+            'kwargs': {},
+            'z_und' : 138,
+            'desc'  : 'Profile monitor after Attenuator',
+            'type'  : 'eco.xdiagnostics.profile_monitors:Pprm'
+            },
+        {
+            'name'  : 'kbVer',
+            'args'  : ['SAROP21-OKBV139'],
+            'z_und' : 139,
+            'desc'  : 'Vertically focusing Bernina KB mirror',
+            'type'  : 'eco.xoptics.KBver:KBver',
+            'kwargs': {}
+            },
+        {
+            'args'  : ['SAROP21-OKBH140'],
+            'name'  : 'kbHor',
+            'z_und' : 140,
+            'desc'  : 'Horizontally focusing Bernina KB mirror',
+            'type'  : 'eco.xoptics.KBhor:KBhor',
+            'kwargs': {}
+            },
+        {
+            'args'  : ['SARES22-GPS'],
+            'name'  : 'gps',
+            'z_und' : 142,
+            'desc'  : 'General purpose station',
+            'type'  : 'eco.endstations.bernina_gps:GPS',
+            'kwargs': {}
+            },
+        {
+            'args'  : ['SARES20-PROF142-M1'],
+            'name'  : 'xeye',
+            'z_und' : 142,
+            'desc'  : 'Mobile X-ray eye in Bernina hutch',
+            'type'  : 'eco.xdiagnostics.profile_monitors:Bernina_XEYE',
+            'kwargs': {'bshost':'sf-daqsync-01.psi.ch','bsport':11173}
+            },
+        {
+            'args'  : ['SLAAR02-TSPL-EPL'],
+            'name'  : 'phaseShifter',
+            'z_und' : 142,
+            'desc'  : 'Experiment laser phase shifter',
+            'type'  : 'eco.devices_general.timing:PhaseShifterAramis',
+            'kwargs': {}
+            },
+        {
+            'args'  : ['SLAAR21-LMOT'],
+            'name'  : 'las',
+            'z_und' : 142,
+            'desc'  : 'Experiment laser optics',
+            'type'  : 'eco.loptics.bernina_experiment:Laser_Exp',
+            'kwargs': {}
+            },
+        {
+            'args'  : ['SLAAR21-LTIM01-EVR0'],
+            'name'  : 'laserShutter',
+            'z_und' : 142,
+            'desc'  : 'Laser Shutter',
+            'type'  : 'eco.loptics.laser_shutter:laser_shutter',
+            'kwargs': {}
+            },
+
+
         ]
             
 
@@ -46,11 +232,6 @@ components_old = {
             'alias' : 'ShutUnd',
             'z_und' : 44,
             'desc' : 'Photon shutter after Undulator'},
-        'SARFE10-OAPU044' : {
-            'alias' : 'SlitUnd',
-            'z_und' : 44,
-            'desc' : 'Slit after Undulator',
-            'eco_type' : 'xoptics.slits.SlitFourBlades'},
         'SARFE10-PBIG050' : {
             'alias' : 'GasMon',
             'z_und' : 50,
@@ -59,43 +240,18 @@ components_old = {
             'alias' : 'MonUnd',
             'z_und' : 44,
             'desc' : 'Intensity position monitor after Undulator'},
-        'SARFE10-OATT053' : {
-            'alias' : 'AttFE',
-            'z_und' : 53,
-            'desc' : 'Attenuator in Front End',
-        'eco_type' : 'xoptics.attenuator_aramis.AttenuatorAramis'},
         'SARFE10-SBST060' : {
             'alias' : 'ShutFE',
             'z_und' : 60,
             'desc' : 'Photon shutter in the end of Front End'},
-        'SARFE10-PPRM064' : {
-            'alias' : 'ProfFE',
-            'z_und' : 64,
-            'desc' : 'Profile monitor after Front End',
-            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP11-OOMH064' : {
             'alias' : 'MirrAlv1',
             'z_und' : 64,
             'desc' : 'Horizontal mirror Alvra 1'},
-        'SAROP11-PPRM066' : {
-            'alias' : 'ProfMirrAlv1',
-            'z_und' : 66,
-            'desc' : 'Profile monitor after Alvra Mirror 1',
-            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
-        'SAROP21-OAPU092' : {
-            'alias' : 'SlitSwitch',
-            'z_und' : 92,
-            'desc' : 'Slit in Optics hutch after Photon switchyard and before Bernina optics',
-            'eco_type' : 'xoptics.slits.SlitBlades'},
         'SAROP21-OOMV092' : {
             'alias' : 'Mirr1',
             'z_und' : 92,
             'desc' : 'Vertical offset Mirror 1'},
-        'SAROP21-PPRM094' : {
-            'alias' : 'ProfMirr1',
-            'z_und' : 94,
-            'desc' : 'Profile monitor after Mirror 1',
-            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-OOMV096' : {
             'alias' : 'Mirr2',
             'z_und' : 96,
@@ -104,16 +260,6 @@ components_old = {
                 'alias' : 'ProfMirr2',
                 'z_und' : 97,
                 'desc' : 'Profile Monitor after Mirror 2'},
-        'SAROP21-ODCM098' : {
-                'alias' : 'Mono',
-                'z_und' : 98,
-                'desc' : 'DCM Monochromator',
-                'eco_type' : 'xoptics.dcm.Double_Crystal_Mono'},
-        'SAROP21-PPRM102' : {
-                'alias' : 'ProfMono',
-                'z_und' : 102,
-                'desc' : 'Profile monitor after Monochromator',
-            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-OPPI103' : {
                 'alias' : 'Pick',
                 'z_und' : 103,
@@ -122,17 +268,6 @@ components_old = {
                 'alias' : 'ShutOpt',
                 'z_und' : 114,
                 'desc' : 'Shutter after Optics hutch'},
-        'SAROP21-PBPS133' : {
-                'alias' : 'MonOpt',
-                'z_und' : 133,
-                'desc' : 'Intensity/position monitor after Optics hutch',
-            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
-              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS1','link':9} },
-        'SAROP21-PPRM133' : {
-                'alias' : 'ProfOpt',
-                'z_und' : 133,
-                'desc' : 'Profile monitor after Optics hutch',
-            'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
         'SAROP21-PALM134' : {
                 'alias' : 'TimTof',
                 'z_und' : 134,
@@ -140,81 +275,7 @@ components_old = {
         'SAROP21-PSEN135' : {
                 'alias' : 'TimRef',
                 'z_und' : 135,
-                'desc' : 'Timing diagnostics spectral encoding of ref. index change'},
-        'SAROP21-OATT135' : {
-                'alias' : 'Att',
-                'z_und' : 135,
-                'desc' : 'Attenuator Bernina',
-                'eco_type' : 'xoptics.attenuator_aramis.AttenuatorAramis'},
-        'SAROP21-OAPU136' : {
-                'alias' : 'SlitAtt',
-                'z_und' : 136,
-                'desc' : 'Slits behind attenuator',
-            'eco_type' : 'xoptics.slits.SlitPosWidth'},
-        'SAROP21-OLAS136' : {
-                'alias' : 'RefLaser',
-                'z_und' : 136,
-                'desc' : 'Bernina beamline reference laser before KBs',
-            'eco_type' : 'xoptics.reflaser.RefLaser_Aramis'},
-        'SAROP21-PBPS138' : {
-                'alias' : 'MonAtt',
-                'z_und' : 138,
-                'desc' : 'Intensity/Position monitor after Attenuator',
-            'eco_type' : 'xdiagnostics.intensity_monitors.SolidTargetDetectorPBPS',
-              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS2','link':9} },
-        'SAROP21-PDIO138' : {
-                'alias' : 'DetDio',
-                'z_und' : 138,
-                'desc' : 'Diode digitizer for exp data',
-            'eco_type' : 'devices_general.detectors.DiodeDigitizer',
-              'kwargs' : {'VME_crate':'SAROP21-CVME-PBPS2','link':9} },
-        'SAROP21-PPRM138' : {
-                'alias' : 'ProfAtt',
-                'z_und' : 138,
-                'desc' : 'Profile monitor after Attenuator',
-                'eco_type' : 'xdiagnostics.profile_monitors.Pprm'},
-        'SAROP21-OKBV139' : {
-                'alias' : 'KbVer',
-                'z_und' : 139,
-                'desc' : 'Vertically focusing Bernina KB mirror',
-                'eco_type' : 'xoptics.KBver.KBver'},
-        'SAROP21-OKBH140' : {
-                'alias' : 'KbHor',
-                'z_und' : 140,
-                'desc' : 'Horizontally focusing Bernina KB mirror',
-                'eco_type' : 'xoptics.KBhor.KBhor'},
-        'SARES22-GPS' : {
-                'alias' : 'Gps',
-                'z_und' : 142,
-                'desc' : 'General purpose station',
-                'eco_type' : 'endstations.bernina_gps.GPS'},
-        'SARES20-PROF142-M1' : {
-                'alias' : 'Xeye',
-                'z_und' : 142,
-                'desc' : 'Mobile X-ray eye in Bernina hutch',
-                'eco_type' : 'xdiagnostics.profile_monitors.Bernina_XEYE',
-                'kwargs' : {'bshost':'sf-daqsync-01.psi.ch','bsport':11173},
-                    },
-        'SLAAR02-TSPL-EPL' : {
-                'alias' : 'PhaseShifter',
-                'z_und' : 142,
-                'desc' : 'Experiment laser phase shifter',
-                'eco_type' : 'devices_general.timing.PhaseShifterAramis'},
-        'http://sf-daq-1:10000' : {
-                'alias' : 'DetJF',
-                'z_und' : 142,
-                'desc' : '1.5M Jungfrau detector',
-                'eco_type' : 'devices_general.detectors.DIAClient'},
-        'SLAAR21-LMOT' : {
-                'alias' : 'Las',
-                'z_und' : 142,
-                'desc' : 'Experiment laser optics',
-                'eco_type' : 'loptics.bernina_experiment.Laser_Exp'},
-        'SLAAR21-LTIM01-EVR0' : {
-                'alias' : 'LaserShutter',
-                'z_und' : 142,
-                'desc' : 'Laser Shutter',
-                'eco_type' : 'loptics.laser_shutter.laser_shutter'}
+                'desc' : 'Timing diagnostics spectral encoding of ref. index change'}
 #        'SLAAR21-LMOT' : {
 #                'alias' : 'Palm',
 #                'z_und' : 142,
