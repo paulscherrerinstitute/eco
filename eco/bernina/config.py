@@ -181,14 +181,14 @@ components = [
             'type'  : 'eco.xoptics.KBhor:KBhor',
             'kwargs': {}
             },
-        {
-            'args'  : ['SARES22-GPS'],
-            'name'  : 'gps',
-            'z_und' : 142,
-            'desc'  : 'General purpose station',
-            'type'  : 'eco.endstations.bernina_gps:GPS',
-            'kwargs': {}
-            },
+#        {
+#            'args'  : ['SARES22-GPS'],
+#            'name'  : 'gps',
+#            'z_und' : 142,
+#            'desc'  : 'General purpose station',
+#            'type'  : 'eco.endstations.bernina_gps:GPS',
+#            'kwargs': {}
+#            },
         {
             'args'  : ['SARES20-PROF142-M1'],
             'name'  : 'xeye',

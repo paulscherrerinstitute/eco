@@ -146,11 +146,12 @@ class Proxy(with_metaclass(_ProxyMetaType)):
                 self.__factory__
             )
         else:
-            return '<%s at 0x%x wrapping %r at 0x%x with factory %r>' % (
-                type(self).__name__, id(self),
-                target, id(target),
-                self.__factory__
-            )
+#            return '<%s at 0x%x wrapping %r at 0x%x with factory %r>' % (
+#                type(self).__name__, id(self),
+#                target, id(target),
+#                self.__factory__
+#            )
+            return '%r' % (target)
 
     def __reversed__(self):
         return reversed(self.__wrapped__)
