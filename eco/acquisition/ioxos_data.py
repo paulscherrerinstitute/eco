@@ -24,6 +24,8 @@ class Ioxostools:
         if not channel_list:
             print('No channels specified, using default list \'%s\' instead.'%list(self._default_channel_list.keys())[0])
             self.channel_list = self._default_channel_list[list(self._default_channel_list.keys())[0]]
+        else:
+            self.channel_list = channel_list
         for channel in self.channel_list:
             self.channels.append(PV(channel))
 

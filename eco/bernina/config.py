@@ -190,6 +190,14 @@ components = [
 #            'kwargs': {}
 #            },
         {
+            'args'  : ['SARES21-XRD'],
+            'name'  : 'xrd',
+            'z_und' : 142,
+            'desc'  : 'Xray diffractometer',
+            'type'  : 'eco.endstations.bernina_xrd:XRD',
+            'kwargs': {}
+            },
+        {
             'args'  : ['SARES20-PROF142-M1'],
             'name'  : 'xeye',
             'z_und' : 142,
@@ -221,7 +229,21 @@ components = [
             'type'  : 'eco.loptics.laser_shutter:laser_shutter',
             'kwargs': {}
             },
-
+        {
+            'args'  : ['/sf/bernina/config/channel_lists/default_channel_list_ioxos'],
+            'name'  : 'ioxos_channel_list',
+            'desc'  : 'ioxos channel list',
+            'type'  : 'eco.utilities.config:parseChannelListFile',
+            'kwargs': {}
+            },
+        {
+            'args'  : [],
+            'name'  : 'ioxosdaq',
+            'z_und' : 142,
+            'desc'  : 'ioxos acquisition',
+            'type'  : 'eco.acquisition.ioxos_data:Ioxostools',
+            'kwargs': {'channel_list':Component('ioxos_channel_list')}
+            },
 
         ]
             

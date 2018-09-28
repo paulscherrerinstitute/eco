@@ -67,3 +67,18 @@ def loadConfig(fina):
 def writeConfig(fina,obj):
     with open(fina,'w') as f:
         json.dump(obj,f)
+
+
+def parseChannelListFile(fina):
+    out = []
+    with open(fina,'r') as f:
+        done = False
+        while not done:
+           d = f.readline()
+           if not d:
+               done=True
+           if len(d)>0:
+               if not d.isspace():
+                   if not d[0]=='#':
+                       out.append(d.strip())
+    return out
