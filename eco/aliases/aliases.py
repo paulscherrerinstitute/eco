@@ -32,6 +32,18 @@ class Alias:
                     ta['alias'] = self.alias + ta['alias']
                     aa.append(ta)
 
+    def add_children(self,*args):
+        self.children.append(find_aliases(args))
+
+
+def find_aliases(*args):
+    o = []
+    for obj in args:
+        if hasattr(obj,'alias'):
+            o.append(obj.alias)
+    return tuple(o)
+
+
 class Namespace:
     def __init__(self,namespace_file=None):
         path = Path(namespace_file)

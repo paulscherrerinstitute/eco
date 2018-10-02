@@ -3,6 +3,7 @@ import subprocess
 from threading import Thread
 from epics import PV
 from .utilities import Changer
+from ..aliases import Alias
 
 _MotorRocordStandardProperties = \
         {}
@@ -32,11 +33,17 @@ def _keywordChecker(kw_key_list_tups):
         assert tkey in tlist, "Keyword %s should be one of %s"%(tkw,tlist)
 
 class MotorRecord:
-    def __init__(self,pvname, name=None, elog=None):
+    def __init__(self,pvname, name=None, elog=None, 
+            alias_fields={
+                'readback'='RBV',
+                'user_offset' = 'OFF'}):
         self.Id = pvname
         self._motor = _Motor(pvname)
         self._elog = elog
         self.name = name
+        self.alias = Alias(name)
+        for an,af in alias_fields.items():
+            self.alias.add_children(Alias('readback',channel='.'.join(Id,af))
         self._currentChange = None
 
 
