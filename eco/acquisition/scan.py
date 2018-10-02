@@ -6,7 +6,9 @@ from time import sleep
 import traceback
 
 class ScanSimple:
-    def __init__(self,adjustables,values,counterCallers,fina,Npulses=100,basepath='',scan_info_dir='',checker=None,scan_directories=False):
+    def __init__(self,adjustables,values,counterCallers,fina,Npulses=100,basepath='',scan_info_dir='',checker=None,scan_directories=False, 
+            callbackStartStep=None
+            ):
         self.Nsteps = len(values)
         self.pulses_per_step = Npulses
         self.adjustables = adjustables
