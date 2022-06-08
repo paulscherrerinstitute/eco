@@ -1,4 +1,4 @@
-from ..devices_general.motors import MotorRecord, SmaractStreamdevice
+from ..devices_general.motors import MotorRecord, SmaractStreamdevice, SmaractRecord
 from ..devices_general.detectors import CameraCA, CameraBS
 from ..devices_general.cameras_swissfel import CameraBasler
 from ..aliases import Alias
@@ -25,7 +25,13 @@ class Pprm(Assembly):
             is_setting=True,
         )
         self.camCA = CameraCA(pvname_camera)
-        self._append(CameraBasler, pvname_camera, camserver_alias=f"{name} ({pvname_camera})", name="camera", is_setting=True)
+        self._append(
+            CameraBasler,
+            pvname_camera,
+            camserver_alias=f"{name} ({pvname_camera})",
+            name="camera",
+            is_setting=True,
+        )
         self._append(
             AdjustablePvEnum, self.pvname + ":LED", name="led", is_setting=True
         )
@@ -87,7 +93,7 @@ class ProfKbBernina(Assembly):
         pvname_target_x="SARES20-MF2:MOT_1",
         pvname_target_y="SARES20-MF2:MOT_2",
         pvname_target_z="SARES20-MF2:MOT_3",
-        pvname_mirror="SARES23-LIC11",
+        pvname_mirror="SARES23:LIC11",
         mirror_in=15,
         mirror_out=-5,
         pvname_zoom="SARES20-MF2:MOT_4",
@@ -103,7 +109,7 @@ class ProfKbBernina(Assembly):
             pvname_y="SARES20-MF2:MOT_2",
             pvname_z="SARES20-MF2:MOT_3",
             name="target_stages",
-            is_status="recursive",
+            is_display="recursive",
         )
         self.target = self.target_stages.presets
 
@@ -126,11 +132,11 @@ class ProfKbBernina(Assembly):
             is_setting=True,
         )
         self._append(
-            SmaractStreamdevice,
+            SmaractRecord,
             pvname_mirror,
             name="x_mirror_microscope",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustableVirtual,
@@ -139,7 +145,7 @@ class ProfKbBernina(Assembly):
             lambda v: self.mirror_in_position if v else self.mirror_out_position,
             name="mirror_in",
             is_setting=True,
-            is_status=True,
+            is_display=True,
         )
         # self.camCA = CameraCA(pvname_camera)
         self._append(
@@ -148,19 +154,37 @@ class ProfKbBernina(Assembly):
             camserver_alias=f"{name} ({pvname_camera})",
             name="camera",
             is_setting=False,
-            is_status="recursive",
+            is_display="recursive",
         )
         self._append(
-            MotorRecord, pvname_zoom, name="zoom", is_setting=True, is_status=True
+            MotorRecord, pvname_zoom, name="zoom", is_setting=True, is_display=True
         )
+
+    def movein_keep_target(self, wait=False):
+        ch = self.mirror_in.set_target_value(1)
+        if wait:
+            ch.wait()
+
+    def moveout_keep_target(self, wait=False):
+        ch = self.mirror_in.set_target_value(0)
+        if wait:
+            ch.wait()
 
     def movein(self, wait=False):
         ch = self.mirror_in.set_target_value(1)
+        try:
+            self.target_stages.presets.movein()
+        except:
+            print("No movein preset found for target stages.")
         if wait:
             ch.wait()
 
     def moveout(self, wait=False):
         ch = self.mirror_in.set_target_value(0)
+        try:
+            self.target_stages.presets.moveout()
+        except:
+            print("No moveout preset found for target stages.")
         if wait:
             ch.wait()
 
@@ -182,7 +206,7 @@ class Pprm_dsd(Assembly):
             camserver_alias=f"{name} ({pvname_camera})",
             name="camera",
             is_setting=False,
-            is_status="recursive",
+            is_display="recursive",
         )
         self._append(
             MotorRecord, self.pvname + ":MOTOR_ZOOM", name="zoom", is_setting=True
@@ -240,7 +264,7 @@ class Bernina_XEYE(Assembly):
                 camserver_alias=f"{name} ({camera_pv})",
                 name="camera",
                 is_setting=True,
-                is_status="recursive",
+                is_display="recursive",
             )
         except:
             print("X-Ray eye Cam not found")

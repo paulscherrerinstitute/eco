@@ -91,22 +91,20 @@ class High_field_thz_chamber(Assembly):
         ### lakeshore temperatures ####
         self._append(
             AdjustablePv,
-            pvsetname = 'SARES20-CRYO:TEMP.VAL',
-            pvreadbackname='SARES20-CRYO:TEMP_RBV',
+            pvsetname="SARES20-CRYO:TEMP.VAL",
+            pvreadbackname="SARES20-CRYO:TEMP_RBV",
             accuracy=0.1,
-            name='temp_sample',
+            name="temp_sample",
             is_setting=False,
         )
         self._append(
             AdjustablePv,
-            pvsetname = 'SARES20-CRYO:TEMP-B',
-            pvreadbackname='SARES20-CRYO:TEMP-B_RBV',
+            pvsetname="SARES20-CRYO:TEMP-B",
+            pvreadbackname="SARES20-CRYO:TEMP-B_RBV",
             accuracy=0.1,
-            name='temp_coldfinger',
+            name="temp_coldfinger",
             is_setting=False,
         )
-
-
 
         ### in vacuum smaract motors ###
         for name, config in self.motor_configuration.items():
@@ -123,7 +121,7 @@ class High_field_thz_chamber(Assembly):
             )
         self._append(
             AdjustableFS,
-            "/photonics/home/gac-bernina/eco/reference_values/thc_par_in_pos",
+            "/sf/bernina/config/eco/reference_values/thc_par_in_pos",
             name="par_in_pos",
             is_setting=False,
         )
@@ -132,34 +130,34 @@ class High_field_thz_chamber(Assembly):
                 MotorRecord,
                 "SARES20-EXP:MOT_RY",
                 name="otti_nu",
-                is_status=True,
+                is_display=True,
                 is_setting=True,
             )
             self._append(
                 MotorRecord,
                 "SARES20-EXP:MOT_RZ",
                 name="otti_del",
-                is_status=True,
+                is_display=True,
                 is_setting=True,
             )
             self._append(
                 DetectorPvData,
                 "SARES20-EXP:DET_RY.RBV",
                 name="otti_det",
-                is_status=True,
+                is_display=True,
             )
             self._append(
                 AdjustablePv,
                 "SARES20-EXP:DET_RY.OFF",
                 name="otti_det_offset",
-                is_status=False,
+                is_display=False,
                 is_setting=True,
             )
             self._append(
                 AdjustableFS,
-                "~/eco/reference_values/otti_det_rot_offset.json",
+                "/sf/bernina/config/eco/reference_values/otti_det_rot_offset.json",
                 name="otti_det_rotation",
-                is_status=True,
+                is_display=True,
                 is_setting=True,
             )
 
@@ -355,6 +353,8 @@ class Organic_crystal_breadboard(Assembly):
                 "direction": 1,
             },
         }
+
+
 
         ### smaract motors ###
         for name, config in self.motor_configuration.items():
@@ -634,8 +634,8 @@ class Electro_optic_sampling:
         tt = t - t0
         y = (
             0.5
-            * exp(-(2 * tau * tt - w ** 2) / (2 * tau ** 2))
-            * (1 - erf((-tau * tt + w ** 2) / (sqrt(2) * tau * w)))
+            * exp(-(2 * tau * tt - w**2) / (2 * tau**2))
+            * (1 - erf((-tau * tt + w**2) / (sqrt(2) * tau * w)))
         )
         return y
 
@@ -784,7 +784,7 @@ class Electro_optic_sampling:
         th = 0.0 / 180 * np.pi
         t = 2.0 / (n0 + 1)
         geoSens = np.cos(alpha) * np.sin(2 * th) + 2 * np.sin(alpha) * np.cos(2 * th)
-        E = np.arcsin(DiffoverSum) * wl / (np.pi * L * r41 * n0 ** 3 * t) / geoSens
+        E = np.arcsin(DiffoverSum) * wl / (np.pi * L * r41 * n0**3 * t) / geoSens
 
         return E
 

@@ -12,8 +12,11 @@ from eco.devices_general.utilities import Changer
 
 
 from eco.utilities.keypress import KeyPress
+
+# from .assembly import Assembly
 from copy import deepcopy
 from enum import IntEnum
+from eco.aliases import Alias
 
 from functools import partial
 
@@ -269,6 +272,8 @@ def value_property(Adj, wait_for_change=True, value_name="_value"):
 class DummyAdjustable:
     def __init__(self, name="no_adjustable"):
         self.name = name
+        self.alias = Alias(name)
+
         self.current_value = 0
 
     def get_current_value(self):
@@ -402,11 +407,11 @@ class AdjustableFS:
 #                 self._append(
 #                     AdjustableObject(tadj),
 #                     call_obj=False,
-#                     is_setting=False,
-#                     is_status="recursive",
+#                     is_display=False,
+#                     is_display="recursive",
 #                 )
 #             else:
-#                 self._append(tadj, call_obj=False, is_setting=False, is_status=True)
+#                 self._append(tadj, call_obj=False, is_setting=False, is_display=True)
 
 
 @default_representation

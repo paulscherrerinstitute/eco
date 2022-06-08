@@ -1,5 +1,5 @@
 from ..elements.assembly import Assembly
-from ..devices_general.motors import SmaractStreamdevice, MotorRecord
+from ..devices_general.motors import SmaractStreamdevice, MotorRecord, SmaractRecord
 from ..elements.adjustable import AdjustableMemory, AdjustableVirtual
 from ..epics.adjustable import AdjustablePv
 from ..devices_general.cameras_swissfel import CameraBasler, CameraPCO
@@ -27,7 +27,7 @@ class TimetoolBerninaUSD(Assembly):
         spectrometer_pvname="SARES20-CAMS142-M5",
         microscope_pvname="SARES20-PROF141-M1",
         delaystage_PV="SLAAR21-LMOT-M524:MOTOR_1",
-        pvname_mirror="SARES23-LIC9",
+        pvname_mirror="SARES23:LIC9",
         pvname_zoom="SARES20-MF1:MOT_8",
         mirror_in=15,
         mirror_out=-5,
@@ -51,7 +51,7 @@ class TimetoolBerninaUSD(Assembly):
             pvname_y="SARES20-MF2:MOT_2",
             pvname_z="SARES20-MF2:MOT_3",
             name="target_stages",
-            is_status="recursive",
+            is_display="recursive",
         )
         self.target = self.target_stages.presets
         # self._append(MotorRecord, "SARES20-MF2:MOT_1", name="x_target", is_setting=True)
@@ -61,11 +61,11 @@ class TimetoolBerninaUSD(Assembly):
             MotorRecord, "SARES20-MF2:MOT_4", name="zoom_microscope", is_setting=True
         )
         self._append(
-            SmaractStreamdevice,
+            SmaractRecord,
             pvname_mirror,
             name="x_mirror_microscope",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustableVirtual,
@@ -74,26 +74,26 @@ class TimetoolBerninaUSD(Assembly):
             lambda v: self.mirror_in_position if v else self.mirror_out_position,
             name="mirror_in",
             is_setting=True,
-            is_status=True,
+            is_display=True,
         )
         self._append(
             CameraBasler,
             pvname=microscope_pvname,
             name="camera_microscope",
-            camserver_alias = f"{name} ({microscope_pvname})",
+            camserver_alias=f"{name} ({microscope_pvname})",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
-            MotorRecord, pvname_zoom, name="zoom", is_setting=True, is_status=True
+            MotorRecord, pvname_zoom, name="zoom", is_setting=True, is_display=True
         )
         self._append(
             CameraPCO,
             pvname=spectrometer_pvname,
             name="camera_spectrometer",
-            camserver_alias = f"{name} ({spectrometer_pvname})",
+            camserver_alias=f"{name} ({spectrometer_pvname})",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,

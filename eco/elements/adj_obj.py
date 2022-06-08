@@ -24,6 +24,7 @@ class AdjustableObject(Assembly):
         return d[fieldname]
 
     def init_object(self):
+        # super().__init__(name=self.name)
         for k, v in self._base_dict.get_current_value().items():
             tadj = AdjustableGetSet(
                 partial(self.get_field, k), partial(self.set_field, k), name=k
@@ -39,9 +40,9 @@ class AdjustableObject(Assembly):
                     call_obj=False,
                     is_setting=False,
                     name=ln,
-                    is_status="recursive",
+                    is_display="recursive",
                 )
             else:
                 self._append(
-                    tadj, call_obj=False, is_setting=False, is_status=True, name=ln
+                    tadj, call_obj=False, is_setting=False, is_display=True, name=ln
                 )

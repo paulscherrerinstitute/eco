@@ -52,56 +52,56 @@ class JJSlitUnd(Assembly):
             MotorRecord,
             self.pvname + ":MOTOR_AX1",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_ax1",
         )
         self._append(
             MotorRecord,
             self.pvname + ":MOTOR_AX2",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_ax2",
         )
         self._append(
             MotorRecord,
             self.pvname + ":MOTOR_AY1",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_ay1",
         )
         self._append(
             MotorRecord,
             self.pvname + ":MOTOR_AY2",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_ay2",
         )
         self._append(
             MotorRecord,
             self.pvname + ":MOTOR_BX1",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_bx1",
         )
         self._append(
             MotorRecord,
             self.pvname + ":MOTOR_BX2",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_bx2",
         )
         self._append(
             MotorRecord,
             self.pvname + ":MOTOR_BY1",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_by1",
         )
         self._append(
             MotorRecord,
             self.pvname + ":MOTOR_BY2",
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_blade_by2",
         )
         self._append(
@@ -113,7 +113,7 @@ class JJSlitUnd(Assembly):
                 for tb in [self._blade_ax1(), self._blade_ax2()]
             ],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_pos_ax",
         )
         self._append(
@@ -125,7 +125,7 @@ class JJSlitUnd(Assembly):
                 for tb in [self._blade_ay1(), self._blade_ay2()]
             ],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_pos_ay",
         )
         self._append(
@@ -137,7 +137,7 @@ class JJSlitUnd(Assembly):
                 for tb in [self._blade_bx1(), self._blade_bx2()]
             ],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_pos_bx",
         )
         self._append(
@@ -149,7 +149,7 @@ class JJSlitUnd(Assembly):
                 for tb in [self._blade_by1(), self._blade_by2()]
             ],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_pos_by",
         )
 
@@ -159,7 +159,7 @@ class JJSlitUnd(Assembly):
             lambda x1, x2: (x2 - x1),
             lambda gap: [(sign * gap / 2 + self._pos_ax()) for sign in [-1, 1]],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_gap_ax",
         )
         self._append(
@@ -168,7 +168,7 @@ class JJSlitUnd(Assembly):
             lambda x1, x2: (x2 - x1),
             lambda gap: [(sign * gap / 2 + self._pos_ay()) for sign in [-1, 1]],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_gap_ay",
         )
         self._append(
@@ -177,7 +177,7 @@ class JJSlitUnd(Assembly):
             lambda x1, x2: (x2 - x1),
             lambda gap: [(sign * gap / 2 + self._pos_bx()) for sign in [-1, 1]],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_gap_bx",
         )
         self._append(
@@ -186,7 +186,7 @@ class JJSlitUnd(Assembly):
             lambda x1, x2: (x2 - x1),
             lambda gap: [(sign * gap / 2 + self._pos_by()) for sign in [-1, 1]],
             is_setting=True,
-            is_status=False,
+            is_display=False,
             name="_gap_by",
         )
         self._append(
@@ -195,7 +195,7 @@ class JJSlitUnd(Assembly):
             lambda a, b: a,
             lambda v: (v, v),
             is_setting=False,
-            is_status=True,
+            is_display=True,
             name="hpos",
         )
         self._append(
@@ -204,7 +204,7 @@ class JJSlitUnd(Assembly):
             lambda a, b: a,
             lambda v: (v, v),
             is_setting=False,
-            is_status=True,
+            is_display=True,
             name="hgap",
         )
         self._append(
@@ -213,7 +213,7 @@ class JJSlitUnd(Assembly):
             lambda a, b: a,
             lambda v: (v, v),
             is_setting=False,
-            is_status=True,
+            is_display=True,
             name="vpos",
         )
         self._append(
@@ -222,7 +222,7 @@ class JJSlitUnd(Assembly):
             lambda a, b: a,
             lambda v: (v, v),
             is_setting=False,
-            is_status=True,
+            is_display=True,
             name="vgap",
         )
 
@@ -233,27 +233,18 @@ class JJSlitUnd(Assembly):
 
 
 @addSlitRepr
-class SlitBlades:
+class SlitBlades(Assembly):
     def __init__(self, pvname, name=None, elog=None):
-        self.name = name
+        super().__init__(name=name)
         self.Id = pvname
-        self.alias = Alias(name)
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_X1", name="right")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_X2", name="left")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_Y1", name="down")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_Y2", name="up")
-        append_object_to_object(
-            self, MotorRecord, pvname + ":MOTOR_X", name="hpos_virt_mrec"
-        )
-        append_object_to_object(
-            self, MotorRecord, pvname + ":MOTOR_W", name="hgap_virt_mrec"
-        )
-        append_object_to_object(
-            self, MotorRecord, pvname + ":MOTOR_Y", name="vpos_virt_mrec"
-        )
-        append_object_to_object(
-            self, MotorRecord, pvname + ":MOTOR_H", name="vgap_virt_mrec"
-        )
+        self._append(MotorRecord, pvname + ":MOTOR_X1", name="right", is_setting=True)
+        self._append(MotorRecord, pvname + ":MOTOR_X2", name="left", is_setting=True)
+        self._append(MotorRecord, pvname + ":MOTOR_Y1", name="down", is_setting=True)
+        self._append(MotorRecord, pvname + ":MOTOR_Y2", name="up", is_setting=True)
+        self._append(MotorRecord, pvname + ":MOTOR_X", name="hpos_virt_mrec")
+        self._append(MotorRecord, pvname + ":MOTOR_W", name="hgap_virt_mrec")
+        self._append(MotorRecord, pvname + ":MOTOR_Y", name="vpos_virt_mrec")
+        self._append(MotorRecord, pvname + ":MOTOR_H", name="vgap_virt_mrec")
 
         def getgap(xn, xp):
             return xp - xn
@@ -815,28 +806,28 @@ class SlitBladesGeneral(Assembly):
             **def_blade_up["kwargs"],
             name="up",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             *def_blade_down["args"],
             **def_blade_down["kwargs"],
             name="down",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             *def_blade_left["args"],
             **def_blade_left["kwargs"],
             name="left",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             *def_blade_right["args"],
             **def_blade_right["kwargs"],
             name="right",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self.blade_motors = [self.up, self.down, self.left, self.right]
 

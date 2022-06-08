@@ -8,6 +8,7 @@ from ..elements.assembly import Assembly
 from .motors import MotorRecord
 import sys
 from pathlib import Path
+import time
 
 sys.path.append("/sf/bernina/config/src/python/sf_databuffer/")
 import bufferutils
@@ -126,7 +127,11 @@ class CamserverConfig(Assembly):
         conditions is a dictionary holding the conditions to select a subset of cameras, e.g. {"group": Bernina}
         fields is a dictionary containing the keys and values that should be updated, e.g. fields={'alias': ['huhu', 'duda']}
         """
-        cams = {cam: self.cc.get_camera_config(cam) for cam in self.cc.get_cameras()}
+        cams = {
+            cam: self.cc.get_camera_config(cam)
+            for cam in self.cc.get_cameras()
+            if not "jungfrau" in cam
+        }
         cams_selected = {}
         for cam, cfg in cams.items():
             try:
@@ -165,7 +170,7 @@ class CameraBasler(Assembly):
             camserver_alias=camserver_alias,
             camserver_group=camserver_group,
             name="config_cs",
-            is_status=False,
+            is_display=False,
         )
         self.config_cs.set_alias()
         if camserver_group is not None:
@@ -175,126 +180,126 @@ class CameraBasler(Assembly):
             self.pvname + ":INIT",
             name="initialize",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePvEnum,
-            self.pvname + ":CAMERA",
+            self.pvname + ":CAMERASTATUS",
             name="running",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":BOARD",
             name="board_no",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":SERIALNR",
             name="serial_no",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":EXPOSURE",
             name="_exposure_time",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePvEnum,
             self.pvname + ":ACQMODE",
             name="_acq_mode",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePvEnum,
             self.pvname + ":RECMODE",
             name="_req_mode",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePvEnum,
             self.pvname + ":STOREMODE",
             name="_store_mode",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":BINY",
             name="_binx",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":BINY",
             name="_biny",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":REGIONX_START",
             name="_roixmin",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":REGIONX_END",
             name="_roixmax",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":REGIONY_START",
             name="_roiymin",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":REGIONY_END",
             name="_roiymax",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePvEnum,
             self.pvname + ":SET_PARAM",
             name="_set_parameters",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePvEnum,
             self.pvname + ":TRIGGER",
             name="trigger_on",
             is_setting=True,
-            is_status=True,
+            is_display=True,
         )
         self._append(
             AdjustablePv,
             self.pvname + ":AMPGAIN",
             name="_gain",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         self._append(
             AdjustablePvEnum,
             self.pvname + ":TRIGGERSOURCE",
             name="trigger_source",
             is_setting=True,
-            is_status=False,
+            is_display=False,
         )
         # append_object_to_object(self,PvEnum,self.pvname+':TRIGGEREDGE',name='trigger_edge')
         self._append(
@@ -303,7 +308,7 @@ class CameraBasler(Assembly):
             lambda value: self._set_params((self._exposure_time, value)),
             name="exposure_time",
             is_setting=True,
-            is_status=True,
+            is_display=True,
         )
         self._append(
             AdjustableGetSet,
@@ -311,16 +316,25 @@ class CameraBasler(Assembly):
             lambda value: self._set_params((self._gain, value)),
             name="gain",
             is_setting=True,
-            is_status=True,
+            is_display=True,
         )
+
+        def set_roi(roi):
+            self._set_params(
+                [self._roixmin, roi[0]],
+                [self._roixmax, roi[1]],
+                [self._roiymin, roi[2]],
+                [self._roiymax, roi[3]],
+            )
+            return (roi[0], roi[1], roi[2], roi[3])
+
         self._append(
             AdjustableVirtual,
             [self._roixmin, self._roixmax, self._roiymin, self._roiymax],
             lambda x_from, x_to, y_from, y_to: [x_from, x_to, y_from, y_to],
-            lambda roi: (roi[0], roi[1], roi[2], roi[3]),
+            set_roi,
             name="roi",
             is_setting=True,
-            is_status=True,
         )
 
     def _set_params(self, *args):
@@ -329,6 +343,11 @@ class CameraBasler(Assembly):
             ob(val)
         self._set_parameters(1)
         self.running(1)
+
+    def gui(self):
+        self._run_cmd(
+            f'caqtdm -macro "NAME={self.pvname},CAMNAME={self.pvname}" /sf/controls/config/qt/Camera/CameraExpert.ui'
+        )
 
 
 class QioptiqMicroscope(CameraBasler):
@@ -354,7 +373,12 @@ class CameraPCO(Assembly):
         )
         self.config_cs.set_alias()
         self._append(AdjustablePvEnum, self.pvname + ":INIT", name="initialize")
-        self._append(AdjustablePvEnum, self.pvname + ":CAMERA", name="running")
+        self._append(
+            AdjustablePvEnum,
+            self.pvname + ":CAMERASTATUS",
+            name="camera_status",
+            is_display=True,
+        )
         self._append(AdjustablePv, self.pvname + ":BOARD", name="board_no")
         self._append(AdjustablePv, self.pvname + ":SERIALNR", name="serial_no")
         self._append(AdjustablePv, self.pvname + ":EXPOSURE", name="_exposure_time")
@@ -376,6 +400,7 @@ class CameraPCO(Assembly):
         )
         self._append(AdjustablePvEnum, self.pvname + ":TRIGGER", name="trigger_on")
         # append_object_to_object(self,PvEnum,self.pvname+':TRIGGEREDGE',name='trigger_edge')
+
         self._append(
             AdjustableGetSet,
             self._exposure_time.get_current_value,
@@ -385,19 +410,39 @@ class CameraPCO(Assembly):
         )
         self._append(
             AdjustableVirtual,
+            [self.camera_status],
+            lambda stat: stat == 2,
+            lambda running: 2 if running else 1,
+            name="running",
+            is_setting=True,
+        )
+
+        def set_roi(roi):
+            self._set_params(
+                [self._roixmin, roi[0]],
+                [self._roixmax, roi[1]],
+                [self._roiymin, roi[2]],
+                [self._roiymax, roi[3]],
+            )
+            return (roi[0], roi[1], roi[2], roi[3])
+
+        self._append(
+            AdjustableVirtual,
             [self._roixmin, self._roixmax, self._roiymin, self._roiymax],
             lambda x_from, x_to, y_from, y_to: [x_from, x_to, y_from, y_to],
-            lambda roi: (roi[0], roi[1], roi[2], roi[3]),
+            set_roi,
             name="roi",
             is_setting=True,
         )
 
     def _set_params(self, *args):
-        self.running(0)
+        self.running(False)
         for ob, val in args:
             ob(val)
         self._set_parameters(1)
+        self.running(True)
 
-
-False
-False
+    def gui(self):
+        self._run_cmd(
+            f'caqtdm -macro "NAME={self.pvname},CAMNAME={self.pvname}" /sf/controls/config/qt/Camera/CameraExpert.ui'
+        )

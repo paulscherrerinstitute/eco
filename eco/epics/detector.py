@@ -6,28 +6,46 @@ from epics import PV
 
 from eco.acquisition.utilities import Acquisition
 from eco.aliases import Alias
+from eco.elements.adjustable import AdjustableMemory
 from eco.elements.assembly import Assembly
 from eco.elements.detector import call_convenience, value_property
-from eco.epics.adjustable import AdjustablePvString
+from eco.epics.adjustable import AdjustablePvString, AdjustablePv
 from eco.epics import get_from_archive
 
 # @call_convenience
 # @value_property
 @get_from_archive
 class DetectorPvData(Assembly):
-    def __init__(self, pvname, name=None):
+    def __init__(self, pvname, name=None, unit=None, has_unit=False):
         super().__init__(name=name)
-        self.status_indicators_collection.append(self)
+        self.status_collection.append(self)
         self.pvname = pvname
-        self._pv = PV(pvname)
+        singular = (unit is None) and (not has_unit)
+        # if name == "aramis_undulator_photon_energy":
+        #     print(f"singular is {singular}", unit, has_unit)
+
+        if unit:
+            self._append(AdjustableMemory, unit, name="unit")
+            has_unit = False
+        if not singular:
+            self._append(AdjustablePv, pvname, name="readback", is_setting=False)
+        else:
+            self._pv = PV(pvname)
+            self.alias = Alias(self.name, channel=self.pvname, channeltype="CA")
+            self.settings_collection.append(self, force=True)
+            self.status_collection.append(self, force=True)
+            self.display_collection.append(self, force=True)
         self.name = name
-        self.alias = Alias(self.name, channel=self.pvname, channeltype="CA")
-        self._append(
-            AdjustablePvString, self.pvname + ".EGU", name="unit", is_setting=False
-        )
+        if has_unit:
+            self._append(
+                AdjustablePvString, self.pvname + ".EGU", name="unit", is_setting=False
+            )
 
     def get_current_value(self):
-        return self._pv.get()
+        if hasattr(self, "_pv"):
+            return self._pv.get()
+        else:
+            return self.readback.get_current_value()
 
     def __call__(self):
         return self.get_current_value()
@@ -110,15 +128,16 @@ class DetectorPvString:
 # @value_property
 @get_from_archive
 class DetectorPvDataStream(Assembly):
-    def __init__(self, pvname, name=None):
+    def __init__(self, pvname, name=None, has_fields=False):
         super().__init__(name=name)
         self.Id = pvname
         self.pvname = pvname
         self._pv = PV(pvname)
         self.alias = Alias(self.name, channel=self.pvname, channeltype="CA")
-        self._append(
-            AdjustablePvString, self.pvname + ".EGU", name="unit", is_setting=False
-        )
+        if has_fields:
+            self._append(
+                AdjustablePvString, self.pvname + ".EGU", name="unit", is_setting=False
+            )
         # self._append(
         #     PvString, self.pvname + ".DESC", name="description", is_setting=False
         # )
