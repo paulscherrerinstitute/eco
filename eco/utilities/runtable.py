@@ -706,6 +706,7 @@ class Gsheet_API:
         keydf_fname,
         cred_fname,
         exp_id,
+        folder_id,
         exp_path,
         gsheet_key_path,
     ):
@@ -715,7 +716,7 @@ class Gsheet_API:
             "https://www.googleapis.com/auth/drive",
         ]
         self._credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            "/sf/bernina/config/src/python/gspread/pandas_push", self._scope
+            cred_fname, self._scope
         )
         self.gc = gspread.authorize(self._credentials)
         self._keydf_fname = keydf_fname
@@ -728,7 +729,7 @@ class Gsheet_API:
     def create_rt_spreadsheet(self, exp_id):
         self.gc = gspread.authorize(self._credentials)
         spreadsheet = self.gc.create(
-            title=f"run_table_{exp_id}", folder_id="1F7DgF0HW1O71nETpfrTvQ35lRZCs5GvH"
+            title=f"run_table_{exp_id}", folder_id=folder_id
         )
         spreadsheet.add_worksheet("runtable", 10, 10)
         spreadsheet.add_worksheet("positions", 10, 10)
@@ -914,6 +915,7 @@ class Run_Table2:
         self,
         data=None,
         exp_id='no_exp_id',
+        folder_id = None,
         exp_path='runtable',
         keydf_fname=None,
         cred_fname=None,
@@ -929,11 +931,12 @@ class Run_Table2:
             devices=devices,
             name=name,
             )
-        if np.all([k is not None for k in [keydf_fname, cred_fname, gsheet_key_path]]):
+        if np.all([k != None for k in [keydf_fname, cred_fname, gsheet_key_path]]):
             self._google_sheet_api = Gsheet_API(
                 keydf_fname,
                 cred_fname,
                 exp_id,
+                folder_id,
                 exp_path,
                 gsheet_key_path,
             )
