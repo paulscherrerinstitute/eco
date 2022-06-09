@@ -8,6 +8,7 @@ import colorama
 from ..elements.adjustable import DummyAdjustable
 from IPython import get_ipython
 from .daq_client import Daq
+from .ioxos_slab import Slab_Ioxos_Daq
 from eco.elements.assembly import Assembly
 from rich.progress import Progress
 
@@ -186,6 +187,9 @@ class Scan:
                 acq = ctr.acquire(
                     file_name=fina, Npulses=self.pulses_per_step, acq_pars=acq_pars
                 )
+            elif isinstance(ctr, Slab_Ioxos_Daq):
+                print([adj.name for adj in self.adjustables], "in scan")
+                acq = ctr.acquire(file_name=fina, N_pulses=self.pulses_per_step, adjs_rb=readbacks_step, adjs_name=[adj.name for adj in self.adjustables]) 
             else:
                 acq = ctr.acquire(file_name=fina, Npulses=self.pulses_per_step)
             acs.append(acq)

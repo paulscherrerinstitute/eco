@@ -938,14 +938,9 @@ class Run_Table2:
     def __init__(
         self,
         data=None,
-<<<<<<< HEAD
         exp_id='no_exp_id',
         folder_id = None,
         exp_path='runtable',
-=======
-        exp_id="no_exp_id",
-        exp_path="runtable",
->>>>>>> origin/master
         keydf_fname=None,
         cred_fname=None,
         devices=None,
@@ -959,13 +954,8 @@ class Run_Table2:
             exp_path=exp_path,
             devices=devices,
             name=name,
-<<<<<<< HEAD
             )
-        if np.all([k != None for k in [keydf_fname, cred_fname, gsheet_key_path]]):
-=======
-        )
         if np.all([k is not None for k in [keydf_fname, cred_fname, gsheet_key_path]]):
->>>>>>> origin/master
             self._google_sheet_api = Gsheet_API(
                 keydf_fname,
                 cred_fname,

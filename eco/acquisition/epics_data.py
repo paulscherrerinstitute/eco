@@ -14,7 +14,7 @@ import time
 class EpicsDaq:
     def __init__(
         self,
-        default_file_path="%s",
+        default_file_path="",
         elog=None,
         name=None,
         channel_list=None,
