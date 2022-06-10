@@ -44,6 +44,7 @@ class Slab_Ioxos(Assembly):
         self.samples(10)
         self.blocks(0)
         self.restart(1)
+        self.active_channels(7)
         self.data = PV("SLAB-LSCP1-ESB1:BOX_DATA", auto_monitor=True)
         for ch in range(8):
             self._append(IoxosChannel, pvbase=self.pvbase, name=f"ch{ch}", ch=ch, is_setting=False, is_display=False,)
@@ -60,39 +61,55 @@ class Slab_Ioxos_Daq(Assembly):
         self._append(AdjustableFS, "/photonics/home/gac-slab/config/eco/reference_values/ioxos_daq_single_shots", name="save_single_shots", is_setting=True)
         self._done = False
         self._default_file_path = default_file_path
+        self._N_acqs = 0
+        self._data = np.zeros((0,))
+        self._meta_len = 12
+
+        def cb_get_data(*args, **kwargs):
+            if self._N_acqs > 0:
+                d = kwargs["value"][self._meta_len:]
+                idx0 = self._data.shape[0]-self._N_acqs*d.shape[0]
+                idx1 = self._data.shape[0]-(self._N_acqs-1)*d.shape[0]
+                self._data[idx0:idx1] = d
+                self._N_acqs = self._N_acqs - 1
+        self.ioxos.data.add_callback(callback = cb_get_data)
 
     def get_data(self, N_pulses=None):
         N_channels = 8
         if N_pulses > 10:
-            N_blocks = N_pulses // 10
+            N_acqs = N_pulses // 10
             N_samples = 10
         else:
             N_samples = N_pulses
-            N_blocks = 1
+            N_acqs = 1
         #self.ioxos.blocks(N_blocks)
         #self.ioxos.samples(N_samples)
 
-        block_len = N_channels*N_samples
-        meta_len = 12
-        data_acc = np.ndarray((N_channels*N_pulses,))
-        meta_acc = np.ndarray((N_blocks))
-        self._m = 0
+        #block_len = N_channels*N_samples
+        #meta_len = 12
+        self._data=np.zeros((N_channels*N_pulses))
+        #data_acc = np.ndarray((N_channels*N_pulses,))
+        #meta_acc = np.ndarray((N_blocks))
+        #self._m = 0
+#
+#        def cb_getdata(pv=None, *args, **kwargs):
+#            data_acc[self._m*block_len:(self._m+1)*block_len] = kwargs["value"][meta_len:]
+#            self._m = self._m + 1
+#            if self._m == N_blocks:
+#                pv.clear_callbacks()
+#                self._done = True
 
-        def cb_getdata(pv=None, *args, **kwargs):
-            data_acc[self._m*block_len:(self._m+1)*block_len] = kwargs["value"][meta_len:]
-            self._m = self._m + 1
-            if self._m == N_blocks:
-                pv.clear_callbacks()
-                self._done = True
 
-        self._done = False
-        self.ioxos.data.add_callback(callback=cb_getdata, pv=self.ioxos.data)
-        self.ioxos.restart(1)
+
+        #self._done = False
+        #self.ioxos.data.add_callback(callback=cb_getdata, pv=self.ioxos.data)
+        #self.ioxos.restart(1)
+        self._N_acqs = N_acqs
         while(True):
-            sleep(.001)
-            if self._done:
+            if self._N_acqs == 0:
                 break
-        return data_acc.reshape((N_pulses, N_channels)).T
+            sleep(.001)
+        return self._data.reshape((N_pulses, N_channels)).T
 
     def save_single(self, file_name, data):
         if os.path.isfile(file_name):
