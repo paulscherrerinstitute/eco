@@ -4,6 +4,7 @@ import pyttsx3
 from ..utilities.path_alias import PathAlias
 import os
 
+
 os.sys.path.insert(0,"/sf/slab/config/src/python/py_scilog")
 _eco_lazy_init = False
 
@@ -42,7 +43,7 @@ namespace.append_obj(
     name="ioxos",
     module_name="eco.acquisition.ioxos_slab",
     pvbase="SLAB-LSCP1-ESB1",
-    lazy=False,
+    lazy=True,
 )
 
 #f"/sf/bernina/data/{config['pgroup']}/res/",
@@ -52,15 +53,9 @@ namespace.append_obj(
     module_name="eco.acquisition.ioxos_slab",
     default_file_path='/photonics/home/gac-slab/test/',
     ioxos=ioxos,
-    lazy=False,
+    lazy=True,
 )
 
-#namespace.append_obj(
-#    "BerninaEnv",
-#    name="env_log",
-#    module_name="eco.fel.atmosphere",
-#    lazy=True,
-#)
 
 # adding all stuff from the config components the "old" way of configuring.
 # whatever is added, it is available by the configured name in this module
@@ -85,6 +80,46 @@ namespace.append_obj(
 )
 
 
+namespace.append_obj(
+    "Env_Sensors",
+    name="env_sensors",
+    module_name="eco.sample_env.environment_sensors",
+    lazy=True,
+)
+
+## SmarAct delay stages
+namespace.append_obj(
+    "SmaractStreamdevice",
+    pvname = f"SLAB-LMTS-LAM11",
+    accuracy=1e-3,
+    name="delay_1_stg",
+    module_name="eco.devices_general.motors",
+    offset_file=f"/photonics/home/gac-slab/config/eco/reference_values/smaract_delay_1_stg",
+    lazy=True,
+)
+namespace.append_obj(
+    "DelayTime",
+    module_name="eco.loptics.bernina_laser",
+    stage=delay_1_stg,
+    name="delay_1",
+)
+
+
+namespace.append_obj(
+    "SmaractStreamdevice",
+    pvname = f"SLAB-LMTS-LAM12",
+    accuracy=1e-3,
+    name="delay_2_stg",
+    module_name="eco.devices_general.motors",
+    offset_file=f"/photonics/home/gac-slab/config/eco/reference_values/smaract_delay_2_stg",
+    lazy=True,
+)
+namespace.append_obj(
+    "DelayTime",
+    module_name="eco.loptics.bernina_laser",
+    stage=delay_2_stg,
+    name="delay_2",
+)
 ## Scan callback functions
 
 def _message_end_scan(scan):
@@ -94,18 +129,8 @@ def _message_end_scan(scan):
     e.stop()
 
 
-#def _copy_scan_info_to_raw(scan, daq=daq):
-#    run_number = daq.get_last_run_number()
-#    pgroup = daq.pgroup
-#    print(f"Copying info file to run {run_number} to the raw directory of {pgroup}.")
-#    response = daq.append_aux(
-#        scan.scan_info_filename, pgroup=pgroup, run_number=run_number
-#    )
-#    print(f"Status: {response.json()['status']} Message: {response.json()['message']}")
-
-
 callbacks_start_scan = []
-callbacks_end_scan = [_message_end_scan]
+callbacks_end_scan = []
 
 elog=None
 def _create_metadata_structure_start_scan(scan, run_table=run_table, elog=elog):

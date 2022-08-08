@@ -27,6 +27,8 @@ class IoxosChannel(Assembly):
         self._append(AdjustablePv, self.pvbase + f":CH{ch}:START_NEW", name = "sig_start", is_setting=True)
         self._append(AdjustablePv, self.pvbase + f":CH{ch}:END_NEW", name = "sig_end", is_setting=True)
         self._append(AdjustablePvEnum, self.pvbase + f":BOX_STAT{ch}", name = "boxcar_calculation", is_setting=True)
+        self._append(AdjustableFS, f"/photonics/home/gac-slab/config/eco/reference_values/ioxos_{name}_chopper_ch", name="chopper_ch", is_setting=True, default_value=0)
+        self._append(AdjustableFS, f"/photonics/home/gac-slab/config/eco/reference_values/ioxos_{name}_chopper_thr", name="chopper_thr", is_setting=True, default_value=1000)
 
 class Slab_Ioxos(Assembly):
     def __init__(
@@ -124,19 +126,29 @@ class Slab_Ioxos_Daq(Assembly):
         np.savez_compressed(file_name, **d)
 
     def save_av(self, file_name, data, adjs_rb, adjs_name, N_pulses):
-        print(adjs_name, "in saveav")
+        chopper_chs = [self.ioxos.__dict__[f"ch{n}"].chopper_ch() for n in range(8)]
+        chopper_thrs = [self.ioxos.__dict__[f"ch{n}"].chopper_thr() for n in range(8)]
+        w = np.array([data[ch]>thr for ch, thr in zip(chopper_chs, chopper_thrs)])
+        d_av_on = np.mean(data, axis=1, where=w)
+        d_av_off = np.mean(data, axis=1, where=~w)
+        d_std_on = np.std(data, axis=1, where=w)
+        d_std_off = np.std(data, axis=1, where=~w)
+        d_npulses_on = np.sum(w, axis=1)
+        d_npulses_off = np.sum(~w, axis=1)
         filename_av = file_name.split("_step")[0] + ".txt"
-        d_av = np.mean(data, axis=1)
-        d_err = np.std(data, axis=1)/np.sqrt(N_pulses)
-        d = np.hstack([adjs_rb, d_av, d_err])
+        d = np.hstack([adjs_rb, d_av_on, d_av_off, d_std_on, d_std_off, d_npulses_on, d_npulses_off])
         exists = os.path.isfile(filename_av)
         with open(filename_av, "a") as f:
             if exists:
                 np.savetxt(f,[d])
             else:
                 head = [f"{n}, " for n in adjs_name]
-                head.extend([f"ch{n}, " for n in range(8)])
-                head.extend([f"ch{n}_err, " for n in range(8)])
+                head.extend([f"ch{n}_on, " for n in range(8)])
+                head.extend([f"ch{n}_off, " for n in range(8)])
+                head.extend([f"ch{n}_on_std, " for n in range(8)])
+                head.extend([f"ch{n}_off_std, " for n in range(8)])
+                head.extend([f"ch{n}_on_npulses, " for n in range(8)])
+                head.extend([f"ch{n}_off_npulses, " for n in range(8)])
                 header = "".join(head)
                 np.savetxt(f,[d],header=header)
 

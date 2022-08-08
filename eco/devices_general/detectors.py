@@ -2,8 +2,10 @@ import numpy as np
 from epics import caget
 from epics import PV
 from eco.epics.utilities_epics import EnumWrapper
-
-from bsread import source, SUB
+try:
+    from bsread import source, SUB
+except:
+    pass
 import subprocess
 import h5py
 from time import sleep
