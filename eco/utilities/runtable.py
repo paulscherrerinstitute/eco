@@ -730,9 +730,12 @@ class Gsheet_API:
             name="gsheet_keys",
             default_value="metadata thc gps xrd att att_usd kb",
         )
+        self.folder_id = folder_id
         self.init_runtable(exp_id)
 
-    def create_rt_spreadsheet(self, exp_id):
+    def create_rt_spreadsheet(self, exp_id, folder_id=None):
+        if folder_id is None:
+            folder_id = self.folder_id
         self.gc = gspread.authorize(self._credentials)
         spreadsheet = self.gc.create(
             title=f"run_table_{exp_id}", folder_id=folder_id
@@ -754,6 +757,8 @@ class Gsheet_API:
     def init_runtable(self, exp_id):
         if os.path.exists(self._keydf_fname):
             self._key_df = pd.read_pickle(self._keydf_fname)
+        else:
+            self._key_df = pd.DataFrame()
         if self._key_df is not None and str(exp_id) in self._key_df.index:
             spreadsheet_key = self._key_df["keys"][f"{exp_id}"]
         else:
@@ -1107,6 +1112,8 @@ class Run_Table_DataFrame(DataFrame):
             data_dir.chmod(0o775)
             print(f"Tried to change permissions to 775")
         pd.DataFrame(self).to_pickle(self.fname + "tmp")
+        fp = Path(self.fname + "tmp") 
+        fp.chmod(0o775)
         call(["mv", self.fname + "tmp", self.fname])
 
     def load(self):

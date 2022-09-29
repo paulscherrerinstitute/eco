@@ -9,7 +9,7 @@ os.sys.path.insert(0,"/sf/slab/config/src/python/py_scilog")
 _eco_lazy_init = False
 
 config = Configuration(
-    "/photonics/home/gac-slab/config/eco/slab_config_eco.json", name="slab_config"
+    "/sf/slab/config/eco/slab_config_eco.json", name="config"
 )
 
 path_aliases = PathAlias()
@@ -24,7 +24,7 @@ namespace.alias_namespace.data = []
 
 namespace.append_obj(
     "set_global_memory_dir",
-    "/photonics/home/gac-slab/config/eco/memory",
+    "/sf/slab/config/eco/memory",
     module_name="eco.elements.memory",
     name="path_memory",
 )
@@ -51,7 +51,8 @@ namespace.append_obj(
     "Slab_Ioxos_Daq",
     name="daq",
     module_name="eco.acquisition.ioxos_slab",
-    default_file_path='/photonics/home/gac-slab/test/',
+    default_file_path=f'/sf/slab/data/{config["pgroup"]}/res/',
+    #default_file_path=f'/sf/slab/config/eco/test_acq/',
     ioxos=ioxos,
     lazy=True,
 )
@@ -65,21 +66,32 @@ namespace.append_obj(
 
 ## Utilities
 
+
+
 namespace.append_obj(
     "Run_Table2",
     name="run_table",
     module_name="eco.utilities.runtable",
     exp_id= config["pgroup"],
-    folder_id= "1DpbE8al9__P2sYkzdE0ZJsmTOGTzxVx5",
+    folder_id= "1n10Sfib-P9xqUhIQ0UuYUEkb_DpY3pcd",
     exp_path= f"/sf/slab/data/{config['pgroup']}/res/run_table/",
+    #exp_path= f"/sf/slab/config/eco/test_acq/",
     devices= "slab",
-    keydf_fname= "/photonics/home/gac-slab/config/eco/run_table/gspread_keys.pkl",
-    cred_fname= "/photonics/home/gac-slab/config/eco/run_table/pandas_push",
-    gsheet_key_path= "/photonics/home/gac-slab/config/eco/run_table/run_table_gsheet_keys", 
+    keydf_fname= "/sf/slab/config/eco/run_table/gspread_keys.pkl",
+    cred_fname= "/sf/slab/config/eco/run_table/pandas_push",
+    gsheet_key_path= "/sf/slab/config/eco/run_table/run_table_gsheet_keys", 
     lazy=True,
 )
 
 
+namespace.append_obj(
+    "Lakeshore_331",
+    pvname = "SLAB-LLS-UNIT1",
+    name = "cryostat_janis",
+    module_name="eco.devices_general.temperature_controllers",
+    lazy=True,
+)
+   
 namespace.append_obj(
     "Env_Sensors",
     name="env_sensors",
@@ -87,39 +99,65 @@ namespace.append_obj(
     lazy=True,
 )
 
-## SmarAct delay stages
+## 800pp setup stages
 namespace.append_obj(
     "SmaractStreamdevice",
     pvname = f"SLAB-LMTS-LAM11",
     accuracy=1e-3,
-    name="delay_1_stg",
+    name="delay_800pp_stg",
     module_name="eco.devices_general.motors",
-    offset_file=f"/photonics/home/gac-slab/config/eco/reference_values/smaract_delay_1_stg",
+    offset_file=f"/sf/slab/config/eco/reference_values/smaract_delay_800pp_stg",
     lazy=True,
 )
 namespace.append_obj(
     "DelayTime",
     module_name="eco.loptics.bernina_laser",
-    stage=delay_1_stg,
-    name="delay_1",
+    stage=delay_800pp_stg,
+    name="delay_800pp",
+)
+namespace.append_obj(
+    "MotorRecord",
+    module_name="eco.devices_general.motors",
+    pvname="SLAB-LMOT-M002:MOT",
+    name="rotation_wp",
+    lazy=True,
 )
 
 
+## Mid-IR setup stages
 namespace.append_obj(
-    "SmaractStreamdevice",
-    pvname = f"SLAB-LMTS-LAM12",
-    accuracy=1e-3,
-    name="delay_2_stg",
+    "MotorRecord",
     module_name="eco.devices_general.motors",
-    offset_file=f"/photonics/home/gac-slab/config/eco/reference_values/smaract_delay_2_stg",
+    pvname="SLAB-LMOT-M001:MOT",
+    name="delay_mirpp_stg",
     lazy=True,
 )
 namespace.append_obj(
     "DelayTime",
     module_name="eco.loptics.bernina_laser",
-    stage=delay_2_stg,
-    name="delay_2",
+    stage=delay_mirpp_stg,
+    name="delay_mirpp",
 )
+
+## Other stages
+
+namespace.append_obj(
+    "MotorRecord",
+    module_name="eco.devices_general.motors",
+    pvname="SLAB-LMOT-M003:MOT",
+    name="rotation_micos_1",
+    lazy=True,
+)
+namespace.append_obj(
+    "MotorRecord",
+    module_name="eco.devices_general.motors",
+    pvname="SLAB-LMOT-M004:MOT",
+    name="rotation_micos_2",
+    lazy=True,
+)
+
+
+
 ## Scan callback functions
 
 def _message_end_scan(scan):
@@ -196,7 +234,8 @@ callbacks_start_scan.append(_create_metadata_structure_start_scan)
 namespace.append_obj(
     "Scans",
     data_base_dir="scan_data",
-    scan_info_dir="/photonics/home/gac-slab/test/scan_info",
+    #scan_info_dir="/sf/slab/config/eco/test_acq/scan_info",
+    scan_info_dir=f"/sf/slab/data/{config['pgroup']}/res/scan_info",
     default_counters=[daq],
     checker=False,
     scan_directories=True,
@@ -209,19 +248,4 @@ namespace.append_obj(
     lazy=True,
 )
 
-############## experiment specific #############
-
-# try to append pgroup folder to path !!!!! This caused eco to run in a timeout without error traceback !!!!!
-try:
-    import sys
-    from ..utilities import TimeoutPath
-    if ~TimeoutPath(f'/sf/slab/data/{config["pgroup"]}/res/').exists():
-        print(
-            "Could not access experiment folder, could be due to more systematic file system failure!"
-        )
-except:
-    print("Did not succed to touch prgoup")
-
-
-#### pgroup specific appending, might be temporary at this location ####
 

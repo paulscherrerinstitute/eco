@@ -27,8 +27,9 @@ class IoxosChannel(Assembly):
         self._append(AdjustablePv, self.pvbase + f":CH{ch}:START_NEW", name = "sig_start", is_setting=True)
         self._append(AdjustablePv, self.pvbase + f":CH{ch}:END_NEW", name = "sig_end", is_setting=True)
         self._append(AdjustablePvEnum, self.pvbase + f":BOX_STAT{ch}", name = "boxcar_calculation", is_setting=True)
-        self._append(AdjustableFS, f"/photonics/home/gac-slab/config/eco/reference_values/ioxos_{name}_chopper_ch", name="chopper_ch", is_setting=True, default_value=0)
-        self._append(AdjustableFS, f"/photonics/home/gac-slab/config/eco/reference_values/ioxos_{name}_chopper_thr", name="chopper_thr", is_setting=True, default_value=1000)
+        self._append(AdjustableFS, f"/sf/slab/config/eco/reference_values/ioxos_{name}_chopper_ch", name="chopper_ch", is_setting=True, default_value=0)
+        self._append(AdjustableFS, f"/sf/slab/config/eco/reference_values/ioxos_{name}_chopper_thr", name="chopper_thr", is_setting=True, default_value=1000)
+        self._append(AdjustableFS, f"/sf/slab/config/eco/reference_values/ioxos_{name}_chopper_inv", name="chopper_inv", is_setting=True, default_value=True)
 
 class Slab_Ioxos(Assembly):
     def __init__(
@@ -60,7 +61,7 @@ class Slab_Ioxos_Daq(Assembly):
     ):
         super().__init__(name=name)
         self.ioxos = ioxos
-        self._append(AdjustableFS, "/photonics/home/gac-slab/config/eco/reference_values/ioxos_daq_single_shots", name="save_single_shots", is_setting=True)
+        self._append(AdjustableFS, "/sf/slab/config/eco/reference_values/ioxos_daq_single_shots", name="save_single_shots", is_setting=True)
         self._done = False
         self._default_file_path = default_file_path
         self._N_acqs = 0
@@ -77,35 +78,14 @@ class Slab_Ioxos_Daq(Assembly):
         self.ioxos.data.add_callback(callback = cb_get_data)
 
     def get_data(self, N_pulses=None):
+        
         N_channels = 8
         if N_pulses > 10:
             N_acqs = N_pulses // 10
-            N_samples = 10
         else:
-            N_samples = N_pulses
+            N_pulses=10
             N_acqs = 1
-        #self.ioxos.blocks(N_blocks)
-        #self.ioxos.samples(N_samples)
-
-        #block_len = N_channels*N_samples
-        #meta_len = 12
         self._data=np.zeros((N_channels*N_pulses))
-        #data_acc = np.ndarray((N_channels*N_pulses,))
-        #meta_acc = np.ndarray((N_blocks))
-        #self._m = 0
-#
-#        def cb_getdata(pv=None, *args, **kwargs):
-#            data_acc[self._m*block_len:(self._m+1)*block_len] = kwargs["value"][meta_len:]
-#            self._m = self._m + 1
-#            if self._m == N_blocks:
-#                pv.clear_callbacks()
-#                self._done = True
-
-
-
-        #self._done = False
-        #self.ioxos.data.add_callback(callback=cb_getdata, pv=self.ioxos.data)
-        #self.ioxos.restart(1)
         self._N_acqs = N_acqs
         while(True):
             if self._N_acqs == 0:
@@ -124,11 +104,14 @@ class Slab_Ioxos_Daq(Assembly):
         N_channels = data.shape[0]
         d = {f"ch{n}": data[n] for n in range(N_channels)}
         np.savez_compressed(file_name, **d)
+        fp = Path(file_name)
+        fp.chmod(0o775)
 
     def save_av(self, file_name, data, adjs_rb, adjs_name, N_pulses):
         chopper_chs = [self.ioxos.__dict__[f"ch{n}"].chopper_ch() for n in range(8)]
         chopper_thrs = [self.ioxos.__dict__[f"ch{n}"].chopper_thr() for n in range(8)]
-        w = np.array([data[ch]>thr for ch, thr in zip(chopper_chs, chopper_thrs)])
+        chopper_invs = [self.ioxos.__dict__[f"ch{n}"].chopper_inv() for n in range(8)]
+        w = np.array([data[ch]<thr if inv else data[ch]>thr for ch, thr, inv in zip(chopper_chs, chopper_thrs, chopper_invs)])
         d_av_on = np.mean(data, axis=1, where=w)
         d_av_off = np.mean(data, axis=1, where=~w)
         d_std_on = np.std(data, axis=1, where=w)
@@ -151,6 +134,8 @@ class Slab_Ioxos_Daq(Assembly):
                 head.extend([f"ch{n}_off_npulses, " for n in range(8)])
                 header = "".join(head)
                 np.savetxt(f,[d],header=header)
+                fp = Path(filename_av)
+                fp.chmod(0o775)
 
     def acquire(self, file_name=None, N_pulses=100, adjs_rb = [], adjs_name=[], default_path=True):
 
