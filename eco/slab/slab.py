@@ -3,24 +3,45 @@ from ..aliases import NamespaceCollection
 import pyttsx3
 from ..utilities.path_alias import PathAlias
 import os
+from pathlib import Path
+import shutil
+from eco.elements.adj_obj import AdjustableObject
+from eco.elements.adjustable import AdjustableFS
 
+### set pgroup from user input ###
+exp_path = Path("/sf/slab/exp/")
+exps = [[p.stem, p.resolve().stem] for p in exp_path.glob("*")]
+idx = ''
+input_message = "Select the pgroup of the experiment:\n"
+for index, (expname, pgroup) in enumerate(exps):
+    input_message += f'{index:2}) {expname:10} ({pgroup})\n'
+input_message += 'Your choice:'
+while idx not in range(len(exps)):
+    try:
+        idx = int(input(input_message))
+    except:
+        continue
+print(f'Selected experiment: {exps[idx][0]} {(exps[idx][1])}')
+pgroup = exps[idx][1]
 
 os.sys.path.insert(0,"/sf/slab/config/src/python/py_scilog")
 _eco_lazy_init = False
 
-config = Configuration(
-    "/sf/slab/config/eco/slab_config_eco.json", name="config"
+cfg_path = Path(f"/sf/slab/config/eco/{pgroup}_slab_config_eco.json")
+if not cfg_path.exists():
+    shutil.copy2("/sf/slab/config/eco/slab_config_eco.json", cfg_path.as_posix())
+_config = AdjustableFS(
+    cfg_path.as_posix(), name="_config"
 )
 
 path_aliases = PathAlias()
-
 namespace = Namespace(
     name="slab", root_module=__name__, alias_namespace=NamespaceCollection().slab
 )
 namespace.alias_namespace.data = []
-
+namespace.append_obj(AdjustableObject, _config, name="config")
 # Adding stuff that might be relevant for stuff configured below (e.g. config)
-
+config.pgroup(pgroup)
 
 namespace.append_obj(
     "set_global_memory_dir",
@@ -51,7 +72,7 @@ namespace.append_obj(
     "Slab_Ioxos_Daq",
     name="daq",
     module_name="eco.acquisition.ioxos_slab",
-    default_file_path=f'/sf/slab/data/{config["pgroup"]}/res/',
+    default_file_path=f'/sf/slab/data/{config.pgroup()}/res/',
     #default_file_path=f'/sf/slab/config/eco/test_acq/',
     ioxos=ioxos,
     lazy=True,
@@ -72,9 +93,9 @@ namespace.append_obj(
     "Run_Table2",
     name="run_table",
     module_name="eco.utilities.runtable",
-    exp_id= config["pgroup"],
+    exp_id= config.pgroup(),
     folder_id= "1n10Sfib-P9xqUhIQ0UuYUEkb_DpY3pcd",
-    exp_path= f"/sf/slab/data/{config['pgroup']}/res/run_table/",
+    exp_path= f"/sf/slab/data/{config.pgroup()}/res/run_table/",
     #exp_path= f"/sf/slab/config/eco/test_acq/",
     devices= "slab",
     keydf_fname= "/sf/slab/config/eco/run_table/gspread_keys.pkl",
@@ -235,7 +256,7 @@ namespace.append_obj(
     "Scans",
     data_base_dir="scan_data",
     #scan_info_dir="/sf/slab/config/eco/test_acq/scan_info",
-    scan_info_dir=f"/sf/slab/data/{config['pgroup']}/res/scan_info",
+    scan_info_dir=f"/sf/slab/data/{config.pgroup()}/res/scan_info",
     default_counters=[daq],
     checker=False,
     scan_directories=True,
