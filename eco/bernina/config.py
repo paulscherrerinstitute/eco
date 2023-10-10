@@ -32,27 +32,27 @@ components = [
         "kwargs": {},
         "lazy": True,
     },
-    {
-        "name": "elog",
-        "type": "eco.utilities.elog:Elog",
-        "args": ["https://elog-gfa.psi.ch/Bernina"],
-        "kwargs": {
-            "screenshot_directory": "/tmp",
-        },
-    },
-    {
-        "name": "screenshot",
-        "type": "eco.utilities.elog:Screenshot",
-        "args": [],
-        "kwargs": {"screenshot_directory": "/sf/bernina/config/screenshots"},
-    },
-    {
-        "name": "fel",
-        "type": "eco.fel.swissfel:SwissFel",
-        "args": [],
-        "kwargs": {},
-        "desc": "Fel related control and feedback",
-    },
+    # {
+    #     "name": "screenshot",
+    #     "type": "eco.utilities.elog:Screenshot",
+    #     "args": [],
+    #     "kwargs": {"screenshot_directory": "/sf/bernina/config/screenshots"},
+    # },
+    #    {
+    #        "name": "fel",
+    #        "type": "eco.fel.swissfel:SwissFel",
+    #        "args": [],
+    #        "kwargs": {},
+    #        "desc": "Fel related control and feedback",
+    #    },
+    #    {
+    #        "name": "mono",
+    #        "args": ["SAROP21-ODCM098"],
+    #        "kwargs": {},
+    #        "z_und": 98,
+    #        "desc": "DCM Monochromator",
+    #        "type": "eco.xoptics.dcm_new:DoubleCrystalMono",
+    #    },
     # {
     # "name": "slit_und",
     # "type": "eco.xoptics.slits:SlitFourBlades_old",
@@ -75,28 +75,28 @@ components = [
     # "type": "eco.xdiagnostics.intensity_monitors:SolidTargetDetectorPBPS",
     # "kwargs": {"VME_crate": "SAROP21-CVME-PBPS2", "link": 9},
     # },
-    {
-        "name": "mon_und",
-        "z_und": 53,
-        "desc": "Intensity/position monitor after Undulator",
-        "type": "eco.xdiagnostics.intensity_monitors:SolidTargetDetectorPBPS_new",
-        "args": ["SARFE10-PBPS053"],
-        "kwargs": {
-            "VME_crate": "SAROP21-CVME-PBPS1",
-            "link": 9,
-            "channels": {
-                "up": "SLAAR21-LSCP1-FNS:CH6:VAL_GET",
-                "down": "SLAAR21-LSCP1-FNS:CH7:VAL_GET",
-                "left": "SLAAR21-LSCP1-FNS:CH4:VAL_GET",
-                "right": "SLAAR21-LSCP1-FNS:CH5:VAL_GET",
-            },
-            "calc": {
-                "itot": "SLAAR21-LTIM01-EVR0:CALCI",
-                "xpos": "SLAAR21-LTIM01-EVR0:CALCX",
-                "ypos": "SLAAR21-LTIM01-EVR0:CALCY",
-            },
-        },
-    },
+    # {
+    #     "name": "mon_und",
+    #     "z_und": 53,
+    #     "desc": "Intensity/position monitor after Undulator",
+    #     "type": "eco.xdiagnostics.intensity_monitors:SolidTargetDetectorPBPS_new",
+    #     "args": ["SARFE10-PBPS053"],
+    #     "kwargs": {
+    #         "VME_crate": "SAROP21-CVME-PBPS1",
+    #         "link": 9,
+    #         "channels": {
+    #             "up": "SLAAR21-LSCP1-FNS:CH6:VAL_GET",
+    #             "down": "SLAAR21-LSCP1-FNS:CH7:VAL_GET",
+    #             "left": "SLAAR21-LSCP1-FNS:CH4:VAL_GET",
+    #             "right": "SLAAR21-LSCP1-FNS:CH5:VAL_GET",
+    #         },
+    #         "calc": {
+    #             "itot": "SLAAR21-LTIM01-EVR0:CALCI",
+    #             "xpos": "SLAAR21-LTIM01-EVR0:CALCX",
+    #             "ypos": "SLAAR21-LTIM01-EVR0:CALCY",
+    #         },
+    #     },
+    # },
     {
         "name": "pshut_und",
         "type": "eco.xoptics.shutters:PhotonShutter",
@@ -145,14 +145,14 @@ components = [
     #    "args": ["SARFE10-PBPS053"],
     #    "kwargs": {},
     # },
-    {
-        "name": "xspect",
-        "z_und": 53,
-        "desc": "X-ray single shot spectrometer",
-        "type": "eco.xdiagnostics.xspect:Xspect",
-        "args": [],
-        "kwargs": {},
-    },
+    # {
+    #     "name": "xspect",
+    #     "z_und": 53,
+    #     "desc": "X-ray single shot spectrometer",
+    #     "type": "eco.xdiagnostics.xspect:Xspect",
+    #     "args": [],
+    #     "kwargs": {},
+    # },
     {
         "name": "prof_fe",
         "args": ["SARFE10-PPRM064"] * 2,
@@ -186,25 +186,17 @@ components = [
         "type": "eco.xoptics.offsetMirrors_new:OffsetMirrorsBernina",
         "kwargs": {},
     },
-    {
-        "name": "mono",
-        "args": ["SAROP21-ODCM098"],
-        "kwargs": {},
-        "z_und": 98,
-        "desc": "DCM Monochromator",
-        "type": "eco.xoptics.dcm_new:DoubleCrystalMono",
-    },
-    {
-        "name": "mono_old",
-        "args": ["SAROP21-ODCM098"],
-        "kwargs": {
-            "energy_sp": "SAROP21-ARAMIS:ENERGY_SP",
-            "energy_rb": "SAROP21-ARAMIS:ENERGY",
-        },
-        "z_und": 98,
-        "desc": "DCM Monochromator",
-        "type": "eco.xoptics.dcm:Double_Crystal_Mono",
-    },
+    # {
+    #     "name": "mono_old",
+    #     "args": ["SAROP21-ODCM098"],
+    #     "kwargs": {
+    #         "energy_sp": "SAROP21-ARAMIS:ENERGY_SP",
+    #         "energy_rb": "SAROP21-ARAMIS:ENERGY",
+    #     },
+    #     "z_und": 98,
+    #     "desc": "DCM Monochromator",
+    #     "type": "eco.xoptics.dcm:Double_Crystal_Mono",
+    # },
     {
         "name": "prof_mono",
         "args": ["SAROP21-PPRM113"] * 2,
@@ -234,28 +226,6 @@ components = [
     #    "kwargs": {"VME_crate": "SAROP21-CVME-PBPS1", "link": 9},
     # },
     {
-        "name": "mon_opt",
-        "z_und": 133,
-        "desc": "Intensity/position monitor after Optics hutch",
-        "type": "eco.xdiagnostics.intensity_monitors:SolidTargetDetectorPBPS_new",
-        "args": ["SAROP21-PBPS133"],
-        "kwargs": {
-            "VME_crate": "SAROP21-CVME-PBPS1",
-            "link": 9,
-            "channels": {
-                "up": "SLAAR21-LSCP1-FNS:CH6:VAL_GET",
-                "down": "SLAAR21-LSCP1-FNS:CH7:VAL_GET",
-                "left": "SLAAR21-LSCP1-FNS:CH4:VAL_GET",
-                "right": "SLAAR21-LSCP1-FNS:CH5:VAL_GET",
-            },
-            "calc": {
-                "itot": "SLAAR21-LTIM01-EVR0:CALCI",
-                "xpos": "SLAAR21-LTIM01-EVR0:CALCX",
-                "ypos": "SLAAR21-LTIM01-EVR0:CALCY",
-            },
-        },
-    },
-    {
         "name": "prof_opt",
         "args": ["SAROP21-PPRM133"] * 2,
         "kwargs": {},
@@ -279,22 +249,22 @@ components = [
         "desc": "Attenuator Bernina",
         "type": "eco.xoptics.attenuator_aramis:AttenuatorAramis",
     },
-    {
-        "name": "slit_att",
-        "args": ["SAROP21-OAPU136"],
-        "kwargs": {},
-        "z_und": 136,
-        "desc": "Slits behind attenuator",
-        "type": "eco.xoptics.slits:SlitPosWidth",
-    },
-    {
-        "name": "det_dio",
-        "args": ["SAROP21-PDIO138"],
-        "z_und": 138,
-        "desc": "Diode digitizer for exp data",
-        "type": "eco.devices_general.detectors:DiodeDigitizer",
-        "kwargs": {"VME_crate": "SAROP21-CVME-PBPS2", "link": 9},
-    },
+    # {
+    #     "name": "slit_att",
+    #     "args": ["SAROP21-OAPU136"],
+    #     "kwargs": {},
+    #     "z_und": 136,
+    #     "desc": "Slits behind attenuator",
+    #     "type": "eco.xoptics.slits:SlitPosWidth",
+    # },
+    # {
+    #     "name": "det_dio",
+    #     "args": ["SAROP21-PDIO138"],
+    #     "z_und": 138,
+    #     "desc": "Diode digitizer for exp data",
+    #     "type": "eco.devices_general.detectors:DiodeDigitizer",
+    #     "kwargs": {"VME_crate": "SAROP21-CVME-PBPS2", "link": 9},
+    # },
     {
         "name": "prof_att",
         "args": ["SAROP21-PPRM138"] * 2,
@@ -354,17 +324,6 @@ components = [
     # "diff_detector": {"jf_id": "JF01T03V01"},
     # },
     # },
-    {
-        "args": [],
-        "name": "vonHamos",
-        "z_und": 142,
-        "desc": "Kern experiment, von Hamos vertical and horizontal stages ",
-        "type": "eco.devices_general.micos_stage:stage",
-        "kwargs": {
-            "vonHamos_horiz_pv": config["Kern"]["vonHamos_horiz"],
-            "vonHamos_vert_pv": config["Kern"]["vonHamos_vert"],
-        },
-    },
     # {
     #     "args": [],
     #     "name": "gasjet",
@@ -385,22 +344,6 @@ components = [
             "bshost": "sf-daqsync-01.psi.ch",
             "bsport": 11151,
         },
-    },
-    {
-        "args": ["SARES20-CAMS142-M1"],
-        "name": "cam_sample_sideview",
-        "z_und": 142,
-        "desc": "",
-        "type": "eco.devices_general.cameras_swissfel:CameraBasler",
-        "kwargs": {},
-    },
-    {
-        "args": ["SARES20-CAMS142-M3"],
-        "name": "cam_sample_inline",
-        "z_und": 142,
-        "desc": "",
-        "type": "eco.devices_general.cameras_swissfel:CameraBasler",
-        "kwargs": {},
     },
     # {
     #    "args": ["SARES20-CAMS142-C3"],
@@ -423,18 +366,6 @@ components = [
     # "camera_pv": config["cams_qioptiq"]["camera_pv"],
     # },
     # },
-    {
-        "args": [],
-        "name": "cams_sigma",
-        "z_und": 142,
-        "desc": "Sigma objective",
-        "type": "eco.endstations.bernina_cameras:Sigma",
-        "kwargs": {
-            "bshost": "sf-daqsync-01.psi.ch",
-            "bsport": 11149,
-            "camera_pv": config["cams_sigma"]["camera_pv"],
-        },
-    },
     # {
     #     "args": ["SLAAR02-TSPL-EPL"],
     #     "name": "phase_shifter",
@@ -450,28 +381,6 @@ components = [
         "desc": "Laser Shutter",
         "type": "eco.loptics.laser_shutter:laser_shutter",
         "kwargs": {},
-    },
-    {
-        "args": [],
-        "name": "epics_channel_list",
-        "desc": "epics channel list",
-        "type": "eco.utilities.config:ChannelList",
-        "kwargs": {
-            "file_name": "/sf/bernina/config/channel_lists/default_channel_list_epics"
-        },
-        "lazy": True,
-    },
-    {
-        "args": [],
-        "name": "epics_daq",
-        "z_und": 142,
-        "desc": "epics data acquisition",
-        "type": "eco.acquisition.epics_data:Epicstools",
-        "kwargs": {
-            "channel_list": Component("epics_channel_list"),
-            "default_file_path": f"/sf/bernina/data/{config['pgroup']}/res/epics_daq/",
-        },
-        "lazy": True,
     },
     # {
     #     "args": [],
@@ -489,17 +398,17 @@ components = [
     #         "default_file_path": None,
     #     },
     # },
-    {
-        "args": [
-            config["checker_PV"],
-            config["checker_thresholds"],
-            config["checker_fractionInThreshold"],
-        ],  #'SARFE10-PBPG050:HAMP-INTENSITY-CAL',[60,700],.7],
-        "name": "checker",
-        "desc": "checker functions for data acquisition",
-        "type": "eco.acquisition.checkers:CheckerCA",
-        "kwargs": {},
-    },
+    # {
+    #    "args": [
+    #        config["checker_PV"],
+    #        config["checker_thresholds"],
+    #        config["checker_fractionInThreshold"],
+    #    ],  #'SARFE10-PBPG050:HAMP-INTENSITY-CAL',[60,700],.7],
+    #    "name": "checker",
+    #    "desc": "checker functions for data acquisition",
+    #    "type": "eco.acquisition.checkers:CheckerCA",
+    #    "kwargs": {},
+    # },
     # {
     #     "args": [
     #         "SARES20-LSCP9-FNS:CH1:VAL_GET",
@@ -510,21 +419,6 @@ components = [
     #     "desc": "checker functions for data acquisition",
     #     "type": "eco.acquisition.checkers:CheckerCA",
     #     "kwargs": {},
-    # },
-    # {
-    #     "args": [],
-    #     "name": "scans_epics",
-    #     "desc": "epics non beam synchronous based acquisition",
-    #     "type": "eco.acquisition.scan:Scans",
-    #     "kwargs": {
-    #         "data_base_dir": "scan_data",
-    #         "scan_info_dir": f"/sf/bernina/data/{config['pgroup']}/res/scan_info",
-    #         "default_counters": [Component("epics_daq")],
-    #         "checker": Component("checker_epics"),
-    #         "scan_directories": True,
-    #         "run_table": Component("run_table"),
-    #     },
-    #     "lazy": True,
     # },
     # {
     #     "args": [],
@@ -579,14 +473,6 @@ components = [
             "default_file_path": f"/sf/bernina/data/{config['pgroup']}/res/%s",
         },
     },
-    {
-        "args": [],
-        "name": "usd_table",
-        "z_und": 141,
-        "desc": "Upstream diagnostics table",
-        "type": "eco.endstations.hexapod:HexapodSymmetrie",
-        "kwargs": {"offset": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]},
-    },
     # {
     #     "args": ["SARES23-"],
     #     "name": "slit_kb",
@@ -603,20 +489,20 @@ components = [
     #    "type": "eco.xoptics.slit_USD:Upstream_diagnostic_slits",
     #    "kwargs": {"right": "LIC7", "left": "LIC8", "up": "LIC8", "down": "LIC5"},
     # },
-    {
-        "args": [
-            [
-                Component("slit_und"),
-                Component("slit_switch"),
-                Component("slit_att"),
-                Component("slit_kb"),
-            ]
-        ],
-        "name": "slits",
-        "desc": "collection of all slits",
-        "type": "eco.utilities.beamline:Slits",
-        "kwargs": {},
-    },
+    # {
+    #     "args": [
+    #         [
+    #             Component("slit_und"),
+    #             Component("slit_switch"),
+    #             Component("slit_att"),
+    #             Component("slit_kb"),
+    #         ]
+    #     ],
+    #     "name": "slits",
+    #     "desc": "collection of all slits",
+    #     "type": "eco.utilities.beamline:Slits",
+    #     "kwargs": {},
+    # },
     # {
     #     "args": [
     #         [Component("slit_switch"), Component("slit_att"), Component("slit_kb"),]
@@ -659,14 +545,6 @@ components = [
     #            },
     #        },
     #    },
-    {
-        "args": [],
-        "name": "dsd",
-        "z_und": 146,
-        "desc": "downstream diagnostics",
-        "type": "eco.xdiagnostics.dsd:DownstreamDiagnostic",
-        "kwargs": {},
-    },
 ]
 
 try:

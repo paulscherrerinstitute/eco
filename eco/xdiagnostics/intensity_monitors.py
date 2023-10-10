@@ -1,4 +1,5 @@
-from ..devices_general.motors import MotorRecord
+from eco.devices_general.pipelines_swissfel import Pipeline
+from ..devices_general.motors import MotorRecord, SmaractRecord
 from ..devices_general.detectors import FeDigitizer
 from ..epics.detector import DetectorPvDataStream
 from ..detector.detectors_psi import DetectorBsStream
@@ -48,6 +49,388 @@ class FeDigitiza(Assembly):
         # Id + "-DRS_TC",
         # Id + "-PULSEID-valid",
         # ]
+
+
+class CalibrationRecord(Assembly):
+    def __init__(self, pvbase, name=None):
+        self.pvbase = pvbase
+        super().__init__(name)
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".INPA",
+            name="input_A",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".INPB",
+            name="input_B",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".INPC",
+            name="input_C",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".INPD",
+            name="input_D",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".INPJ",
+            name="input_J",
+            is_setting=True,
+            is_display=True,
+        )
+
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".E",
+            name="const_E",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".F",
+            name="const_F",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".G",
+            name="const_G",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".H",
+            name="const_H",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".I",
+            name="const_I",
+            is_setting=True,
+            is_display=True,
+        )
+        self._append(
+            AdjustablePv,
+            self.pvbase + ".CALC",
+            name="function",
+            is_setting=True,
+            is_display=True,
+        )
+
+
+# class SolidTargetDetectorPBPSMonOpt(SolidTargetDetectorPBPS):
+#     def __init__(self, *args, **kwargs):
+#         ...
+
+
+class SolidTargetDetectorPBPS(Assembly):
+    def __init__(
+        self,
+        pvname,
+        # VME_crate=None,
+        # pipeline=None,
+        # link=None,
+        channel_xpos=None,
+        channel_ypos=None,
+        channel_intensity=None,
+        diode_channels_raw={},
+        # ch_up=12,
+        # ch_down=13,
+        # ch_left=15,
+        # ch_right=14,
+        # elog=None,
+        use_calibration=True,
+        calibration_records=None,
+        name=None,
+        fe_digi_channels={},
+        # calc=None,
+        # calc_calib={},
+        pipeline_computation=None,
+    ):
+        super().__init__(name=name)
+        self.pvname = pvname
+        self._append(
+            MotorRecord, pvname + ":MOTOR_X1", name="x_diodes", is_setting=True
+        )
+        self._append(
+            MotorRecord, pvname + ":MOTOR_Y1", name="y_diodes", is_setting=True
+        )
+        self._append(
+            MotorRecord, pvname + ":MOTOR_PROBE", name="target_y", is_setting=True
+        )
+        self._append(
+            AdjustablePvEnum, pvname + ":PROBE_SP", name="target", is_setting=True
+        )
+        if channel_intensity:
+            self._append(
+                DetectorBsStream,
+                channel_intensity,
+                name="intensity",
+                is_setting=False,
+            )
+        else:
+            self._append(
+                DetectorBsStream,
+                pvname + ":INTENSITY",
+                name="intensity",
+                is_setting=False,
+            )
+
+        if channel_xpos:
+            self._append(DetectorBsStream, channel_xpos, name="xpos", is_setting=False)
+        else:
+            self._append(
+                DetectorBsStream, pvname + ":XPOS", name="xpos", is_setting=False
+            )
+        if channel_ypos:
+            self._append(DetectorBsStream, channel_ypos, name="ypos", is_setting=False)
+        else:
+            self._append(
+                DetectorBsStream, pvname + ":YPOS", name="ypos", is_setting=False
+            )
+
+        if diode_channels_raw:
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["up"],
+                name="signal_up_raw",
+                is_setting=False,
+            )
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["down"],
+                name="signal_down_raw",
+                is_setting=False,
+            )
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["left"],
+                name="signal_left_raw",
+                is_setting=False,
+            )
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["right"],
+                name="signal_right_raw",
+                is_setting=False,
+            )
+        if fe_digi_channels:
+            self._append(
+                FeDigitiza,
+                fe_digi_channels["left"],
+                name="settings_diode_left",
+                is_setting=True,
+            )
+            self._append(
+                FeDigitiza,
+                fe_digi_channels["right"],
+                name="settings_diode_right",
+                is_setting=True,
+            )
+            self._append(
+                FeDigitiza,
+                fe_digi_channels["up"],
+                name="settings_diode_up",
+                is_setting=True,
+            )
+            self._append(
+                FeDigitiza,
+                fe_digi_channels["down"],
+                name="settings_diode_down",
+                is_setting=True,
+            )
+
+        if use_calibration:
+            # Calibration calculation record
+
+            # Calibration
+            if calibration_records:
+                self._append(
+                    CalibrationRecord,
+                    calibration_records["intensity"],
+                    name="calib_intensity",
+                    is_setting=True,
+                    is_display=False,
+                )
+                self._append(
+                    CalibrationRecord,
+                    calibration_records["xpos"],
+                    name="calib_xpos",
+                    is_setting=True,
+                    is_display=False,
+                )
+                self._append(
+                    CalibrationRecord,
+                    calibration_records["ypos"],
+                    name="calib_ypos",
+                    is_setting=True,
+                    is_display=False,
+                )
+
+            else:
+                self._append(
+                    CalibrationRecord,
+                    pvname + ":INTENSITY",
+                    name="calib_intensity",
+                    is_setting=True,
+                    is_display=False,
+                )
+                self._append(
+                    CalibrationRecord,
+                    pvname + ":XPOS",
+                    name="calib_xpos",
+                    is_setting=True,
+                    is_display=False,
+                )
+                self._append(
+                    CalibrationRecord,
+                    pvname + ":YPOS",
+                    name="calib_ypos",
+                    is_setting=True,
+                    is_display=False,
+                )
+        if pipeline_computation:
+            self._append(Pipeline, pipeline_computation,name='pipeline_comp', is_setting=True, is_display=False)
+
+    def get_calibration_values(self, seconds=5, return_data=False):
+        self.x_diodes.set_target_value(0).wait()
+        self.y_diodes.set_target_value(0).wait()
+        ds = [
+            self.signal_up_raw,
+            self.signal_down_raw,
+            self.signal_left_raw,
+            self.signal_right_raw,
+        ]
+        aqs = [d.acquire(seconds=seconds) for d in ds]
+        data = [aq.wait() for aq in aqs]
+        mean = [np.mean(td) for td in data]
+        std = [np.std(td) for td in data]
+        nsamples = [len(td) for td in data]
+
+        print(f"Got {nsamples} samples in {seconds} s.")
+        norm_diodes = [1 / tm / 4 for tm in mean]
+        if return_data:
+            return data,norm_diodes
+        return norm_diodes
+
+    def set_calibration_values(self, norm_diodes):
+        self.calib_intensity.const_E.set_target_value(norm_diodes[0])
+        self.calib_ypos.const_E.set_target_value(norm_diodes[0])
+        self.calib_intensity.const_F.set_target_value(norm_diodes[1])
+        self.calib_ypos.const_F.set_target_value(norm_diodes[1])
+        self.calib_intensity.const_G.set_target_value(norm_diodes[2])
+        self.calib_xpos.const_E.set_target_value(norm_diodes[2])
+        self.calib_intensity.const_H.set_target_value(norm_diodes[3])
+        self.calib_xpos.const_F.set_target_value(norm_diodes[3])
+
+    def get_calibration_values_position(
+        self, calib_intensities, seconds=5, motion_range=0.2
+    ):
+        self.x_diodes.set_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.y_diodes.set_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.x_diodes.set_target_value(0).wait()
+        self.y_diodes.set_target_value(0).wait()
+        raw = []
+        for pos in [motion_range / 2, -motion_range / 2]:
+            print(pos)
+            self.x_diodes.set_target_value(pos).wait()
+            aqs = [
+                ts.acquire(seconds=seconds)
+                for ts in [self.signal_left_raw, self.signal_right_raw]
+            ]
+            vals = [
+                np.mean(aq.wait()) * calib
+                for aq, calib in zip(aqs, calib_intensities[0:2])
+            ]
+            raw.append((vals[0] - vals[1]) / (vals[0] + vals[1]))
+        xcalib = motion_range / np.diff(raw)[0]
+        self.x_diodes.set_target_value(0).wait()
+        raw = []
+        for pos in [motion_range / 2, -motion_range / 2]:
+            self.y_diodes.set_target_value(pos).wait()
+            aqs = [
+                ts.acquire(seconds=seconds)
+                for ts in [self.signal_up_raw, self.signal_down_raw]
+            ]
+            vals = [
+                np.mean(aq.wait()) * calib
+                for aq, calib in zip(aqs, calib_intensities[2:4])
+            ]
+            raw.append((vals[0] - vals[1]) / (vals[0] + vals[1]))
+        ycalib = motion_range / np.diff(raw)[0]
+        self.y_diodes.set_target_value(0).wait()
+        return xcalib, ycalib
+
+    def set_calibration_values_position(self, xcalib, ycalib):
+        self.calib_xpos.const_I.set_target_value(xcalib)
+        # self.calib_xpos.const_J.set_target_value(0)
+        self.calib_ypos.const_I.set_target_value(ycalib)
+        # self.calib_ypos.const_J.set_target_value(0)
+
+    def calibrate(self, seconds=5):
+        c = self.get_calibration_values(seconds=seconds)
+        self.set_calibration_values(c)
+        xc, yc = self.get_calibration_values_position(c, seconds=seconds)
+        self.set_calibration_values_position(xc, yc)
+
+    def set_gains(self, value):
+        try:
+            self.diode_up.gain.set(value)
+            self.diode_down.gain.set(value)
+            self.diode_left.gain.set(value)
+            self.diode_right.gain.set(value)
+        except:
+            print("No diodes configured, can not change any gain!")
+
+    def get_available_gains(self):
+        try:
+            nu = self.diode_up.gain.names
+            nd = self.diode_down.gain.names
+            nl = self.diode_left.gain.names
+            nr = self.diode_right.gain.names
+            assert (
+                nu == nd == nl == nr
+            ), "NB: the gain options of the four diodes are not equal!!!"
+            return nu
+        except:
+            print("No diodes configured, can not change any gain!")
+
+    def get_gains(self):
+        try:
+            gains = dict()
+            gains["up"] = (self.diode_up.gain.get_name(), self.diode_up.gain.get())
+            gains["down"] = (
+                self.diode_down.gain.get_name(),
+                self.diode_down.gain.get(),
+            )
+            gains["left"] = (
+                self.diode_left.gain.get_name(),
+                self.diode_left.gain.get(),
+            )
+            gains["right"] = (
+                self.diode_right.gain.get_name(),
+                self.diode_right.gain.get(),
+            )
+            return gains
+        except:
+            print("No diodes configured, can not change any gain!")
 
 
 class SolidTargetDetectorPBPS_assi(Assembly):
@@ -340,108 +723,6 @@ class SolidTargetDetectorPBPS_new:
         # SAROP21-CVME-PBPS:Lnk10Ch15-WD-gain
 
 
-class SolidTargetDetectorPBPS:
-    def __init__(
-        self,
-        Id,
-        VME_crate=None,
-        link=None,
-        ch_up=12,
-        ch_down=13,
-        ch_left=15,
-        ch_right=14,
-        elog=None,
-        name=None,
-    ):
-        self.Id = Id
-        self.name = name
-        self.diode_x = MotorRecord(Id + ":MOTOR_X1", name="diode_x")
-        self.diode_y = MotorRecord(Id + ":MOTOR_Y1", name="diode_y")
-        self.target_pos = MotorRecord(Id + ":MOTOR_PROBE", name="target_pos")
-        self.target = AdjustablePvEnum(Id + ":PROBE_SP", name="target")
-        if VME_crate:
-            self.diode_up = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_up))
-            self.diode_down = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_down))
-            self.diode_left = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_left))
-            self.diode_right = FeDigitizer("%s:Lnk%dCh%d" % (VME_crate, link, ch_right))
-
-        if self.name:
-            self.alias = Alias(name)
-            self.alias.append(self.diode_x.alias)
-            self.alias.append(self.diode_y.alias)
-            self.alias.append(self.target_pos.alias)
-            self.alias.append(self.target.alias)
-
-    def __repr__(self):
-        s = f"**Intensity  monitor {self.name}**\n\n"
-
-        s += f"Target in: {self.target.get_current_value().name}\n\n"
-        try:
-            sd = "**Biasd voltage**\n"
-            sd += " - Diode up: %.4f\n" % (sdelf.diode_up.get_biasd())
-            sd += " - Diode down: %.4f\n" % (sdelf.diode_down.get_biasd())
-            sd += " - Diode left: %.4f\n" % (sdelf.diode_left.get_biasd())
-            sd += " - Diode right: %.4f\n" % (sdelf.diode_right.get_biasd())
-            sd += "\n"
-
-            sd += "**Gain**\n"
-            sd += " - Diode up: %i\n" % (sdelf.diode_up.gain.get())
-            sd += " - Diode down: %i\n" % (sdelf.diode_down.gain.get())
-            sd += " - Diode left: %i\n" % (sdelf.diode_left.gain.get())
-            sd += " - Diode right: %i\n" % (sdelf.diode_right.gain.get())
-            s += sd
-        except:
-            pass
-        return s
-
-    def set_gains(self, value):
-        try:
-            self.diode_up.gain.set(value)
-            self.diode_down.gain.set(value)
-            self.diode_left.gain.set(value)
-            self.diode_right.gain.set(value)
-        except:
-            print("No diodes configured, can not change any gain!")
-
-    def get_available_gains(self):
-        try:
-            nu = self.diode_up.gain.names
-            nd = self.diode_down.gain.names
-            nl = self.diode_left.gain.names
-            nr = self.diode_right.gain.names
-            assert (
-                nu == nd == nl == nr
-            ), "NB: the gain options of the four diodes are not equal!!!"
-            return nu
-        except:
-            print("No diodes configured, can not change any gain!")
-
-    def get_gains(self):
-        try:
-            gains = dict()
-            gains["up"] = (self.diode_up.gain.get_name(), self.diode_up.gain.get())
-            gains["down"] = (
-                self.diode_down.gain.get_name(),
-                self.diode_down.gain.get(),
-            )
-            gains["left"] = (
-                self.diode_left.gain.get_name(),
-                self.diode_left.gain.get(),
-            )
-            gains["right"] = (
-                self.diode_right.gain.get_name(),
-                self.diode_right.gain.get(),
-            )
-            return gains
-        except:
-            print("No diodes configured, can not change any gain!")
-
-        # SAROP21-CVME-PBPS:Lnk10Ch15-WD-gain
-
-
-from ..elements.assembly import Assembly
-
-
 class SolidTargetDetectorPBPS_new_assembly(Assembly):
     def __init__(
         self,
@@ -714,7 +995,7 @@ class SolidTargetDetectorPBPS_assembly(Assembly):
                 DetectorPvDataStream, calc["ypos"], name="ypos", is_setting=False
             )
 
-    def get_calibration_values(self, seconds=5):
+    def get_calibration_values(self, seconds=5, return_data=False):
         self.x_diodes.set_target_value(0).wait()
         self.y_diodes.set_target_value(0).wait()
         ds = [self.signal_up, self.signal_down, self.signal_left, self.signal_right]
@@ -723,6 +1004,8 @@ class SolidTargetDetectorPBPS_assembly(Assembly):
         mean = [np.mean(td) for td in data]
         std = [np.std(td) for td in data]
         norm_diodes = [1 / tm / 4 for tm in mean]
+        if return_data:
+            return data,norm_diodes
         return norm_diodes
 
     def set_calibration_values(self, norm_diodes):
@@ -791,6 +1074,256 @@ class SolidTargetDetectorPBPS_assembly(Assembly):
         channels = ["SLAAR21-LTIM01-EVR0:CALCY.INPJ", "SLAAR21-LTIM01-EVR0:CALCY.INPI"]
         for tc, tv in zip(channels, ycalib):
             PV(tc).put(bytes(str(tv), "utf8"))
+
+    def calibrate(self, seconds=5):
+        c = self.get_calibration_values(seconds=seconds)
+        self.set_calibration_values(c)
+        xc, yc = self.get_calibration_values_position(c, seconds=seconds)
+        self.set_calibration_values_position(xc, yc)
+
+    def set_gains(self, value):
+        try:
+            self.diode_up.gain.set(value)
+            self.diode_down.gain.set(value)
+            self.diode_left.gain.set(value)
+            self.diode_right.gain.set(value)
+        except:
+            print("No diodes configured, can not change any gain!")
+
+    def get_available_gains(self):
+        try:
+            nu = self.diode_up.gain.names
+            nd = self.diode_down.gain.names
+            nl = self.diode_left.gain.names
+            nr = self.diode_right.gain.names
+            assert (
+                nu == nd == nl == nr
+            ), "NB: the gain options of the four diodes are not equal!!!"
+            return nu
+        except:
+            print("No diodes configured, can not change any gain!")
+
+    def get_gains(self):
+        try:
+            gains = dict()
+            gains["up"] = (self.diode_up.gain.get_name(), self.diode_up.gain.get())
+            gains["down"] = (
+                self.diode_down.gain.get_name(),
+                self.diode_down.gain.get(),
+            )
+            gains["left"] = (
+                self.diode_left.gain.get_name(),
+                self.diode_left.gain.get(),
+            )
+            gains["right"] = (
+                self.diode_right.gain.get_name(),
+                self.diode_right.gain.get(),
+            )
+            return gains
+        except:
+            print("No diodes configured, can not change any gain!")
+
+
+class SolidTargetDetectorBerninaUSD(Assembly):
+    def __init__(
+        self,
+        pv_targets,
+        # VME_crate=None,
+        # pipeline=None,
+        # link=None,
+        channel_xpos=None,
+        channel_ypos=None,
+        channel_intensity=None,
+        diode_channels_raw={},
+        # ch_up=12,
+        # ch_down=13,
+        # ch_left=15,
+        # ch_right=14,
+        # elog=None,
+        use_calibration=True,
+        calibration_records=None,
+        name=None,
+        # calc=None,
+        # calc_calib={},
+    ):
+        super().__init__(name=name)
+
+        self._append(
+            SmaractRecord,
+            pv_targets,
+            name="target_x",
+            is_setting=True,
+            is_display=True,
+        )
+        if channel_intensity:
+            self._append(
+                DetectorBsStream,
+                channel_intensity,
+                name="intensity",
+                is_setting=False,
+            )
+
+        if channel_xpos:
+            self._append(DetectorBsStream, channel_xpos, name="xpos", is_setting=False)
+        # else:
+        #     self._append(
+        #         DetectorBsStream, pvname + ":XPOS", name="xpos", is_setting=False
+        #     )
+        if channel_ypos:
+            self._append(DetectorBsStream, channel_ypos, name="ypos", is_setting=False)
+        # else:
+        #     self._append(
+        #         DetectorBsStream, pvname + ":YPOS", name="ypos", is_setting=False
+        #     )
+
+        if diode_channels_raw:
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["up"],
+                name="signal_up_raw",
+                is_setting=False,
+            )
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["down"],
+                name="signal_down_raw",
+                is_setting=False,
+            )
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["left"],
+                name="signal_left_raw",
+                is_setting=False,
+            )
+            self._append(
+                DetectorBsStream,
+                diode_channels_raw["right"],
+                name="signal_right_raw",
+                is_setting=False,
+            )
+
+        if use_calibration:
+            # Calibration calculation record
+
+            # Calibration
+            if calibration_records:
+                self._append(
+                    CalibrationRecord,
+                    calibration_records["intensity"],
+                    name="calib_intensity",
+                    is_setting=True,
+                    is_display=False,
+                )
+                self._append(
+                    CalibrationRecord,
+                    calibration_records["xpos"],
+                    name="calib_xpos",
+                    is_setting=True,
+                    is_display=False,
+                )
+                self._append(
+                    CalibrationRecord,
+                    calibration_records["ypos"],
+                    name="calib_ypos",
+                    is_setting=True,
+                    is_display=False,
+                )
+
+            # else:
+            #     self._append(
+            #         CalibrationRecord,
+            #         pvname + ":INTENSITY",
+            #         name="calib_intensity",
+            #         is_setting=True,
+            #         is_display=False,
+            #     )
+            #     self._append(
+            #         CalibrationRecord,
+            #         pvname + ":XPOS",
+            #         name="calib_xpos",
+            #         is_setting=True,
+            #         is_display=False,
+            #     )
+            #     self._append(
+            #         CalibrationRecord,
+            #         pvname + ":YPOS",
+            #         name="calib_ypos",
+            #         is_setting=True,
+            #         is_display=False,
+            #     )
+
+    def get_calibration_values(self, seconds=5):
+        self.x_diodes.set_target_value(0).wait()
+        self.y_diodes.set_target_value(0).wait()
+        ds = [
+            self.signal_up_raw,
+            self.signal_down_raw,
+            self.signal_left_raw,
+            self.signal_right_raw,
+        ]
+        aqs = [d.acquire(seconds=seconds) for d in ds]
+        data = [aq.wait() for aq in aqs]
+        mean = [np.mean(td) for td in data]
+        std = [np.std(td) for td in data]
+        nsamples = [len(td) for td in data]
+
+        print(f"Got {nsamples} samples in {seconds} s.")
+        norm_diodes = [1 / tm / 4 for tm in mean]
+        return norm_diodes
+
+    def set_calibration_values(self, norm_diodes):
+        self.calib_intensity.const_E.set_target_value(norm_diodes[0])
+        self.calib_ypos.const_E.set_target_value(norm_diodes[0])
+        self.calib_intensity.const_F.set_target_value(norm_diodes[1])
+        self.calib_ypos.const_F.set_target_value(norm_diodes[1])
+        self.calib_intensity.const_G.set_target_value(norm_diodes[2])
+        self.calib_xpos.const_E.set_target_value(norm_diodes[2])
+        self.calib_intensity.const_H.set_target_value(norm_diodes[3])
+        self.calib_xpos.const_F.set_target_value(norm_diodes[3])
+
+    def get_calibration_values_position(
+        self, calib_intensities, seconds=5, motion_range=0.2
+    ):
+        self.x_diodes.set_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.y_diodes.set_limits(-motion_range / 2 - 0.1, +motion_range / 2 + 0.1)
+        self.x_diodes.set_target_value(0).wait()
+        self.y_diodes.set_target_value(0).wait()
+        raw = []
+        for pos in [motion_range / 2, -motion_range / 2]:
+            print(pos)
+            self.x_diodes.set_target_value(pos).wait()
+            aqs = [
+                ts.acquire(seconds=seconds)
+                for ts in [self.signal_left_raw, self.signal_right_raw]
+            ]
+            vals = [
+                np.mean(aq.wait()) * calib
+                for aq, calib in zip(aqs, calib_intensities[0:2])
+            ]
+            raw.append((vals[0] - vals[1]) / (vals[0] + vals[1]))
+        xcalib = motion_range / np.diff(raw)[0]
+        self.x_diodes.set_target_value(0).wait()
+        raw = []
+        for pos in [motion_range / 2, -motion_range / 2]:
+            self.y_diodes.set_target_value(pos).wait()
+            aqs = [
+                ts.acquire(seconds=seconds)
+                for ts in [self.signal_up_raw, self.signal_down_raw]
+            ]
+            vals = [
+                np.mean(aq.wait()) * calib
+                for aq, calib in zip(aqs, calib_intensities[2:4])
+            ]
+            raw.append((vals[0] - vals[1]) / (vals[0] + vals[1]))
+        ycalib = motion_range / np.diff(raw)[0]
+        self.y_diodes.set_target_value(0).wait()
+        return xcalib, ycalib
+
+    def set_calibration_values_position(self, xcalib, ycalib):
+        self.calib_xpos.const_I.set_target_value(xcalib)
+        self.calib_xpos.const_J.set_target_value(0)
+        self.calib_ypos.const_I.set_target_value(ycalib)
+        self.calib_ypos.const_J.set_target_value(0)
 
     def calibrate(self, seconds=5):
         c = self.get_calibration_values(seconds=seconds)

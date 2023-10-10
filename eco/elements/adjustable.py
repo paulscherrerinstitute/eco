@@ -4,9 +4,11 @@ import time
 from json import load, dump
 from pathlib import Path
 from threading import Thread
-
+import itertools
 import colorama
+import numpy as np
 
+import eco
 from eco.aliases import Alias
 from eco.devices_general.utilities import Changer
 
@@ -104,6 +106,60 @@ def spec_convenience(Adj):
         Adj.mv = mv
         Adj.mvr = mvr
 
+    def wm_elog(self, premessage=None, tags=[]):
+        elog = self._get_elog()
+        tname = self.alias.get_full_name()
+        value = self.get_current_value()
+
+        if premessage:
+            messages = [
+                premessage,
+                f"{tname} is at {value}.",
+            ]
+        else:
+            messages = [f"{tname} is at {value}."]
+        self.mvr(value)
+        elog.post(*messages, tags=tags)
+
+    def mv_elog(self, value, premessage=None, tags=[]):
+        elog = self._get_elog()
+        tname = self.alias.get_full_name()
+        start = self.get_current_value()
+        end = value
+        rel_change = end - start
+        if premessage:
+            messages = [
+                premessage,
+                f"Changing {tname} from {start} by {rel_change} to {end}.",
+            ]
+        else:
+            messages = [f"Changing {tname} from {start} by {rel_change} to {end}."]
+        self.mv(value)
+        elog.post(*messages, tags=tags)
+
+    def mvr_elog(self, value, premessage=None, tags=[]):
+        elog = self._get_elog()
+        tname = self.alias.get_full_name()
+        start = self.get_current_value()
+        end = start + value
+        rel_change = value
+        if premessage:
+            messages = [
+                premessage,
+                f"Changing {tname} from {start} by {rel_change} to {end}.",
+            ]
+        else:
+            messages = [f"Changing {tname} from {start} by {rel_change} to {end}."]
+        self.mvr(value)
+        elog.post(*messages, tags=tags)
+
+    if hasattr(Adj, "wm"):
+        Adj.wm_elog = wm_elog
+    if hasattr(Adj, "mv"):
+        Adj.mv_elog = mv_elog
+    if hasattr(Adj, "mvr"):
+        Adj.mvr_elog = mvr_elog
+
     def call(self, value=None):
         if not value is None:
             return self.mv(value)
@@ -111,6 +167,18 @@ def spec_convenience(Adj):
             return self.wm()
 
     Adj.__call__ = call
+
+    def _get_elog(self):
+        if hasattr(self, "_elog") and self._elog:
+            return self._elog
+        elif hasattr(self, "__elog") and self.__elog:
+            return self.__elog
+        elif eco.ELOG:
+            return eco.ELOG
+        else:
+            return None
+
+    Adj._get_elog = _get_elog
 
     return Adj
 
@@ -167,18 +235,31 @@ class ValueInRange:
 
 def update_changes(Adj):
     def get_position_str(start, end, value):
-        start = float(start)
-        value = float(value)
-        end = float(end)
-        s = ValueInRange(start, end, bar_width=30, unit="", fmt="1.5g").get_str(value)
-        return (
-            colorama.Style.BRIGHT
-            + f"{value:1.5}".rjust(10)
-            + colorama.Style.RESET_ALL
-            + "  "
-            + s
-            + 2 * "\t"
-        )
+        vals = [v if hasattr(v, "__iter__") else [v] for v in [start, end, value]]
+        #        bars = []
+        bars = ""
+        for s, v, e in zip(*vals):
+            s = float(s)
+            v = float(v)
+            e = float(e)
+            s = ValueInRange(s, e, bar_width=30, unit="", fmt="1.5g").get_str(v)
+            bars = bars + (
+                colorama.Style.BRIGHT
+                + f"{v:1.5}".rjust(10)
+                + colorama.Style.RESET_ALL
+                + "  "
+                + s
+                + 2 * "\t"
+            )
+        #            bars.append((
+        #                colorama.Style.BRIGHT
+        #                + f"{v:1.5}".rjust(10)
+        #                + colorama.Style.RESET_ALL
+        #                + "  "
+        #                + s
+        #                + 2 * "\t"
+        #            ))
+        return bars
 
     def update_change(self, value, elog=None):
         start = self.get_current_value()
@@ -188,14 +269,16 @@ def update_changes(Adj):
             )
         except TypeError:
             print(f"Changing {self.name} from {start} to {value}")
-
+        # for pos in get_position_str(start, value, start):
+        #    print(pos, end="\r")
         print(get_position_str(start, value, start), end="\r")
         try:
             if hasattr(self, "add_value_callback"):
 
                 def cbfoo(**kwargs):
                     present_value = self.get_current_value()
-                    # print(get_position_str(start, value, kwargs["value"]), end="\r")
+                    # for pos in get_position_str(start, value, present_value):
+                    #    print(pos, end="\r")
                     print(get_position_str(start, value, present_value), end="\r")
 
                 cb_id = self.add_value_callback(cbfoo)
@@ -246,19 +329,37 @@ def update_changes(Adj):
 def value_property(Adj, wait_for_change=True, value_name="_value"):
     if wait_for_change:
 
-        def tmp(Adj, value):
-            Adj.set_target_value(value, hold=False).wait()
+        def set_target_value_wait(self, value):
+            try:
+                self.set_target_value(value, hold=False).wait()
+            except:
+                self.set_target_value(value).wait()
+
+        def get_current_value(self):
+            o = self.get_current_value()
+            if hasattr(o, "__setitem__"):
+                # print("overwriting output class")
+
+                class TempObj(o.__class__):
+                    def __setitem__(oself, *args):
+                        o.__class__.__setitem__(oself, *args)
+                        self._set_target_value_wait(oself)
+
+                return TempObj(o)
+            else:
+                return o
+
+        Adj._set_target_value_wait = set_target_value_wait
+        Adj._get_current_value = get_current_value
 
         setattr(
             Adj,
             value_name,
             property(
-                Adj.get_current_value,
-                tmp,
+                Adj._get_current_value,
+                Adj._set_target_value_wait,
             ),
         )
-
-    Adj.value = property(lambda self: self._value)
     return Adj
 
 
@@ -270,11 +371,12 @@ def value_property(Adj, wait_for_change=True, value_name="_value"):
 @tweak_option
 @value_property
 class DummyAdjustable:
-    def __init__(self, name="no_adjustable"):
+    def __init__(self, name="no_adjustable", limits=[-100, 100]):
         self.name = name
         self.alias = Alias(name)
 
         self.current_value = 0
+        self.limits = tuple(limits)
 
     def get_current_value(self):
         return self.current_value
@@ -286,6 +388,12 @@ class DummyAdjustable:
         return Changer(
             target=value, parent=self, changer=changer, hold=hold, stopper=None
         )
+
+    def get_limits(self):
+        return self.limits
+
+    def set_limits(self, lowlim, highlim):
+        self.limits = (lowlim, highlim)
 
     def __repr__(self):
         name = self.name
@@ -429,6 +537,7 @@ class AdjustableVirtual:
         append_aliases=False,
         name=None,
         unit=None,
+        check_limits=False,
     ):
         self.name = name
         self.alias = Alias(name)
@@ -444,6 +553,7 @@ class AdjustableVirtual:
         self._foo_get_current_value = foo_get_current_value
         self._reset_current_value_to = reset_current_value_to
         self._change_simultaneously = change_simultaneously
+        self._check_limits = check_limits
         if reset_current_value_to:
             for adj in self._adjustables:
                 if not hasattr(adj, "reset_current_value_to"):
@@ -457,18 +567,25 @@ class AdjustableVirtual:
             vals = (vals,)
 
         def changer(value):
+            if self._check_limits:
+                if not self.check_target_value_within_limits(value):
+                    raise Exception(
+                        f"Target value of virtual adjustable {self.name} is higher than limit values of {[adj.name for adj in self._adjustables]}!"
+                    )
+
             if self._change_simultaneously:
                 self._active_changers = [
                     adj.set_target_value(val, hold=False)
                     for val, adj in zip(vals, self._adjustables)
+                    if val is not None
                 ]
                 for tc in self._active_changers:
                     tc.wait()
             else:
-
                 for val, adj in zip(vals, self._adjustables):
-                    self._active_changers = [adj.set_target_value(val, hold=False)]
-                    self._active_changers[0].wait()
+                    if val is not None:
+                        self._active_changers = [adj.set_target_value(val, hold=False)]
+                        self._active_changers[0].wait()
 
         def stopper():
             for tc in self._active_changers:
@@ -483,6 +600,14 @@ class AdjustableVirtual:
         return self._foo_get_current_value(
             *[adj.get_current_value() for adj in self._adjustables]
         )
+
+    def check_target_value_within_limits(self, value):
+        in_lims = []
+        values = self._foo_set_target_value_current_value(value)
+        for val, adj in zip(values, self._adjustables):
+            lim_low, lim_high = adj.get_limits()
+            in_lims.append((lim_low < val) and (val < lim_high))
+        return all(in_lims)
 
     def reset_current_value_to(self, value):
         if not self._reset_current_value_to:
@@ -500,7 +625,15 @@ class AdjustableVirtual:
 @tweak_option
 @value_property
 class AdjustableGetSet:
-    def __init__(self, foo_get, foo_set, precision=0, check_interval=None, name=None):
+    def __init__(
+        self,
+        foo_get,
+        foo_set,
+        precision=0,
+        check_interval=None,
+        cache_get_seconds=None,
+        name=None,
+    ):
         """assumes a waiting setterin function, in case no check_interval parameter is supplied"""
         self.alias = Alias(name)
         self.name = name
@@ -508,6 +641,7 @@ class AdjustableGetSet:
         self._get = foo_get
         self._check_interval = check_interval
         self.precision = precision
+        self._cache_get_seconds = cache_get_seconds
 
     def set_and_wait(self, value):
         if self._check_interval:
@@ -517,7 +651,7 @@ class AdjustableGetSet:
         else:
             self._set(value)
 
-    def set_target_value(self, value):
+    def set_target_value(self, value, hold=False):
         return Changer(
             target=value,
             parent=self,
@@ -527,7 +661,17 @@ class AdjustableGetSet:
         )
 
     def get_current_value(self):
-        return self._get()
+        ts = time.time()
+        if self._cache_get_seconds and hasattr(self, "_get_cache"):
+            if ts - self._get_cache[0] < self._cache_get_seconds:
+                value = self._get_cache[1]
+            else:
+                value = self._get()
+        else:
+            value = self._get()
+        if self._cache_get_seconds:
+            self._get_cache = (ts, value)
+        return value
 
 
 @spec_convenience

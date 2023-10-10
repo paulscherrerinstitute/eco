@@ -2,6 +2,7 @@ from epics import caget_many
 from ..elements.adjustable import AdjustableMemory, AdjustableVirtual
 from ..epics.adjustable import AdjustablePv, AdjustablePvEnum, AdjustablePvString
 from ..epics.detector import DetectorPvData, DetectorPvDataStream
+from ..detector.detectors_psi import DetectorBsStream
 from eco.epics.utilities_epics import EpicsString
 import logging
 from ..elements.assembly import Assembly
@@ -13,12 +14,17 @@ logging.getLogger("cta_lib").setLevel(logging.WARNING)
 class TimingSystem(Assembly):
     """This is a wrapper object for the global timing system at SwissFEL"""
 
-    def __init__(self, pv_master=None, pv_pulse_id=None, name=None):
+    def __init__(self, pv_master=None, pv_pulse_id=None, pv_eventset=None, name=None):
         super().__init__(name=name)
+        self._append(MasterEventSystem, pv_master, name="event_master", is_display=True)
+        # self._append(DetectorPvDataStream, pv_pulse_id, name="pulse_id")
         self._append(
-            MasterEventSystem, pv_master, name="event_master", is_display="recursive"
+            DetectorBsStream, "pulse_id", cachannel=pv_pulse_id, name="pulse_id"
         )
-        self._append(DetectorPvDataStream, pv_pulse_id, name="pulse_id")
+        self._append(DetectorBsStream, "lab_time", cachannel=None, name="lab_time")
+
+        if pv_eventset:
+            self._append(DetectorBsStream, pv_eventset, cachannel=None, name="eventset")
 
 
 # EVR output mapping
@@ -212,7 +218,7 @@ class MasterEventSystem(Assembly):
         for s, c in zip(slots, codes):
             if not c == None:
                 if c in codes_out:
-                    print(f"Code {c} exists multiple times!")
+                    # print(f"Code {c} exists multiple times!")
                     continue
                 slots_out.append(s)
                 codes_out.append(c)
@@ -295,31 +301,36 @@ class EvrPulser(Assembly):
             is_setting=True,
         )
         self.description = EpicsString(pv_base + "-Name-I")
-        self._append(
-            AdjustableVirtual,
-            [self._eventcode.frequency],
-            lambda x: x,
-            lambda x: x,
-            name="frequency",
-        )
-        self._append(
-            AdjustableVirtual,
-            [self._eventcode.delay],
-            lambda x: x,
-            lambda x: x,
-            name="delay_eventcode",
-        )
-        self._append(
-            AdjustableVirtual,
-            [self.delay_pulser],
-            lambda tp: self.delay_eventcode.get_current_value() + tp,
-            lambda x: x - self.delay_eventcode.get_current_value(),
-            name="delay",
-        )
+
+        if True: #self._eventcode is not None:
+            self._append(
+                AdjustableVirtual,
+                [self._eventcode.frequency],
+                lambda x: x,
+                lambda x: x,
+                name="frequency",
+            )
+            self._append(
+                AdjustableVirtual,
+                [self._eventcode.delay],
+                lambda x: x,
+                lambda x: x,
+                name="delay_eventcode",
+            )
+            self._append(
+                AdjustableVirtual,
+                [self.delay_pulser],
+                lambda tp: self.delay_eventcode.get_current_value() + tp,
+                lambda x: x - self.delay_eventcode.get_current_value(),
+                name="delay",
+            )
 
     @property
     def _eventcode(self):
-        return self._event_master.event_codes[self.eventcode.get_current_value()]
+        try:
+            return self._event_master.event_codes[self.eventcode.get_current_value()]
+        except KeyError:
+            return None
 
 
 class DummyPulser(Assembly):
@@ -491,14 +502,14 @@ class EvrOutput(Assembly):
     def pulserA(self):
         try:
             return self._pulsers[self.pulserA_number.get_current_value()]
-        except IndexError:
+        except (IndexError, TypeError):
             return DummyPulser()
 
     @property
     def pulserB(self):
         try:
             return self._pulsers[self.pulserA_number.get_current_value()]
-        except IndexError:
+        except (IndexError, TypeError):
             return DummyPulser()
 
 
@@ -550,6 +561,17 @@ class EventReceiver(Assembly):
         # for to in outputs:
         #     to._pulsers = self.pulsers
         self.outputs = outputs
+
+        self._append(
+            AdjustablePv,
+            self.pvname + ":SYSRESET",
+            is_status=False,
+            is_setting=False,
+            name="restart_ioc_pv",
+        )
+
+    def restart_ioc(self):
+        self.restart_ioc_pv.set_target_value(1)
 
     def gui(self):
         dev = self.pvname.split("-")[-1]

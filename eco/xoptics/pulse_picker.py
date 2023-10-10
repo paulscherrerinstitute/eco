@@ -15,7 +15,7 @@ def addMotorRecordToSelf(self, name=None, Id=None):
         print(f"Warning! Could not find motor {name} (Id:{Id})")
 
 
-class Pulsepick:
+class PulsePickerSwissfel(Assembly):
     def __init__(self, Id=None, evronoff=None, evrsrc=None, name=None):
         self.name = name
         self.alias = Alias(name)
@@ -38,12 +38,12 @@ class Pulsepick:
 
     def open(self):
         self._openclose.put(1)
-        #self._evrsrc.put(62)
+        self._evrsrc.put(62)
         print("Opened Pulse Picker")
 
     def close(self):
         self._openclose.put(0)
-        #self._evrsrc.put(62)
+        self._evrsrc.put(62)
         print("Closed Pulse Picker")
 
     def trigger(self):

@@ -1,8 +1,15 @@
+from datetime import datetime
+from inspect import isclass
+import json
+from pathlib import Path
 from tkinter import W
+from markdown import markdown
 
 from numpy import isin
 
-from eco.elements.protocols import Detector
+# from eco.acquisition.scan import NumpyEncoder
+
+from eco.elements.protocols import Detector, InitialisationWaitable
 from ..aliases import Alias
 from tabulate import tabulate
 import colorama
@@ -12,6 +19,11 @@ import os
 import subprocess
 from rich.progress import track
 from eco import Adjustable, Detector
+
+import eco
+
+
+_initializing_assemblies = []
 
 
 class Collection:
@@ -60,7 +72,7 @@ class Collection:
 
 
 class Assembly:
-    def __init__(self, name=None, parent=None, is_alias=True):
+    def __init__(self, name=None, parent=None, is_alias=True, elog=None):
         self.name = name
         self.alias = Alias(name, parent=parent)
         # self.settings = []
@@ -71,6 +83,10 @@ class Assembly:
         self.view_toplevel_only = []
         if memory.global_memory_dir:
             self.memory = memory.Memory(self)
+        if elog:
+            self.__elog = elog
+        else:
+            self.__class__.__elog = property(lambda dum: ELOG)
 
     def _append(
         self,
@@ -83,9 +99,16 @@ class Assembly:
         is_alias=True,
         view_toplevel_only=True,
         call_obj=True,
+        append_property_with_name=False,
         **kwargs,
     ):
-        if call_obj and callable(foo_obj_init):
+        if isinstance(foo_obj_init, Adjustable) and not isclass(foo_obj_init):
+            self.__dict__[name] = foo_obj_init
+        elif isinstance(foo_obj_init, Detector) and not isclass(foo_obj_init):
+            self.__dict__[name] = foo_obj_init
+        elif isinstance(foo_obj_init, Assembly) and not isclass(foo_obj_init):
+            self.__dict__[name] = foo_obj_init
+        elif call_obj and callable(foo_obj_init):
             self.__dict__[name] = foo_obj_init(*args, **kwargs, name=name)
         else:
             self.__dict__[name] = foo_obj_init
@@ -93,6 +116,17 @@ class Assembly:
         # except:
         #     print(f'object {name} / {foo_obj_init} not initialized with name/parent')
         #     self.__dict__[name] = foo_obj_init(*args, **kwargs)
+        if append_property_with_name:
+            if isinstance(self.__dict__[name], Adjustable):
+                self.__class__.__dict__[append_property_with_name] = property(
+                    self.__dict__[name].get_current_value,
+                    lambda val: self.__dict__[name].set_target_value(val).wait(),
+                )
+            elif isinstance(self.__dict__[name], Detector):
+                self.__class__.__dict__[append_property_with_name] = property(
+                    self.__dict__[name].get_current_value,
+                )
+
         if is_setting == "auto":
             is_setting = isinstance(self.__dict__[name], Adjustable)
         if is_setting:
@@ -110,11 +144,13 @@ class Assembly:
         if view_toplevel_only:
             self.view_toplevel_only.append(self.__dict__[name])
 
-    def get_status(self, base="self", verbose=True):
+    def get_status(self, base="self", verbose=True, channeltypes=None):
         if base == "self":
             base = self
         settings = {}
+        settings_channels = {}
         status = {}
+        status_channels = {}
         nodet = []
         geterror = []
         for ts in track(
@@ -129,11 +165,71 @@ class Assembly:
             # else:
             if hasattr(ts, "get_current_value"):
                 try:
-                    settings[ts.alias.get_full_name(base=base)] = ts.get_current_value()
+                    if (not channeltypes) or (ts.alias.channeltype in channeltypes):
+                        settings[
+                            ts.alias.get_full_name(base=base)
+                        ] = ts.get_current_value()
+                        try:
+                            settings_channels[
+                                ts.alias.get_full_name(base=base)
+                            ] = ts.alias.channel
+                        except:
+                            pass
                 except:
                     geterror.append(ts.alias.get_full_name(base=base))
             else:
                 nodet.append(ts.alias.get_full_name(base=base))
+
+        #  with ThreadPoolExecutor(max_workers=max_workers) as exc:
+        #         list(
+        #             progress.track(
+        #                 exc.map(
+        #                     lambda name: self.init_name(
+        #                         name, verbose=verbose, raise_errors=raise_errors
+        #                     ),
+        #                     self.all_names
+        #                     - self.initialized_names
+        #                     - set(exclude_names),
+        #                 ),
+        #                 description="Initializing ...",
+        #                 total=len(
+        #                     self.all_names - self.initialized_names - set(exclude_names)
+        #                 ),
+        #                 transient=True,
+        #             )
+        #         )
+
+        def get_stat_one_assembly(ts):
+            if hasattr(ts, "get_current_value"):
+                try:
+                    if (not channeltypes) or (ts.alias.channeltype in channeltypes):
+                        status[
+                            ts.alias.get_full_name(base=base)
+                        ] = ts.get_current_value()
+                        try:
+                            status_channels[
+                                ts.alias.get_full_name(base=base)
+                            ] = ts.alias.channel
+                        except:
+                            pass
+                except:
+                    geterror.append(ts.alias.get_full_name(base=base))
+            else:
+                nodet.append(ts.alias.get_full_name(base=base))
+
+        #  with ThreadPoolExecutor(max_workers=max_workers) as exc:
+        #         list(
+        #             progress.track(
+        #                 exc.map(
+        #                     get_stat_one_assembly,
+        #                     self.status_collection.get_list(),
+        #                 ),
+        #             description="Getting status...",
+        #             total=len(self.status_collection.get_list()),
+        #             transient=True,
+        #             )
+        #         )
+
         for ts in track(
             self.status_collection.get_list(),
             transient=True,
@@ -146,7 +242,16 @@ class Assembly:
             # else:
             if hasattr(ts, "get_current_value"):
                 try:
-                    status[ts.alias.get_full_name(base=base)] = ts.get_current_value()
+                    if (not channeltypes) or (ts.alias.channeltype in channeltypes):
+                        status[
+                            ts.alias.get_full_name(base=base)
+                        ] = ts.get_current_value()
+                        try:
+                            status_channels[
+                                ts.alias.get_full_name(base=base)
+                            ] = ts.alias.channel
+                        except:
+                            pass
                 except:
                     geterror.append(ts.alias.get_full_name(base=base))
             else:
@@ -159,7 +264,12 @@ class Assembly:
                     "Retrieved error while running get_current_value from: "
                     + ", ".join(geterror)
                 )
-        return {"settings": settings, "status": status}
+        return {
+            "settings": settings,
+            "status": status,
+            "settings_channels": settings_channels,
+            "status_channels": status_channels,
+        }
 
     def status(self, get_string=False):
         stat = self.get_status()
@@ -194,38 +304,161 @@ class Assembly:
         s = tabulate([[name, value] for name, value in stat_filt[stat_field].items()])
         return s
 
-    def get_display_str(self):
+    def get_display_str(self, tablefmt="simple"):
         main_name = self.name
         stats = self.display_collection()
         # stats_dict = {}
         tab = []
         for to in stats:
             name = to.alias.get_full_name(base=self)
-            value = to.get_current_value()
+
             is_adjustable = isinstance(to, Adjustable)
-            if is_adjustable:
-                typechar = "✏️"
-            else:
-                typechar = "👁️"
             is_detector = isinstance(to, Detector)
+            typechar = ""
+            if is_adjustable:
+                typechar += "✏️"
+            elif is_detector:
+                typechar += "👁️"
+            if hasattr(to, "settings_collection"):
+                typechar += " ↳"
+
+            try:
+                value = to.get_current_value()
+            except AttributeError:
+                if hasattr(to, "settings_collection"):
+                    value = "\x1b[3mhas lower level items\x1b[0m"
+
             if isinstance(value, Enum):
                 value = f"{value.value} ({value.name})"
             try:
-                unit = to.unit()
+                unit = to.unit.get_current_value()
             except:
                 unit = None
-            tab.append([".".join([main_name, name]), value, unit, typechar])
-        s = tabulate(tab)
+            try:
+                description = to.description.get_current_value()
+            except:
+                description = None
+            tab.append(
+                [".".join([main_name, name]), value, unit, typechar, description]
+            )
+        s = tabulate(tab, tablefmt=tablefmt)
         return s
+
+    def status_to_elog(
+        self,
+        text="",
+        text_encoding="markdown",
+        auto_title=True,
+        attach_display=True,
+        attach_status_file=True,
+    ):
+        elog = self._get_elog()
+        message = ""
+        files = []
+        if auto_title:
+            message += markdown(f"#### Status {self.alias.get_full_name()}")
+
+        if text:
+            if text_encoding == "markdown":
+                message += markdown(text)
+        if attach_display:
+            message += self.get_display_str(tablefmt="html")
+
+        if attach_status_file:
+            stat = self.get_status()
+            tmppath = Path("/tmp")
+            filepath = tmppath / Path(
+                f"status_{self.alias.get_full_name}_{datetime.now().isoformat()}.json"
+            )
+            with open(filepath, "w") as f:
+                # json.dump(stat, f, cls=NumpyEncoder, indent=4)
+                json.dump(stat, f, indent=4)
+            files.append(filepath)
+
+        elog.post(
+            message,
+            *files,
+            text_encoding="html",
+        )
+        # tags=[],
 
     def __repr__(self):
         label = self.alias.get_full_name() + " status\n"
         return label + self.get_display_str()
 
-    def _run_cmd(self, line):
-        print(f"Starting following commandline silently:\n" + line)
-        with open(os.devnull, "w") as FNULL:
-            subprocess.Popen(line, shell=True, stdout=FNULL, stderr=subprocess.STDOUT)
+    # def _wait_for_initialisation(self, timeout=2):
+    #     for ton, to in self.__dict__.items():
+    #         try:
+    #             iswaitable = isinstance(to, InitialisationWaitable)
+    #             if iswaitable:
+    #                 to._wait_for_initialisation()
+    #         except:
+    #             pass
+
+    def _wait_for_initialisation(self):
+        for item in self.status_collection.get_list():
+            if isinstance(item, Assembly) and (item in _initializing_assemblies):
+                continue
+            if isinstance(item, InitialisationWaitable):
+                if isinstance(item, Assembly):
+                    _initializing_assemblies.append(item)
+                item._wait_for_initialisation()
+
+    def _run_cmd(self, line, silent=True):
+        if silent:
+            print(f"Starting following commandline silently:\n" + line)
+            with open(os.devnull, "w") as FNULL:
+                subprocess.Popen(
+                    line, shell=True, stdout=FNULL, stderr=subprocess.STDOUT
+                )
+        else:
+            subprocess.Popen(line, shell=True)
+
+    def _get_elog(self):
+        if hasattr(self, "_elog") and self._elog:
+            return self._elog
+        elif hasattr(self, "__elog") and self.__elog:
+            return self.__elog
+        elif eco.ELOG:
+            return eco.ELOG
+        else:
+            return None
+
+
+import epics.pv
+import time
+
+
+class Monitor:
+    def __init__(self, assembly):
+        self.assembly = assembly
+        self.data = {}
+        self.callbacks = {}
+        self.pvs = {}
+
+    def start_monitoring(self):
+        o = self.assembly.get_status(channeltypes=["CA"])
+        # self.data = {k: [v] for k, v in o["status"].items()}
+        self.channelkeys = {v: k for k, v in o["status_channels"].items()}
+        self.pvs = {k: epics.pv.PV(v) for k, v in o["status_channels"].items()}
+        # for cik, civ in epics.pv._PVcache_.items():
+        #     if cik[0] in o["status_channels"].keys():
+        #         tname = self.channelkeys[cik[0]]
+        #         tpv = civ
+        for tname, tpv in self.pvs.items():
+            self.callbacks[tname] = tpv.add_callback(self.append)
+
+    def stop_monitoring(self):
+        for tname in self.pvs:
+            self.pvs[tname].remove_callback(index=self.callbacks[tname])
+
+    def append(self, pvname=None, value=None, timestamp=None, **kwargs):
+        if not (self.channelkeys[pvname] in self.data):
+            self.data[self.channelkeys[pvname]] = []
+        ts_local = time.time()
+        self.data[self.channelkeys[pvname]].append(
+            {"value": value, "timestamp": timestamp, "timestamp_local": ts_local}
+        )
 
 
 class Assembly_old:

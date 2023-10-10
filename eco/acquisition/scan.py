@@ -1,3 +1,4 @@
+from numbers import Number
 import os
 import json
 import numpy as np
@@ -51,34 +52,50 @@ class Scan:
         Npulses=100,
         basepath="",
         scan_info_dir="",
+        settling_time=0,
         checker=None,
         scan_directories=False,
-        callbackStartStep=None,
         callbacks_start_scan=[],
+        callbacks_start_step=[],
+        callbacks_end_step=[],
         callbacks_end_scan=[],
         checker_sleep_time=2,
         return_at_end="question",
-        run_table=None,
         run_number=None,
         elog=None,
+        **kwargs_callbacks,
     ):
         if np.any([char in fina for char in inval_chars]):
             raise ScanNameError
         self.Nsteps = len(values)
-        self._run_table = run_table
-        self.pulses_per_step = Npulses
+        if not isinstance(Npulses, Number):
+            if not len(Npulses) == len(values):
+                raise ValueError("steps for Number of pulses and values must match!")
+            self.pulses_per_step = Npulses
+        else:
+            self.pulses_per_step = [Npulses] * len(values)
         self.adjustables = adjustables
         self.values_todo = values
         self.values_done = []
+        self.pulses_done = []
         self.readbacks = []
         self.counterCallers = counterCallers
+        self.settling_time = settling_time
         self.fina = fina
         self.nextStep = 0
         self.basepath = basepath
         self.scan_info_dir = scan_info_dir
+
+        anames = []
+        for ta in adjustables:
+            try:
+                anames.append(ta.alias.get_full_name())
+            except:
+                anames.append(ta.name)
+
         self.scan_info = {
             "scan_parameters": {
-                "name": [ta.name for ta in adjustables],
+                "name": anames,
                 "Id": [ta.Id if hasattr(ta, "Id") else "noId" for ta in adjustables],
             },
             "scan_values_all": values,
@@ -95,7 +112,11 @@ class Scan:
         self._checker_sleep_time = checker_sleep_time
         self._elog = elog
         self.run_number = run_number
+        self.remaining_tasks = []
+        self.callbacks_start_step = callbacks_start_step
+        self.callbacks_end_step = callbacks_end_step
         self.callbacks_end_scan = callbacks_end_scan
+        self.callbacks_kwargs = kwargs_callbacks
         print(f"Scan info in file {self.scan_info_filename}.")
         for adj in self.adjustables:
             tv = adj.get_current_value()
@@ -104,7 +125,7 @@ class Scan:
 
         if callbacks_start_scan:
             for caller in callbacks_start_scan:
-                caller(self)
+                caller(self, **self.callbacks_kwargs)
 
     def get_filename(self, stepNo, Ndigits=4):
         fina = os.path.join(self.basepath, Path(self.fina).stem)
@@ -136,6 +157,10 @@ class Scan:
                 )
             self.checker.clear_and_start_counting()
 
+        if self.callbacks_start_step:
+            for caller in self.callbacks_start_step:
+                caller(self, **self.callbacks_kwargs)
+
         if not len(self.values_todo) > 0:
             return False
         values_step = self.values_todo[0]
@@ -150,6 +175,10 @@ class Scan:
             ms.append(adj.set_target_value(tv))
         for tm in ms:
             tm.wait()
+
+        # settling
+        sleep(self.settling_time)
+
         readbacks_step = []
         adjs_name = []
         adjs_offset = []
@@ -185,12 +214,12 @@ class Scan:
                     "user_tag": self.fina,
                 }
                 acq = ctr.acquire(
-                    file_name=fina, Npulses=self.pulses_per_step, acq_pars=acq_pars
+                    file_name=fina, Npulses=self.pulses_per_step[0], acq_pars=acq_pars
                 )
             elif isinstance(ctr, Slab_Ioxos_Daq):
                 acq = ctr.acquire(file_name=fina, N_pulses=self.pulses_per_step, adjs_rb=readbacks_step, adjs_name=[adj.name for adj in self.adjustables]) 
             else:
-                acq = ctr.acquire(file_name=fina, Npulses=self.pulses_per_step)
+                acq = ctr.acquire(file_name=fina, Npulses=self.pulses_per_step[0])
             acs.append(acq)
         filenames = []
         for ta in acs:
@@ -207,12 +236,17 @@ class Scan:
         else:
             tstepinfo = step_info
         self.values_done.append(self.values_todo.pop(0))
+        self.pulses_done.append(self.pulses_per_step.pop(0))
         self.readbacks.append(readbacks_step)
         self.appendScanInfo(
             values_step, readbacks_step, step_files=filenames, step_info=tstepinfo
         )
         self.writeScanInfo()
+        if self.callbacks_end_step:
+            for caller in self.callbacks_end_step:
+                caller(self, **self.callbacks_kwargs)
         self.nextStep += 1
+
         return True
 
     def appendScanInfo(
@@ -254,7 +288,7 @@ class Scan:
 
                 if self.callbacks_end_scan:
                     for caller in self.callbacks_end_scan:
-                        caller(self)
+                        caller(self, **self.callbacks_kwargs)
                 if self.return_at_end == "question":
                     if input("Change back to initial values? (y/n)")[0] == "y":
                         chs = self.changeToInitialValues()
@@ -285,12 +319,16 @@ class Scans:
         checker=None,
         scan_directories=False,
         callbacks_start_scan=[],
+        callbacks_start_step=[],
+        callbacks_end_step=[],
         callbacks_end_scan=[],
         run_table=None,
         elog=None,
     ):
         self._run_table = run_table
         self.callbacks_start_scan = callbacks_start_scan
+        self.callbacks_start_step = callbacks_start_step
+        self.callbacks_end_step = callbacks_end_step
         self.callbacks_end_scan = callbacks_end_scan
         self.data_base_dir = data_base_dir
         scan_info_dir = Path(scan_info_dir)
@@ -337,6 +375,7 @@ class Scans:
         start_immediately=True,
         step_info=None,
         return_at_end="question",
+        **kwargs_callbacks,
     ):
         positions0 = np.linspace(start0_pos, end0_pos, N_intervals + 1)
         positions1 = np.linspace(start1_pos, end1_pos, N_intervals + 1)
@@ -354,10 +393,13 @@ class Scans:
             checker=self.checker,
             scan_directories=self._scan_directories,
             callbacks_start_scan=self.callbacks_start_scan,
+            callbacks_start_step=self.callbacks_start_step,
+            callbacks_end_step=self.callbacks_end_step,
             callbacks_end_scan=self.callbacks_end_scan,
             run_table=self._run_table,
             elog=self._elog,
             return_at_end=return_at_end,
+            **kwargs_callbacks,
         )
         if start_immediately:
             s.scanAll(step_info=step_info)
@@ -370,10 +412,11 @@ class Scans:
         file_name="",
         counters=[],
         start_immediately=True,
+        settling_time=0,
         step_info=None,
         return_at_end=True,
+        **kwargs_callbacks,
     ):
-
         adjustable = DummyAdjustable()
 
         positions = list(range(N_repetitions))
@@ -390,14 +433,18 @@ class Scans:
             Npulses=N_pulses,
             basepath=self.data_base_dir,
             scan_info_dir=self.scan_info_dir,
+            settling_time=settling_time,
             checker=self.checker,
             scan_directories=self._scan_directories,
             callbacks_start_scan=self.callbacks_start_scan,
+            callbacks_start_step=self.callbacks_start_step,
+            callbacks_end_step=self.callbacks_end_step,
             callbacks_end_scan=self.callbacks_end_scan,
             run_table=self._run_table,
             elog=self._elog,
             run_number=run_number,
             return_at_end=return_at_end,
+            **kwargs_callbacks,
         )
         if start_immediately:
             s.scanAll(step_info=step_info)
@@ -415,6 +462,8 @@ class Scans:
         start_immediately=True,
         step_info=None,
         return_at_end="question",
+        settling_time=0,
+        **kwargs_callbacks,
     ):
         positions = np.linspace(start_pos, end_pos, N_intervals + 1)
         values = [[tp] for tp in positions]
@@ -431,13 +480,17 @@ class Scans:
             basepath=self.data_base_dir,
             scan_info_dir=self.scan_info_dir,
             checker=self.checker,
+            settling_time=settling_time,
             scan_directories=self._scan_directories,
             return_at_end=return_at_end,
             callbacks_start_scan=self.callbacks_start_scan,
+            callbacks_start_step=self.callbacks_start_step,
+            callbacks_end_step=self.callbacks_end_step,
             callbacks_end_scan=self.callbacks_end_scan,
             run_table=self._run_table,
             elog=self._elog,
             run_number=run_number,
+            **kwargs_callbacks,
         )
         if start_immediately:
             s.scanAll(step_info=step_info)
@@ -453,8 +506,10 @@ class Scans:
         file_name="",
         counters=[],
         start_immediately=True,
+        settling_time=0,
         step_info=None,
         return_at_end="question",
+        **kwargs_callbacks,
     ):
         positions = np.linspace(start_pos, end_pos, N_intervals + 1)
         current = adjustable.get_current_value()
@@ -474,11 +529,15 @@ class Scans:
             checker=self.checker,
             scan_directories=self._scan_directories,
             return_at_end=return_at_end,
+            settling_time=settling_time,
             callbacks_start_scan=self.callbacks_start_scan,
+            callbacks_start_step=self.callbacks_start_step,
+            callbacks_end_step=self.callbacks_end_step,
             callbacks_end_scan=self.callbacks_end_scan,
             run_table=self._run_table,
             elog=self._elog,
             run_number=run_number,
+            **kwargs_callbacks,
         )
         if start_immediately:
             s.scanAll(step_info=step_info)
@@ -498,8 +557,10 @@ class Scans:
         file_name=None,
         counters=[],
         start_immediately=True,
+        settling_time=0,
         step_info=None,
         return_at_end="question",
+        **kwargs_callbacks,
     ):
         positions = posList
         values = [[tp] for tp in positions]
@@ -517,12 +578,16 @@ class Scans:
             scan_info_dir=self.scan_info_dir,
             checker=self.checker,
             scan_directories=self._scan_directories,
+            settling_time=settling_time,
             return_at_end=return_at_end,
             callbacks_start_scan=self.callbacks_start_scan,
+            callbacks_start_step=self.callbacks_start_step,
+            callbacks_end_step=self.callbacks_end_step,
             callbacks_end_scan=self.callbacks_end_scan,
             run_table=self._run_table,
             elog=self._elog,
             run_number=run_number,
+            **kwargs_callbacks,
         )
         if start_immediately:
             s.scanAll(step_info=step_info)
@@ -543,6 +608,7 @@ class Scans:
         start_immediately=True,
         step_info=None,
         return_at_end="question",
+        **kwargs_callbacks,
     ):
         positions0 = np.linspace(start0_pos, end0_pos, N_intervals + 1)
         positions1 = np.linspace(start1_pos, end1_pos, N_intervals + 1)
@@ -566,9 +632,12 @@ class Scans:
             scan_directories=self._scan_directories,
             return_at_end=return_at_end,
             callbacks_start_scan=self.callbacks_start_scan,
+            callbacks_start_step=self.callbacks_start_step,
+            callbacks_end_step=self.callbacks_end_step,
             callbacks_end_scan=self.callbacks_end_scan,
             run_table=self._run_table,
             elog=self._elog,
+            **kwargs_callbacks,
         )
         if start_immediately:
             s.scanAll(step_info=step_info)

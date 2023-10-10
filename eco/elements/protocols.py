@@ -16,3 +16,15 @@ class Adjustable(Protocol):
 class Detector(Protocol):
     def get_current_value(self):
         ...
+
+
+@runtime_checkable
+class ValueUpdateMonitorable(Protocol):
+    def get_current_value_callback(self):
+        ...
+
+
+@runtime_checkable
+class InitialisationWaitable(Protocol):
+    def _wait_for_initialisation(self):
+        ...

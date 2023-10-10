@@ -14,6 +14,7 @@ from ..elements.assembly import Assembly
 from ..detector.jungfrau import Jungfrau
 from .kappa_conversion import kappa2you, you2kappa
 import numpy as np
+from ..utilities.recspace import Crystals, DiffGeometryYou
 
 
 def addMotorRecordToSelf(self, name=None, Id=None):
@@ -32,6 +33,7 @@ class GPS(Assembly):
         configuration=["base"],
         alias_namespace=None,
         fina_hex_angle_offset=None,
+        diffcalc=False,
     ):
         super().__init__(name=name)
         self.pvname = pvname
@@ -136,7 +138,6 @@ class GPS(Assembly):
             )
 
         if "phi_hex" in self.configuration:
-
             ### motors PI hexapod ###
             if fina_hex_angle_offset:
                 fina_hex_angle_offset = Path(fina_hex_angle_offset).expanduser()
@@ -274,6 +275,15 @@ class GPS(Assembly):
                 unit="deg",
             )
 
+        if diffcalc:
+            self._append(
+                Crystals,
+                diffractometer_you=self,
+                name="diffcalc",
+                is_setting=False,
+                is_display=False,
+            )
+
     def gui(self, guiType="xdm"):
         """Adjustable convention"""
         cmd = ["caqtdm", "-macro"]
@@ -400,8 +410,12 @@ class XRDYou(Assembly):
         name=None,
         Id=None,
         configuration=["base"],
-        diff_detector=None,
+        detectors=None,
         invert_kappa_ellbow=True,
+        pgroup_adj=None,
+        configsjf_adj=None,
+        fina_hex_angle_offset=None,
+        diffcalc=True,
     ):
         """X-ray diffractometer platform in AiwssFEL Bernina.\
                 <configuration> : list of elements mounted on 
@@ -566,7 +580,7 @@ class XRDYou(Assembly):
             try:
                 self._append(
                     MotorRecord_new,
-                    Id + ":MOT_TBL_RY",
+                    Id + ":MOT_TBL_RZ",
                     name="rzhl",
                     is_setting=True,
                     is_display=True,
@@ -580,62 +594,75 @@ class XRDYou(Assembly):
             self._append(
                 MotorRecord_new,
                 Id + ":MOT_HEX_TX",
-                name="tphi",
+                name="transl_eta",
                 is_setting=True,
                 is_display=True,
             )
             self._append(
                 MotorRecord_new,
                 Id + ":MOT_HEX_RX",
-                name="phi",
+                name="eta",
                 is_setting=True,
                 is_display=True,
             )
 
         if "phi_hex" in self.configuration:
             ### motors PI hexapod ###
-            append_object_to_object(
-                self,
-                AdjustablePv,
-                "SARES20-HEX_PI:SET-POSI-X",
-                pvreadbackname="SARES20-HEX_PI:POSI-X",
-                name="xhex",
+            if fina_hex_angle_offset:
+                fina_hex_angle_offset = Path(fina_hex_angle_offset).expanduser()
+
+            self._append(
+                HexapodPI,
+                "SARES20-HEX_PI",
+                name="hex",
+                fina_angle_offset=fina_hex_angle_offset,
+                is_setting=True,
+                is_display="recursive",
             )
-            append_object_to_object(
-                self,
-                AdjustablePv,
-                "SARES20-HEX_PI:SET-POSI-Y",
-                pvreadbackname="SARES20-HEX_PI:POSI-Y",
-                name="yhex",
-            )
-            append_object_to_object(
-                self,
-                AdjustablePv,
-                "SARES20-HEX_PI:SET-POSI-Z",
-                pvreadbackname="SARES20-HEX_PI:POSI-Z",
-                name="zhex",
-            )
-            append_object_to_object(
-                self,
-                AdjustablePv,
-                "SARES20-HEX_PI:SET-POSI-U",
-                pvreadbackname="SARES20-HEX_PI:POSI-U",
-                name="uhex",
-            )
-            append_object_to_object(
-                self,
-                AdjustablePv,
-                "SARES20-HEX_PI:SET-POSI-V",
-                pvreadbackname="SARES20-HEX_PI:POSI-V",
-                name="vhex",
-            )
-            append_object_to_object(
-                self,
-                AdjustablePv,
-                "SARES20-HEX_PI:SET-POSI-W",
-                pvreadbackname="SARES20-HEX_PI:POSI-W",
-                name="whex",
-            )
+        #        if "phi_hex" in self.configuration:
+        #            ### motors PI hexapod ###
+        #            append_object_to_object(
+        #                self,
+        #                AdjustablePv,
+        #                "SARES20-HEX_PI:SET-POSI-X",
+        #                pvreadbackname="SARES20-HEX_PI:POSI-X",
+        #                name="xhex",
+        #            )
+        #            append_object_to_object(
+        #                self,
+        #                AdjustablePv,
+        #                "SARES20-HEX_PI:SET-POSI-Y",
+        #                pvreadbackname="SARES20-HEX_PI:POSI-Y",
+        #                name="yhex",
+        #            )
+        #            append_object_to_object(
+        #                self,
+        #                AdjustablePv,
+        #                "SARES20-HEX_PI:SET-POSI-Z",
+        #                pvreadbackname="SARES20-HEX_PI:POSI-Z",
+        #                name="zhex",
+        #            )
+        #            append_object_to_object(
+        #                self,
+        #                AdjustablePv,
+        #                "SARES20-HEX_PI:SET-POSI-U",
+        #                pvreadbackname="SARES20-HEX_PI:POSI-U",
+        #                name="uhex",
+        #            )
+        #            append_object_to_object(
+        #                self,
+        #                AdjustablePv,
+        #                "SARES20-HEX_PI:SET-POSI-V",
+        #                pvreadbackname="SARES20-HEX_PI:POSI-V",
+        #                name="vhex",
+        #            )
+        #            append_object_to_object(
+        #                self,
+        #                AdjustablePv,
+        #                "SARES20-HEX_PI:SET-POSI-W",
+        #                pvreadbackname="SARES20-HEX_PI:POSI-W",
+        #                name="whex",
+        #            )
 
         if "kappa" in self.configuration:
             self._append(
@@ -757,14 +784,28 @@ class XRDYou(Assembly):
                 unit="deg",
             )
 
-        if diff_detector:
+        if detectors:
+            for tdet in detectors:
+                tname = tdet["name"]
+                tid = tdet["jf_id"]
+                self._append(
+                    Jungfrau,
+                    tid,
+                    name=tname,
+                    is_setting=False,
+                    is_display=False,
+                    pgroup_adj=pgroup_adj,
+                    config_adj=configsjf_adj,
+                    view_toplevel_only=True,
+                )
+
+        if diffcalc:
             self._append(
-                Jungfrau,
-                diff_detector["jf_id"],
-                name="det_diff",
+                Crystals,
+                diffractometer_you=self,
+                name="diffcalc",
                 is_setting=False,
                 is_display=False,
-                view_toplevel_only=True,
             )
 
     def get_adjustable_positions_str(self):
@@ -804,10 +845,12 @@ class XRDYou(Assembly):
         kappa_angle=60,
         degrees=True,
         bernina_kappa=True,
-        invert_elbow=False,
+        invert_elbow=None,
     ):
         """tool to convert from you definition angles to kappa angles, in
         particular the bernina kappa where the"""
+        if invert_elbow is None:
+            invert_elbow = self.invert_kappa_ellbow
         if bernina_kappa:
             eta = -eta
             phi = -phi
@@ -828,16 +871,16 @@ class XRDYou(Assembly):
         if bernina_kappa:
             eta_k = eta_k - np.pi / 2
             kappa = -kappa
-        if False:
+        if True:
 
             def flip_ang(ang):
-                if 1 < abs(ang // np.pi):
+                if 2 <= abs(ang // np.pi):
                     return ang - np.sign(ang) * np.pi * 2
                 else:
                     return ang
 
-            # phi_k = flip_ang(phi_k)
-            phi_k = phi_k + np.pi * 2
+            phi_k = flip_ang(phi_k)
+            # phi_k = phi_k + np.pi * 2
             eta_k = flip_ang(eta_k)
             kappa = flip_ang(kappa)
         if degrees:
@@ -852,8 +895,10 @@ class XRDYou(Assembly):
         kappa_angle=60,
         degrees=True,
         bernina_kappa=True,
-        invert_elbow=False,
+        invert_elbow=None,
     ):
+        if invert_elbow is None:
+            invert_elbow = self.invert_kappa_ellbow
         if degrees:
             eta_k, kappa, phi_k, kappa_angle = np.deg2rad(
                 [eta_k, kappa, phi_k, kappa_angle]
@@ -927,7 +972,14 @@ class XRDYou(Assembly):
 
 
 class XRD(Assembly):
-    def __init__(self, name=None, Id=None, configuration=["base"], diff_detector=None):
+    def __init__(
+        self,
+        name=None,
+        Id=None,
+        configuration=["base"],
+        diff_detector=None,
+        pgroup_adj=None,
+    ):
         """X-ray diffractometer platform in AiwssFEL Bernina.\
                 <configuration> : list of elements mounted on 
                 the plaform, options are kappa, nutable, hlgonio, polana"""
@@ -1152,6 +1204,7 @@ class XRD(Assembly):
                 name="det_diff",
                 is_setting=False,
                 is_display=True,
+                pgroup_adj=pgroup_adj,
                 view_toplevel_only=True,
             )
 

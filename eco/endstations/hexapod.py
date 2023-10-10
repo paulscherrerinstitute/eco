@@ -1,6 +1,8 @@
+import time
 from epics import PV
 from ..elements.adjustable import AdjustableFS, AdjustableVirtual
 from ..epics.adjustable import AdjustablePv, AdjustablePvEnum
+from ..epics.detector import DetectorPvData
 from time import sleep
 from ..aliases import append_object_to_object, Alias
 from scipy.spatial.transform import Rotation
@@ -24,80 +26,119 @@ class Hexapod_PI:
             for i in "RST"
         ]
 
+class AdjustablePiHex(AdjustablePv):
+    def __init__(self, pvname=None, pvreadbackname=None, accuracy=None, unit=None, name=None):
+        super().__init__(pvname, pvreadbackname=pvreadbackname, accuracy=accuracy, unit=unit, name=name)
+        self.limit_high = AdjustableFS(f'/sf/bernina/config/eco/reference_values/hex_pi_{name}_limit_high.json', default_value=0)
+        self.limit_low = AdjustableFS(f'/sf/bernina/config/eco/reference_values/hex_pi_{name}_limit_low.json', default_value=0)
+
+
+    def change(self, value):
+        if self.limit_low:
+            if value < self.limit_low():
+                raise Exception(
+                    f"Target value of {self.name} is smaller than limit value!"
+                )
+        if self.limit_high:
+            if self.limit_high() < value:
+                raise Exception(
+                    f"Target value of {self.name} is higher than limit value!"
+                )
+        self._pv.put(value)
+        time.sleep(0.1)
+        while self.get_change_done() == 0:
+            time.sleep(0.1)
+
+    def get_limits(self):
+        return (self.limit_low(), self.limit_high())
+
+    def set_limits(self, limit_low, limit_high):
+        self.limit_low(limit_low)
+        self.limit_high(limit_high)
+
 
 class HexapodPI(Assembly):
     def __init__(self, pvname, name=None, fina_angle_offset=None):
         super().__init__(name=name)
         self.pvname = pvname
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-POSI-X",
             pvreadbackname=self.pvname + ":POSI-X",
             accuracy=0.001,
+            unit="mm",
             name="x_raw",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-POSI-Y",
             pvreadbackname=self.pvname + ":POSI-Y",
             accuracy=0.001,
+            unit="mm",
             name="y_raw",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-POSI-Z",
             pvreadbackname=self.pvname + ":POSI-Z",
             accuracy=0.001,
+            unit="mm",
             name="z_raw",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-POSI-U",
             pvreadbackname=self.pvname + ":POSI-U",
             accuracy=0.001,
+            unit="deg",
             name="rx_raw",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-POSI-V",
             pvreadbackname=self.pvname + ":POSI-V",
             accuracy=0.001,
+            unit="deg",
             name="ry_raw",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-POSI-W",
             pvreadbackname=self.pvname + ":POSI-W",
             accuracy=0.001,
+            unit="deg",
             name="rz_raw",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-PIVOT-R",
             pvreadbackname=self.pvname + ":PIVOT-R",
             accuracy=0.001,
+            unit="mm",
             name="pivot_x",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-PIVOT-S",
             pvreadbackname=self.pvname + ":PIVOT-S",
             accuracy=0.001,
+            unit="mm",
             name="pivot_y",
             is_setting=True,
         )
         self._append(
-            AdjustablePv,
+            AdjustablePiHex,
             self.pvname + ":SET-PIVOT-T",
             pvreadbackname=self.pvname + ":PIVOT-T",
             accuracy=0.001,
+            unit="mm",
             name="pivot_z",
             is_setting=True,
         )
@@ -115,6 +156,8 @@ class HexapodPI(Assembly):
                 reset_current_value_to=False,
                 append_aliases=False,
                 change_simultaneously=False,
+                check_limits=True,
+                unit="mm",
                 name="x",
                 is_setting=False,
             )
@@ -127,7 +170,9 @@ class HexapodPI(Assembly):
                 ),
                 reset_current_value_to=False,
                 change_simultaneously=False,
+                check_limits=True,
                 append_aliases=False,
+                unit="mm",
                 name="y",
                 is_setting=False,
             )
@@ -141,6 +186,8 @@ class HexapodPI(Assembly):
                 reset_current_value_to=False,
                 append_aliases=False,
                 change_simultaneously=False,
+                check_limits=True,
+                unit="mm",
                 name="z",
                 is_setting=False,
             )
@@ -364,16 +411,17 @@ class HexapodPI_old:
         return self.__str__()
 
 
-class HexapodSymmetrie:
+class HexapodSymmetrie(Assembly):
     def __init__(
         self, pv_master="SARES20-HEXSYM", name="hex_usd", offset=[0, 0, 0, 0, 0, 0]
     ):
-        self.name = name
+        super().__init__(name=name)
         self.offset = offset
         self.pvname = pv_master
         self.coordinate_switch = AdjustablePvEnum(
             f"{self.pvname}:MOVE#PARAM:CM", name="hex_usd_coordinate_switch"
         )
+
         self.pvs_setpos = {
             "x": PV(f"{self.pvname}:MOVE#PARAM:X.VAL"),
             "y": PV(f"{self.pvname}:MOVE#PARAM:Y.VAL"),
@@ -390,6 +438,14 @@ class HexapodSymmetrie:
             "ry": PV(f"{self.pvname}:POSMACH:RY"),
             "rz": PV(f"{self.pvname}:POSMACH:RZ"),
         }
+
+        self._append(DetectorPvData, f"{self.pvname}:POSMACH:X", name="x")
+        self._append(DetectorPvData, f"{self.pvname}:POSMACH:Y", name="y")
+        self._append(DetectorPvData, f"{self.pvname}:POSMACH:Z", name="z")
+        self._append(DetectorPvData, f"{self.pvname}:POSMACH:RX", name="rx")
+        self._append(DetectorPvData, f"{self.pvname}:POSMACH:RY", name="ry")
+        self._append(DetectorPvData, f"{self.pvname}:POSMACH:RZ", name="rz")
+
         self._ctrl_pv = PV(f"{self.pvname}:STATE#PANEL:SET.VAL")
 
     def set_coordinates(self, x, y, z, rx, ry, rz, relative_to_eco_offset=True):

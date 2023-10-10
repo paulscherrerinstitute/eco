@@ -1,15 +1,14 @@
+from eco.devices_general.powersockets import MpodChannel
 import sys
 
 sys.path.append("..")
-from ..devices_general.motors import MotorRecord, SmaractStreamdevice
-from ..devices_general.smaract import SmarActRecord
+from ..devices_general.motors import MotorRecord, SmaractRecord
 from ..epics.adjustable import AdjustablePv
 import numpy as np
 from epics import PV
 from ..aliases import Alias, append_object_to_object
 from time import sleep
 import escape.parse.swissfel as sf
-from ..bernina import config
 import pylab as plt
 import escape
 from pathlib import Path
@@ -33,20 +32,19 @@ def addMotorRecordToSelf(self, name=None, Id=None):
 
 
 def addSmarActRecordToSelf(self, Id=None, name=None, **kwargs):
-    self.__dict__[name] = SmaractStreamdevice(Id, name=name, **kwargs)
+    self.__dict__[name] = SmaractRecord(Id, name=name, **kwargs)
     self.alias.append(self.__dict__[name].alias)
 
-
 class High_field_thz_chamber(Assembly):
-    def __init__(self, name=None, Id=None, alias_namespace=None, configuration=[]):
+    def __init__(self, name=None, alias_namespace=None, configuration=[], illumination_mpod = None, helium_control_valve=None):
         super().__init__(name=name)
-        self.Id = Id
         self.name = name
         self.alias = Alias(name)
         self.par_out_pos = [35, -9.5]
         self.motor_configuration = {
             "rx": {
-                "id": "-ESB13",
+                # "id": "SARES23-USR:MOT_13",
+                "id": "SARES23-USR:MOT_6",
                 "pv_descr": "Motor7:1 THz Chamber Rx",
                 "type": 2,
                 "sensor": 1,
@@ -55,7 +53,8 @@ class High_field_thz_chamber(Assembly):
                 "kwargs": {"accuracy": 0.01},
             },
             "x": {
-                "id": "-ESB14",
+                # "id": "SARES23-USR:MOT_14",
+                "id": "SARES23-USR:MOT_15",
                 "pv_descr": "Motor7:2 THz Chamber x ",
                 "type": 1,
                 "sensor": 0,
@@ -63,7 +62,8 @@ class High_field_thz_chamber(Assembly):
                 "home_direction": "back",
             },
             "z": {
-                "id": "-ESB10",
+                # "id": "SARES23-USR:MOT_10",
+                "id": "SARES23-LIC:MOT_16",
                 "pv_descr": "Motor6:1 THz Chamber z ",
                 "type": 1,
                 "sensor": 0,
@@ -71,7 +71,8 @@ class High_field_thz_chamber(Assembly):
                 "home_direction": "back",
             },
             "ry": {
-                "id": "-ESB11",
+                # "id": "SARES23-USR:MOT_11",
+                "id": "SARES23-LIC:MOT_15",
                 "pv_descr": "Motor6:2 THz Chamber Ry",
                 "type": 2,
                 "sensor": 1,
@@ -79,7 +80,8 @@ class High_field_thz_chamber(Assembly):
                 "home_direction": "back",
             },
             "rz": {
-                "id": "-ESB12",
+                # "id": "SARES23-USR:MOT_12",
+                "id": "SARES23-USR:MOT_4",
                 "pv_descr": "Motor6:3 THz Chamber Rz",
                 "type": 2,
                 "sensor": 1,
@@ -91,33 +93,41 @@ class High_field_thz_chamber(Assembly):
         ### lakeshore temperatures ####
         self._append(
             AdjustablePv,
-            pvsetname="SARES20-CRYO:TEMP.VAL",
-            pvreadbackname="SARES20-CRYO:TEMP_RBV",
+            pvsetname="SARES20-LS336:LOOP1_SP",
+            pvreadbackname="SARES20-LS336:A_RBV",
             accuracy=0.1,
             name="temp_sample",
             is_setting=False,
         )
         self._append(
             AdjustablePv,
-            pvsetname="SARES20-CRYO:TEMP-B",
-            pvreadbackname="SARES20-CRYO:TEMP-B_RBV",
+            pvsetname="SARES20-LS336:LOOP2_SP",
+            pvreadbackname="SARES20-LS336:B_RBV",
             accuracy=0.1,
             name="temp_coldfinger",
             is_setting=False,
         )
 
         ### in vacuum smaract motors ###
+        #for name, config in self.motor_configuration.items():
+        #    if "kwargs" in config.keys():
+        #        tmp_kwargs = config["kwargs"]
+        #    else:
+        #        tmp_kwargs = {}
+        #    self._append(
+        #        SmaractStreamdevice,
+        #        pvname=Id + config["id"],
+        #        name=name,
+        #        is_setting=True,
+        #        **tmp_kwargs,
+        #    )
+        ### in vacuum smaract motors ###
         for name, config in self.motor_configuration.items():
-            if "kwargs" in config.keys():
-                tmp_kwargs = config["kwargs"]
-            else:
-                tmp_kwargs = {}
             self._append(
-                SmaractStreamdevice,
-                pvname=Id + config["id"],
+                SmaractRecord,
+                pvname=config["id"],
                 name=name,
                 is_setting=True,
-                **tmp_kwargs,
             )
         self._append(
             AdjustableFS,
@@ -160,6 +170,29 @@ class High_field_thz_chamber(Assembly):
                 is_display=True,
                 is_setting=True,
             )
+        if illumination_mpod:
+            for illu in illumination_mpod:
+                self._append(MpodChannel,illu['pvbase'], illu['channel_number'], module_string=illu['module_string'], name=illu['name'])
+        if helium_control_valve:
+            self._append(MpodChannel,helium_control_valve['pvbase'], helium_control_valve['channel_number'], module_string=helium_control_valve['module_string'], name="_helium_valve_mpod_ch", is_display=True, is_setting=True)
+
+            def get_valve(voltage):
+                if voltage < 2.9:
+                    val=0
+                elif voltage > 5.5:
+                    val=100
+                else:
+                    val = (voltage-2.9)/(5.5-2.9)*100
+                return val
+
+            def set_valve(val):
+                if val <1:
+                    voltage = .5
+                else:
+                    voltage = val*(5.5-2.9)/100+2.9
+                return voltage
+            
+            self._append(AdjustableVirtual, [self._helium_valve_mpod_ch.voltage], get_valve, set_valve, name=helium_control_valve["name"], is_display=True, is_setting=False)
 
     def moveout(self):
         change_in_pos = str(
@@ -187,12 +220,12 @@ class High_field_thz_chamber(Assembly):
     def set_stage_config(self):
         for name, config in self.motor_configuration.items():
             mot = self.__dict__[name]
-            mot.caqtdm_name(config["pv_descr"])
-            mot.stage_type(config["type"])
+            mot.description(config["pv_descr"])
+            #mot.stage_type(config["type"])
             mot.sensor_type(config["sensor"])
-            mot.speed(config["speed"])
+            mot.max_frequency(config["speed"])
             sleep(0.5)
-            mot.calibrate_sensor(1)
+            mot.calibrate_sensor()
 
     def home_smaract_stages(self, stages=None):
         if stages == None:
@@ -209,25 +242,27 @@ class High_field_thz_chamber(Assembly):
             )
             sleep(1)
             if config["home_direction"] == "back":
-                mot.home_backward(1)
-                while mot.status_channel().value == 7:
+                mot.home_reverse(1)
+                sleep(.5)
+                while not mot.flags.motion_complete():
                     sleep(1)
-                if mot.is_homed() == 0:
+                if not mot.flags.is_homed():
                     print(
                         "Homing failed, try homing {} in forward direction".format(name)
                     )
                     mot.home_forward(1)
             elif config["home_direction"] == "forward":
                 mot.home_forward(1)
-                while mot.status_channel().value == 7:
+                sleep(.5)
+                while not mot.flags.motion_complete():
                     sleep(1)
-                if mot.is_homed() == 0:
+                if not mot.flags.is_homed():
                     print(
                         "Homing failed, try homing {} in backward direction".format(
                             name
                         )
                     )
-                    mot.home_backward(1)
+                    mot.home_reverse(1)
 
     def calc_otti(
         self, otti_nu=None, otti_del=None, otti_det=None, plotit=True, **kwargs
@@ -255,40 +290,45 @@ class Organic_crystal_breadboard(Assembly):
         self.alias = Alias(name)
 
         self.motor_configuration = {
-            "mirr2_x": {
-                "id": "-LIC17",
+            "mir_x": {
+                # "id": "-LIC17",
+                "id": "-USR:MOT_8",
                 "pv_descr": "Motor8:2 THz mirror x ",
                 "type": 1,
                 "sensor": 13,
                 "speed": 250,
                 "home_direction": "back",
             },
-            "mirr2_rz": {
-                "id": "-LIC18",
+            "mir_rz": {
+                # "id": "-LIC18",
+                "id": "-USR:MOT_9",
                 "pv_descr": "Motor8:3 THz mirror rz ",
                 "type": 1,
                 "sensor": 13,
                 "speed": 250,
                 "home_direction": "back",
             },
-            "mirr2_ry": {
-                "id": "-ESB1",
+            "mir_ry": {
+                # "id": "-ESB1",
+                "id": "-LIC:MOT_18",
                 "pv_descr": "Motor3:1 THz mirror ry ",
                 "type": 2,
                 "sensor": 1,
                 "speed": 250,
                 "home_direction": "forward",
             },
-            "mirr2_z": {
-                "id": "-LIC16",
+            "mir_z": {
+                # "id": "-LIC16",
+                "id": "-USR:MOT_7",
                 "pv_descr": "Motor8:1 THz mirror z",
                 "type": 1,
                 "sensor": 13,
                 "speed": 250,
                 "home_direction": "back",
             },
-            "par2_x": {
-                "id": "-ESB3",
+            "par_x": {
+                # "id": "-ESB3",
+                "id": "-LIC:MOT_17",
                 "pv_descr": "Motor3:3 THz parabola2 x",
                 "type": 1,
                 "sensor": 0,
@@ -296,39 +336,43 @@ class Organic_crystal_breadboard(Assembly):
                 "home_direction": "back",
             },
             "delaystage_thz": {
-                "id": "-ESB18",
+                # "id": "-ESB18",
+                "id": "-USR:MOT_1",
                 "pv_descr": "Motor8:3 NIR delay stage",
                 "type": 1,
                 "sensor": 0,
                 "speed": 100,
                 "home_direction": "back",
             },
-            "nir_mirr1_ry": {
-                "id": "-ESB17",
+            "nir_m1_ry": {
+                # "id": "-ESB17",
+                "id": "-USR:MOT_3",
                 "pv_descr": "Motor8:2 near IR mirror 1 ry",
                 "type": 2,
                 "sensor": 1,
                 "speed": 250,
                 "home_direction": "back",
             },
-            "nir_mirr1_rx": {
-                "id": "-ESB16",
+            "nir_m1_rx": {
+                "id": "-USR:MOT_16",
                 "pv_descr": "Motor8:1 near IR mirror 1 rx",
                 "type": 2,
                 "sensor": 1,
                 "speed": 250,
                 "home_direction": "back",
             },
-            "nir_mirr2_ry": {
-                "id": "-ESB9",
+            "nir_m2_ry": {
+                # "id": "-ESB9",
+                "id": "-USR:MOT_14",
                 "pv_descr": "Motor5:3 near IR mirror 2 ry",
                 "type": 2,
                 "sensor": 1,
                 "speed": 250,
                 "home_direction": "back",
             },
-            "nir_mirr2_rx": {
-                "id": "-ESB4",
+            "nir_m2_rx": {
+                # "id": "-USR:MOT_4",
+                "id": "-USR:MOT_12",
                 "pv_descr": "Motor4:1 near IR mirror 2 rx",
                 "type": 1,
                 "sensor": 13,
@@ -336,7 +380,7 @@ class Organic_crystal_breadboard(Assembly):
                 "home_direction": "back",
             },
             "crystal": {
-                "id": "-ESB2",
+                "id": "-USR:MOT_2",
                 "pv_descr": "Motor3:2 crystal rotation",
                 "type": 2,
                 "sensor": 1,
@@ -344,7 +388,7 @@ class Organic_crystal_breadboard(Assembly):
                 "home_direction": "back",
             },
             "wp": {
-                "id": "-ESB7",
+                "id": "-USR:MOT_7",
                 "pv_descr": "Motor5:1 waveplate rotation",
                 "type": 2,
                 "sensor": 1,
@@ -359,7 +403,7 @@ class Organic_crystal_breadboard(Assembly):
         ### smaract motors ###
         for name, config in self.motor_configuration.items():
             self._append(
-                SmaractStreamdevice,
+                SmaractRecord,
                 pvname=Id + config["id"],
                 name=name,
                 is_setting=True,

@@ -1,7 +1,10 @@
 import requests
 from pathlib import Path
 from time import sleep
+
+from eco.elements.protocols import Adjustable
 from ..epics.detector import DetectorPvDataStream
+from epics import PV
 from ..acquisition.utilities import Acquisition
 from ..elements.assembly import Assembly
 from ..utilities.path_alias import PathAlias
@@ -23,6 +26,7 @@ class Daq(Assembly):
         channels_BSCAM=None,
         channels_CA=None,
         config_JFs=None,
+        rate_multiplicator=None,
         name=None,
     ):
         super().__init__(name=name)
@@ -43,9 +47,14 @@ class Daq(Assembly):
         self.broker_address = broker_address
         self.broker_address_aux = broker_address_aux
         self.timeout = timeout
-        self.pgroup = pgroup
+        self._pgroup = pgroup
         if type(pulse_id_adj) is str:
             self.pulse_id = DetectorPvDataStream(pulse_id_adj, name="pulse_id")
+            self._pid_wo_automonitor = PV(
+                "SGE-CPCW-85-EVR0:RX-PULSEID",
+                connection_timeout=0.05,
+                auto_monitor=False,
+            )
         else:
             self.pulse_id = pulse_id_adj
         self.running = []
@@ -54,7 +63,24 @@ class Daq(Assembly):
         self.name = name
         self._default_file_path = None
 
+        self.rate_multiplicator = rate_multiplicator
+
+    @property
+    def pgroup(self):
+        if isinstance(self._pgroup, Adjustable):
+            return self._pgroup.get_current_value()
+        else:
+            return self._pgroup
+
+    @pgroup.setter
+    def pgroup(self, value):
+        if isinstance(self._pgroup, Adjustable):
+            self._pgroup.set_target_value(value).wait()
+        else:
+            self._pgroup = value
+
     def acquire(self, file_name=None, Npulses=100, acq_pars={}):
+        print(acq_pars)
         print(file_name, Npulses)
         acquisition = Acquisition(
             acquire=None,
@@ -164,6 +190,7 @@ class Daq(Assembly):
             parameters["directory_name"] = directory_relative.as_posix()
 
         parameters["pgroup"] = pgroup
+        parameters["rate_multiplicator"] = self.rate_multiplicator
         # print("----- debug info ----->\n", parameters, "\n<----- debug info -----")
         response = validate_response(
             requests.post(
@@ -172,10 +199,10 @@ class Daq(Assembly):
                 timeout=self.timeout,
             ).json()
         )
-        
-        runno = response['run_number']
 
-        filenames = response['files']
+        runno = response["run_number"]
+
+        filenames = response["files"]
 
         # filenames = [
         #     (directory_base / Path(filename_format.format(runno)))
@@ -186,27 +213,27 @@ class Daq(Assembly):
 
         return runno, filenames
 
-    def get_next_run_number(self,pgroup=None):
+    def get_next_run_number(self, pgroup=None):
         if pgroup is None:
             pgroup = self.pgroup
         res = requests.get(
             f"{self.broker_address}/get_next_run_number",
-            json={'pgroup':pgroup},
+            json={"pgroup": pgroup},
             timeout=self.timeout,
-            )
-        assert res.ok, f'Getting last run number failed {res.raise_for_status()}'
-        return int(res.json()['message'])
+        )
+        assert res.ok, f"Getting last run number failed {res.raise_for_status()}"
+        return int(res.json()["message"])
 
-    def get_last_run_number(self,pgroup=None):
+    def get_last_run_number(self, pgroup=None):
         if pgroup is None:
             pgroup = self.pgroup
         res = requests.get(
             f"{self.broker_address}/get_last_run_number",
-            json={'pgroup':pgroup},
+            json={"pgroup": pgroup},
             timeout=self.timeout,
-            )
-        assert res.ok, f'Getting last run number failed {res.raise_for_status()}'
-        return int(res.json()['message'])
+        )
+        assert res.ok, f"Getting last run number failed {res.raise_for_status()}"
+        return int(res.json()["message"])
 
     def get_detector_frequency(self):
         return self._event_master.event_codes[
@@ -243,16 +270,17 @@ class Daq(Assembly):
             f"{self.broker_address}/take_pedestal", json=parameters
         ).json()
 
-    def append_aux(self,*file_names,run_number=None,pgroup=None):
+    def append_aux(self, *file_names, run_number=None, pgroup=None):
         if pgroup is None:
             pgroup = self.pgroup
         if run_number is None:
             run_number = self.get_last_run_number()
 
         return requests.post(
-            self.broker_address_aux+'/copy_user_files', 
-            json={'pgroup': pgroup, 'run_number': run_number, 'files': file_names}
-            )
+            self.broker_address_aux + "/copy_user_files",
+            json={"pgroup": pgroup, "run_number": run_number, "files": file_names},
+        )
+
 
 def validate_response(resp):
     if resp.get("status") == "ok":

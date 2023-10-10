@@ -1,3 +1,5 @@
+from eco.detector.detectors_psi import DetectorBsStream
+from eco.devices_general.pipelines_swissfel import Pipeline
 from ..elements.assembly import Assembly
 from ..devices_general.motors import SmaractStreamdevice, MotorRecord, SmaractRecord
 from ..elements.adjustable import AdjustableMemory, AdjustableVirtual
@@ -22,12 +24,13 @@ class TimetoolBerninaUSD(Assembly):
         self,
         name=None,
         processing_pipeline="SARES20-CAMS142-M5_psen_db",
-        processing_instance="SARES20-CAMS142-M5_psen_db1",
+        edge_finding_pipeline="SAROP21-ATT01_proc",
+        processing_instance="SARES20-CAMS142-M5_psen_db",
         spectrometer_camera_channel="SARES20-CAMS142-M5:FPICTURE",
         spectrometer_pvname="SARES20-CAMS142-M5",
         microscope_pvname="SARES20-PROF141-M1",
         delaystage_PV="SLAAR21-LMOT-M524:MOTOR_1",
-        pvname_mirror="SARES23:LIC9",
+        pvname_mirror="SARES23-LIC:MOT_9",
         pvname_zoom="SARES20-MF1:MOT_8",
         mirror_in=15,
         mirror_out=-5,
@@ -43,7 +46,10 @@ class TimetoolBerninaUSD(Assembly):
 
         self.proc_client = PipelineClient()
         self.proc_pipeline = processing_pipeline
+        self._append(Pipeline,self.proc_pipeline, name='pipeline_projection', is_setting=True)
         self.proc_instance = processing_instance
+        self.proc_pipeline_edge = edge_finding_pipeline
+        self._append(Pipeline,self.proc_pipeline_edge, name='pipeline_edgefinding', is_setting=True)
         self.spectrometer_camera_channel = spectrometer_camera_channel
         self._append(
             Target_xyz,
@@ -80,7 +86,7 @@ class TimetoolBerninaUSD(Assembly):
             CameraBasler,
             pvname=microscope_pvname,
             name="camera_microscope",
-            camserver_alias=f"{name} ({microscope_pvname})",
+            camserver_alias="PROF_KB (SARES20-PROF141-M1)",
             is_setting=True,
             is_display=False,
         )
@@ -126,6 +132,45 @@ class TimetoolBerninaUSD(Assembly):
             name="las_out_ry",
             accuracy=10,
             is_setting=True,
+        )
+
+        # SARES20-CAMS142-M5.bsen_signal_x_profile
+        # SARES20-CAMS142-M5.processing_parameters
+        # SARES20-CAMS142-M5.psen_signal_x_profile
+        #
+        #
+
+        self._append(
+            DetectorBsStream,
+            "SARES20-CAMS142-M5.roi_signal_x_profile",
+            cachannel=None,
+            name="spectrum_signal",
+            is_setting=False,
+            is_display=True,
+        )
+        self._append(
+            DetectorBsStream,
+            "SARES20-CAMS142-M5.roi_background_x_prof",
+            cachannel=None,
+            name="spectrum_background",
+            is_setting=False,
+            is_display=True,
+        )
+        self._append(
+            DetectorBsStream,
+            "SARES20-CAMS142-M5.bsen_signal_x_profilef",
+            cachannel=None,
+            name="spectrum_bsen",
+            is_setting=False,
+            is_display=True,
+        )
+        self._append(
+            DetectorBsStream,
+            "SAROP21-ATT01:arrival_time",
+            cachannel=None,
+            name="edge_position",
+            is_setting=False,
+            is_display=True,
         )
 
     def get_online_data(self):

@@ -329,15 +329,16 @@ class SlitBlades(Assembly):
 
 
 @addSlitRepr
-class SlitPosWidth:
+class SlitPosWidth(Assembly):
     def __init__(self, pvname, name=None, elog=None):
-        self.name = name
-        self.Id = pvname
-        self.alias = Alias(name)
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_X", name="hpos")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_Y", name="vpos")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_W", name="hgap")
-        append_object_to_object(self, MotorRecord, pvname + ":MOTOR_H", name="vgap")
+        super().__init__(name=name)
+
+        self.pvname = pvname
+
+        self._append(MotorRecord, pvname + ":MOTOR_X", name="hpos")
+        self._append(MotorRecord, pvname + ":MOTOR_Y", name="vpos")
+        self._append(MotorRecord, pvname + ":MOTOR_W", name="hgap")
+        self._append(MotorRecord, pvname + ":MOTOR_H", name="vgap")
 
         def getblade(pos, gap, direction=1):
             return pos + direction * gap / 2
@@ -367,8 +368,7 @@ class SlitPosWidth:
                 [x + tx * self.vgap.get_current_value() for tx in [-1 / 2, 1 / 2]]
             )
 
-        append_object_to_object(
-            self,
+        self._append(
             AdjustableVirtual,
             [self.vpos, self.vgap],
             partial(getblade, direction=1),
@@ -376,8 +376,7 @@ class SlitPosWidth:
             reset_current_value_to=True,
             name="up",
         )
-        append_object_to_object(
-            self,
+        self._append(
             AdjustableVirtual,
             [self.vpos, self.vgap],
             partial(getblade, direction=-1),
@@ -385,8 +384,7 @@ class SlitPosWidth:
             reset_current_value_to=True,
             name="down",
         )
-        append_object_to_object(
-            self,
+        self._append(
             AdjustableVirtual,
             [self.hpos, self.hgap],
             partial(getblade, direction=1),
@@ -394,8 +392,7 @@ class SlitPosWidth:
             reset_current_value_to=True,
             name="left",
         )
-        append_object_to_object(
-            self,
+        self._append(
             AdjustableVirtual,
             [self.hpos, self.hgap],
             partial(getblade, direction=-1),
@@ -844,10 +841,10 @@ class SlitBladesGeneral(Assembly):
             return tuple([tx + self.vpos.get_current_value() for tx in [-x / 2, x / 2]])
 
         def sethpos(x):
-            return tuple([tx + self.hgap.get_current_value() for tx in [-x / 2, x / 2]])
+            return tuple([x + tx for tx in [-self.hgap.get_current_value()/2, self.hgap.get_current_value()/2]])
 
         def setvpos(x):
-            return tuple([tx + self.vgap.get_current_value() for tx in [-x / 2, x / 2]])
+            return tuple([x + tx for tx in [-self.vgap.get_current_value()/2, self.vgap.get_current_value()/2]])
 
         self._append(
             AdjustableVirtual,
@@ -885,7 +882,10 @@ class SlitBladesGeneral(Assembly):
     def _apply_on_all_blades(self, method_name, *args, **kwargs):
         out = []
         for blade in self.blade_motors:
-            out.append(blade.__dict__[method_name](*args, **kwargs))
+            if method_name in blade.__dict__.keys():
+                out.append(blade.__dict__[method_name](*args, **kwargs))
+            else:
+                out.append(blade.__getattribute__(method_name)(*args, **kwargs))
         return out
 
     def home_all_blades(self):

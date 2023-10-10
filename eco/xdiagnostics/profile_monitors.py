@@ -1,3 +1,4 @@
+from eco.detector.detectors_psi import DetectorBsStream
 from ..devices_general.motors import MotorRecord, SmaractStreamdevice, SmaractRecord
 from ..devices_general.detectors import CameraCA, CameraBS
 from ..devices_general.cameras_swissfel import CameraBasler
@@ -15,9 +16,15 @@ def addMotorRecordToSelf(self, Id=None, name=None):
 
 
 class Pprm(Assembly):
-    def __init__(self, pvname, pvname_camera, name=None):
+    def __init__(self, pvname, pvname_camera, name=None, in_target=1, bs_channels={}):
         super().__init__(name=name)
         self.pvname = pvname
+        self.in_target = in_target
+
+        self._append(
+            AdjustablePvEnum, self.pvname + ":PROBE_SP", name="target", is_setting=True
+        )
+
         self._append(
             MotorRecord,
             pvname_camera + ":MOTOR_PROBE",
@@ -31,24 +38,32 @@ class Pprm(Assembly):
             camserver_alias=f"{name} ({pvname_camera})",
             name="camera",
             is_setting=True,
+            is_display="recursive",
         )
         self._append(
             AdjustablePvEnum, self.pvname + ":LED", name="led", is_setting=True
         )
-        self._append(
-            AdjustablePvEnum, self.pvname + ":PROBE_SP", name="target", is_setting=True
-        )
+        for bscn,bscc in bs_channels.items():
+            self._append(
+                DetectorBsStream,
+                bscc,
+                name=bscn,
+                is_setting=False,
+            )
 
-    def movein(self, target=1):
+
+    def movein(self, target=None):
+        if target == None:
+            target = self.in_target
         self.target.set_target_value(target)
 
     def moveout(self, target=0):
         self.target.set_target_value(target)
 
-    def __repr__(self):
-        s = f"**Profile Monitor {self.name}**\n"
-        s += f"Target in beam: {self.target.get_current_value().name}\n"
-        return s
+    # def __repr__(self):
+    #     s = f"**Profile Monitor {self.name}**\n"
+    #     s += f"Target in beam: {self.target.get_current_value().name}\n"
+    #     return s
 
 
 class Target_xyz(Assembly):
@@ -93,7 +108,7 @@ class ProfKbBernina(Assembly):
         pvname_target_x="SARES20-MF2:MOT_1",
         pvname_target_y="SARES20-MF2:MOT_2",
         pvname_target_z="SARES20-MF2:MOT_3",
-        pvname_mirror="SARES23:LIC11",
+        pvname_mirror="SARES23-LIC:MOT_11",
         mirror_in=15,
         mirror_out=-5,
         pvname_zoom="SARES20-MF2:MOT_4",
@@ -110,27 +125,10 @@ class ProfKbBernina(Assembly):
             pvname_z="SARES20-MF2:MOT_3",
             name="target_stages",
             is_display="recursive",
+            is_setting=True,
         )
         self.target = self.target_stages.presets
 
-        self._append(
-            MotorRecord,
-            pvname_target_x,
-            name="x_target",
-            is_setting=True,
-        )
-        self._append(
-            MotorRecord,
-            pvname_target_y,
-            name="y_target",
-            is_setting=True,
-        )
-        self._append(
-            MotorRecord,
-            pvname_target_z,
-            name="z_target",
-            is_setting=True,
-        )
         self._append(
             SmaractRecord,
             pvname_mirror,
@@ -159,6 +157,8 @@ class ProfKbBernina(Assembly):
         self._append(
             MotorRecord, pvname_zoom, name="zoom", is_setting=True, is_display=True
         )
+        ix = self.settings_collection._list.index(self.zoom.offset)
+        self.settings_collection._list.pop(ix)
 
     def movein_keep_target(self, wait=False):
         ch = self.mirror_in.set_target_value(1)
@@ -173,18 +173,18 @@ class ProfKbBernina(Assembly):
     def movein(self, wait=False):
         ch = self.mirror_in.set_target_value(1)
         try:
-            self.target_stages.presets.movein()
+            self.presets.movein()
         except:
-            print("No movein preset found for target stages.")
+            print("No movein preset found for prof_kb.")
         if wait:
             ch.wait()
 
     def moveout(self, wait=False):
         ch = self.mirror_in.set_target_value(0)
         try:
-            self.target_stages.presets.moveout()
+            self.presets.moveout()
         except:
-            print("No moveout preset found for target stages.")
+            print("No moveout preset found for prof_kb.")
         if wait:
             ch.wait()
 
