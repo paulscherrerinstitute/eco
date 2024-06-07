@@ -79,16 +79,7 @@ namespace.append_obj(
 )
 
 
-# adding all stuff from the config components the "old" way of configuring.
-# whatever is added, it is available by the configured name in this module
-# afterwards, and can be used immediately, e.g. as input argument for the next thing.
-
-# Adding stuff the "new" way
-
 ## Utilities
-
-
-
 namespace.append_obj(
     "Run_Table2",
     name="run_table",

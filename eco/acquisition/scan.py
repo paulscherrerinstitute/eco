@@ -217,7 +217,7 @@ class Scan:
                     file_name=fina, Npulses=self.pulses_per_step[0], acq_pars=acq_pars
                 )
             elif isinstance(ctr, Slab_Ioxos_Daq):
-                acq = ctr.acquire(file_name=fina, N_pulses=self.pulses_per_step, adjs_rb=readbacks_step, adjs_name=[adj.name for adj in self.adjustables]) 
+                acq = ctr.acquire(file_name=fina, N_pulses=self.pulses_per_step[0], adjs_rb=readbacks_step, adjs_name=[adj.name for adj in self.adjustables]) 
             else:
                 acq = ctr.acquire(file_name=fina, Npulses=self.pulses_per_step[0])
             acs.append(acq)

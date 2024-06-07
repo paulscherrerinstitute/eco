@@ -795,7 +795,7 @@ class Tweak:
                 self.thread = None
 
             def print(self):
-                if self.thread and self.thread.isAlive():
+                if self.thread and self.thread.is_alive():
                     return
                 else:
                     self.thread = Thread(target=self.print_foo)
